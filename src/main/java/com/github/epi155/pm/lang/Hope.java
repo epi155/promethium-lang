@@ -1,0 +1,114 @@
+package com.github.epi155.pm.lang;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+public interface Hope<T> extends One, Glitch, SomeOne<T> {
+    /**
+     * Create a <b> Hope </b> with value
+     *
+     * @param value value to set
+     * @param <S>   type of value
+     * @return <b>Hope</b> instance
+     */
+    static <S> @NotNull Hope<S> of(S value) {
+        return new PmHope<>(value, null);
+    }
+
+    /**
+     * Create an error <b> Hope </b>
+     *
+     * @param fault error
+     * @param <S>   type value in case of success
+     * @return <b>Hope</b> instance
+     */
+    static <S> @NotNull Hope<S> of(@NotNull Failure fault) {
+        return new PmHope<>(null, fault);
+    }
+
+    /**
+     * Create an error <b> Hope </b>
+     *
+     * @param ce   custom error message
+     * @param argv custom error parameters
+     * @param <S>  type value in case of success
+     * @return <b>Hope</b> instance
+     */
+    static <S> @NotNull Hope<S> failure(@NotNull MsgError ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
+    }
+
+    /**
+     * Create an error <b> Hope </b>
+     * <p>
+     * The first <i> class / method / line </i> of the stacktrace,
+     * which has the same package as the class it calls <i> capture </i>
+     * (limited to the first two namespaces),
+     * is identified as a detail of the error
+     * </p>
+     *
+     * @param t   exception to catch
+     * @param <S> type value in case of success
+     * @return <b>Hope</b> instance
+     */
+    static <S> @NotNull Hope<S> capture(@NotNull Throwable t) {
+        return new PmHope<>(null, PmFailure.of(t));
+    }
+
+    /**
+     * Create an error <b> Hope </b>
+     * <p>
+     * The <i> method / line </i> of the stacktrace,
+     * which threw the class-internal exception calling <i> capture </i>,
+     * is identified as a detail of the error
+     * </p>
+     *
+     * @param t   exception to catch
+     * @param <S> type value in case of success
+     * @return <b>Hope</b> instance
+     */
+    static <S> @NotNull Hope<S> captureHere(@NotNull Throwable t) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
+        StackTraceElement[] stErr = t.getStackTrace();
+        for (int i = 1; i < stErr.length; i++) {
+            StackTraceElement error = stErr[i];
+            if (caller.getClassName().equals(error.getClassName()) && caller.getMethodName().equals(error.getMethodName())) {
+                return new PmHope<>(null, PmFailure.ofException(error, t));
+            }
+        }
+        return new PmHope<>(null, PmFailure.of(t));
+    }
+
+    T orThrow() throws FailureException;
+
+    @NotNull <R> Hope<R> andThen(@NotNull Function<T, Hope<R>> fcn);
+
+    @NotNull Nope andClose(@NotNull Consumer<T> action);
+
+    @NotNull Nope and(@NotNull Function<T, ? extends One> fcn);
+
+    /**
+     * Set the action on success
+     * <p>
+     * In the event of an error, the action is not performed.
+     * </p>
+     *
+     * @param action action to be taken if successful
+     * @return Glitch to set the action on failure
+     * @see Glitch#onFailure(Consumer)
+     */
+    @NotNull Glitch onSuccess(Consumer<T> action);
+
+    @NotNull Nope asNope();
+
+    default @NotNull Collection<Failure> errors() {
+        return isSuccess() ? Collections.emptyList() : Collections.singletonList(fault());
+    }
+
+}
