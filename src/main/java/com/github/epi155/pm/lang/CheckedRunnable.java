@@ -1,6 +1,14 @@
 package com.github.epi155.pm.lang;
 
+/**
+ * Runnable with exception
+ */
 @FunctionalInterface
 public interface CheckedRunnable {
-	void run() throws FailureException ;
+    /**
+     * execute method
+     *
+     * @throws FailureException exception throwed
+     */
+    void run() throws FailureException;
 }

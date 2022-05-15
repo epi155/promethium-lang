@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+/**
+ * Utility class for carrying a single error
+ */
 public interface Nope extends One, Glitch {
     /**
      * No error

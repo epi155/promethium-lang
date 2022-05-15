@@ -2,6 +2,9 @@ package com.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Custom message error
+ */
 public interface MsgError {
     /**
      * Factory constructor
@@ -14,8 +17,19 @@ public interface MsgError {
         return new PmMsgError(code, pattern);
     }
 
+    /**
+     * error code
+     *
+     * @return error code
+     */
     String code();
 
+    /**
+     * message builder
+     *
+     * @param objects error parameters
+     * @return final error message
+     */
     String message(Object... objects);
 
 }

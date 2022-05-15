@@ -16,7 +16,7 @@ class PmDemuxEnum<E extends Enum<E>, T> implements DemuxEnum<E, T> {
     }
 
     @Override
-    public DemuxEnum<E, T> on(E e, Consumer<T> action) {
+    public DemuxEnum<E, T> on(@NotNull E e, @NotNull Consumer<T> action) {
         if (this.e == e && notConsumed) {
             notConsumed = false;
             action.accept(value);
@@ -25,7 +25,7 @@ class PmDemuxEnum<E extends Enum<E>, T> implements DemuxEnum<E, T> {
     }
 
     @Override
-    public DemuxEnum<E, T> on(@NotNull Set<E> e, Consumer<T> action) {
+    public DemuxEnum<E, T> on(@NotNull Set<E> e, @NotNull Consumer<T> action) {
         if (e.contains(this.e) && notConsumed) {
             notConsumed = false;
             action.accept(value);
@@ -34,7 +34,7 @@ class PmDemuxEnum<E extends Enum<E>, T> implements DemuxEnum<E, T> {
     }
 
     @Override
-    public DemuxEnum<E, T> notOn(E e, Consumer<T> action) {
+    public DemuxEnum<E, T> notOn(@NotNull E e, @NotNull Consumer<T> action) {
         if (this.e != e && notConsumed) {
             notConsumed = false;
             action.accept(value);
@@ -43,7 +43,7 @@ class PmDemuxEnum<E extends Enum<E>, T> implements DemuxEnum<E, T> {
     }
 
     @Override
-    public DemuxEnum<E, T> notOn(@NotNull Set<E> e, Consumer<T> action) {
+    public DemuxEnum<E, T> notOn(@NotNull Set<E> e, @NotNull Consumer<T> action) {
         if (!e.contains(this.e) && notConsumed) {
             notConsumed = false;
             action.accept(value);
@@ -51,11 +51,10 @@ class PmDemuxEnum<E extends Enum<E>, T> implements DemuxEnum<E, T> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-	@Override
-    public <W> void onElse(Consumer<W> action) {
+    @Override
+    public void onElse(@NotNull Consumer<T> action) {
         if (notConsumed) {
-            action.accept((W) action);
+            action.accept(value);
         }
     }
 

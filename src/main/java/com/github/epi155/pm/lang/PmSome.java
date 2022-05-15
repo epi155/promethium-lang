@@ -82,7 +82,7 @@ class PmSome<T> extends PmAny implements Some<T> {
     }
 
     @Override
-    public @NotNull None andClose(@NotNull Consumer<T> action) {
+    public @NotNull None implies(@NotNull Consumer<T> action) {
         if (isSuccess()) {
             action.accept(value);
             return new PmNone();

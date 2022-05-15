@@ -13,8 +13,8 @@ class PmDemuxClass implements DemuxClass {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
-    public <W> DemuxClass when(@NotNull Class<W> cls, Consumer<W> action) {
+    @Override
+    public <W> DemuxClass when(@NotNull Class<W> cls, @NotNull Consumer<W> action) {
         if (cls.isAssignableFrom(o.getClass()) && notConsumed) {
             notConsumed = false;
             action.accept((W) o);
@@ -23,8 +23,8 @@ class PmDemuxClass implements DemuxClass {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
-    public <W> void whenOther(Consumer<W> action) {
+    @Override
+    public <W> void whenOther(@NotNull Consumer<W> action) {
         if (notConsumed) {
             action.accept((W) o);
         }

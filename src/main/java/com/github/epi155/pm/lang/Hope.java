@@ -7,6 +7,11 @@ import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Utility class for carrying a single error xor a value
+ *
+ * @param <T> value type
+ */
 public interface Hope<T> extends One, Glitch, SomeOne<T> {
     /**
      * Create a <b> Hope </b> with value
@@ -85,12 +90,37 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
         return new PmHope<>(null, PmFailure.of(t));
     }
 
+    /**
+     * Retrieve the value if there is no error or throw an exception
+     *
+     * @return value
+     * @throws FailureException exception with error payload
+     */
     T orThrow() throws FailureException;
 
+    /**
+     * Compose operator
+     *
+     * @param fcn transform value to result {@link Hope}
+     * @param <R> result type
+     * @return result {@link Hope} instance, if this has an error, the transformation is not called and the result has the original error
+     */
     @NotNull <R> Hope<R> andThen(@NotNull Function<T, Hope<R>> fcn);
 
-    @NotNull Nope andClose(@NotNull Consumer<T> action);
+    /**
+     * Logical implies operator
+     *
+     * @param action action on value, executed if there are no errors
+     * @return {@link Nope} instance, with original error, if any
+     */
+    @NotNull Nope implies(@NotNull Consumer<T> action);
 
+    /**
+     * Logical short-circuit and operator
+     *
+     * @param fcn transform value to {@link Hope} or {@link Nope}
+     * @return {@link Nope} instance, if this has an error, the transformation is not called and the result has the original error
+     */
     @NotNull Nope and(@NotNull Function<T, ? extends One> fcn);
 
     /**
@@ -103,8 +133,13 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * @return Glitch to set the action on failure
      * @see Glitch#onFailure(Consumer)
      */
-    @NotNull Glitch onSuccess(Consumer<T> action);
+    @NotNull Glitch onSuccess(@NotNull Consumer<T> action);
 
+    /**
+     * Collapse to {@link Nope} instance, keeping only error data, and lost value
+     *
+     * @return {@link Nope} instance
+     */
     @NotNull Nope asNope();
 
     default @NotNull Collection<Failure> errors() {

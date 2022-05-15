@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * Custom action in case of errors
+ */
 public interface Glitches {
     /**
      * Set the action in case of failure

@@ -65,6 +65,25 @@ class TestConcat {
     }
 
     @Test
+    void test50() {
+        val list = Arrays.asList(1, 2, 3, 4, 5, 6);
+        val bld = None.builder();
+        list.stream()
+                .map(this::func1)
+                .flatMap(bld::flat)
+                .map(this::func2)
+                .flatMap(bld::flat)
+                .map(this::func3)
+                .flatMap(bld::flat)
+                .map(this::func4)
+                .flatMap(bld::flat)
+                .forEach(it -> {
+                });
+        val z = bld.build();
+        z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
+    }
+
+    @Test
     void test51() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> func1(n)
@@ -82,6 +101,7 @@ class TestConcat {
                 .andThen(this::fun3)
                 .andThen(this::fun4)).collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
+
     }
 
     @Test

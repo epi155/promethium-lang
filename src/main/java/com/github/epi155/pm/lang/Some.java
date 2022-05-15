@@ -7,6 +7,11 @@ import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Utility class for carrying many errors xor a value
+ *
+ * @param <T> value type
+ */
 public interface Some<T> extends Any, Glitches, SomeOne<T> {
     /**
      * {@link Some} builder
@@ -24,6 +29,7 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      * @param ce      error message
      * @param objects message parameters
      * @return instance of {@link Some} (error)
+     * @param <U>   payload type
      */
     static <U> @NotNull Some<U> failure(@NotNull MsgError ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
@@ -33,9 +39,9 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
 
     /**
      * static factory with {@link Throwable}
-     *
      * @param t throwable instance
      * @return instance of {@link Some} (error)
+     * @param <U>   payload type
      */
     static <U> @NotNull Some<U> capture(@NotNull Throwable t) {
         return new PmSome<>(Collections.singletonList(PmFailure.of(t)));
@@ -46,6 +52,7 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      *
      * @param fault {@link Failure} instance
      * @return instance of {@link Some} (error)
+     * @param <U>   payload type
      */
     static <U> @NotNull Some<U> of(@NotNull Failure fault) {
         return new PmSome<>(Collections.singletonList(fault));
@@ -72,15 +79,38 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      * @return Glitches to set the action on failure
      * @see Glitches#onFailure(Consumer)
      */
-    @NotNull Glitches onSuccess(Consumer<? super T> successAction);
+    @NotNull Glitches onSuccess(@NotNull Consumer<? super T> successAction);
 
+    /**
+     * Collapse to {@link None} instance, keeping only errors data, and lost value
+     *
+     * @return {@link None} instance
+     */
     @NotNull None asNone();
 
+    /**
+     * Compose operator
+     *
+     * @param fcn transform value to result {@link Some}
+     * @param <R> result type
+     * @return result {@link Some} instance, if this has errors, the transformation is not called and the result has the original error
+     */
     @NotNull <R> Some<R> andThen(@NotNull Function<T, ? extends SomeOne<R>> fcn);
 
+    /**
+     * Logical short-circuit and operator
+     *
+     * @param fcn transform value to {@link Some} or {@link None}
+     * @return {@link None} instance, if this has errors, the transformation is not called and the result has the original error
+     */
     @NotNull None and(@NotNull Function<T, ? extends Any> fcn);
 
-    @NotNull None andClose(@NotNull Consumer<T> action);
-
+    /**
+     * Logical implies operator
+     *
+     * @param action action on value, executed if there are no errors
+     * @return {@link None} instance, with original error, if any
+     */
+    @NotNull None implies(@NotNull Consumer<T> action);
 
 }

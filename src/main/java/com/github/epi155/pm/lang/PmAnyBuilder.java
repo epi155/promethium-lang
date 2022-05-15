@@ -110,11 +110,6 @@ abstract class PmAnyBuilder implements ErrorBuilder {
         return errors.isEmpty();
     }
 
-    @Override
-    public int count() {
-        return errors.size();
-    }
-
     public @NotNull Collection<Failure> errors() {
         return errors;
     }
@@ -140,11 +135,6 @@ abstract class PmAnyBuilder implements ErrorBuilder {
         } catch (Exception e) {
             capture(e);
         }
-    }
-
-    @Override
-    public @NotNull Stream<Failure> stream() {
-        return errors.stream();
     }
 
     @Override

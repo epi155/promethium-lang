@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
+/**
+ * Minimal interface for classes with error data
+ */
 public interface AnyOne {
     /**
      * Indicates whether at least one error has occurred.

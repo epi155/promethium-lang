@@ -37,14 +37,33 @@
         <url>https://github.com/epi155/promethium-lang</url>
     </scm>
 
-    <distributionManagement>
-        <repository>
+    <profiles>
+        <profile>
             <id>github</id>
-            <name>GitHub EPi155 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/epi155</url>
-        </repository>
-    </distributionManagement>
-
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub EPi155 Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/epi155</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>sonatype</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>sonatype-nexus-snapshots</id>
+                    <name>Sonatype Nexus Snapshots</name>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Nexus Release Repository</name>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->

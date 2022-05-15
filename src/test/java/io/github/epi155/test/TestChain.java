@@ -42,7 +42,7 @@ class TestChain {
         val bld = None.builder();
         val a = Arrays.asList(1, 2, 3, 4);
         a.forEach(ii -> bld.add(compute1(ii)
-                .andClose(s -> s
+                .implies(s -> s
                         .when(Integer.class, it -> log.info("{} is int", it))
                         .when(Double.class, dt -> log.info("{} is dbl", dt))
                 )));

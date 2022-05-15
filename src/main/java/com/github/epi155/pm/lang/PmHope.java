@@ -58,7 +58,7 @@ class PmHope<T> implements Hope<T> {
         }
     }
 
-    public @NotNull Nope andClose(@NotNull Consumer<T> action) {
+    public @NotNull Nope implies(@NotNull Consumer<T> action) {
         if (isSuccess()) {
             action.accept(value);
             return Nope.nope();
@@ -91,7 +91,7 @@ class PmHope<T> implements Hope<T> {
     }
 
     @Override
-    public @NotNull Glitch onSuccess(Consumer<T> action) {
+    public @NotNull Glitch onSuccess(@NotNull Consumer<T> action) {
         if (fault == null) {
             action.accept(value);
         }

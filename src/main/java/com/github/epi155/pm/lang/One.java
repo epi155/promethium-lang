@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+/**
+ * Generic utility class for carrying a single error
+ */
 public interface One extends Any {
 
     /**
