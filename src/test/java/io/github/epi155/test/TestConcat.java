@@ -1,6 +1,6 @@
 package io.github.epi155.test;
 
-import com.github.epi155.pm.lang.*;
+import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
