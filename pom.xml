@@ -39,9 +39,9 @@
 
     <distributionManagement>
         <repository>
-            <id>github-pm</id>
+            <id>github</id>
             <name>GitHub EPi155 Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/epi155/pm</url>
+            <url>https://maven.pkg.github.com/epi155</url>
         </repository>
     </distributionManagement>
 
