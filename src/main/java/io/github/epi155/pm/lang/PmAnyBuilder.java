@@ -4,6 +4,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
@@ -29,6 +30,7 @@ abstract class PmAnyBuilder implements ErrorBuilder {
     public void capture(@NotNull Throwable e) {
         errors.add(PmFailure.of(e));
     }
+
     @Override
     public void captureException(@NotNull Throwable e) {
         errors.add(PmFailure.of(e));
@@ -111,7 +113,7 @@ abstract class PmAnyBuilder implements ErrorBuilder {
     }
 
     public @NotNull Collection<Failure> errors() {
-        return errors;
+        return Collections.unmodifiableCollection(errors);
     }
 
     protected void capture(StackTraceElement ste, Throwable t) {

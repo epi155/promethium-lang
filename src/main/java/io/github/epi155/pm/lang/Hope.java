@@ -2,8 +2,6 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -141,9 +139,5 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * @return {@link Nope} instance
      */
     @NotNull Nope asNope();
-
-    default @NotNull Collection<Failure> errors() {
-        return isSuccess() ? Collections.emptyList() : Collections.singletonList(fault());
-    }
 
 }

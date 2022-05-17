@@ -3,8 +3,6 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -93,9 +91,5 @@ public interface Nope extends One, Glitch {
      * @see Glitch#onFailure(Consumer)
      */
     @NotNull Glitch onSuccess(Runnable action);
-
-    default @NotNull Collection<Failure> errors() {
-        return isSuccess() ? Collections.emptyList() : Collections.singletonList(fault());
-    }
 
 }
