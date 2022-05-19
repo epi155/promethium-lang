@@ -50,7 +50,7 @@ class PmHope<T> implements Hope<T> {
     }
 
     @Override
-    public @NotNull <R> Hope<R> andThen(@NotNull Function<T, Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> andThen(@NotNull Function<? super T, Hope<R>> fcn) {
         if (isSuccess()) {
             return fcn.apply(value);
         } else {
@@ -58,7 +58,22 @@ class PmHope<T> implements Hope<T> {
         }
     }
 
-    public @NotNull Nope implies(@NotNull Consumer<T> action) {
+    @Override
+    public @NotNull <R> Hope<R> map(@NotNull Function<? super T, ? extends R> fcn) {
+        if (isSuccess()) {
+            try {
+                val result = fcn.apply(value);
+                return Hope.of(result);
+            } catch (Exception e) {
+                return Hope.capture(e);
+            }
+        } else {
+            return Hope.of(fault);
+        }
+    }
+
+    @Override
+    public @NotNull Nope implies(@NotNull Consumer<? super T> action) {
         if (isSuccess()) {
             action.accept(value);
             return Nope.nope();
@@ -68,7 +83,7 @@ class PmHope<T> implements Hope<T> {
     }
 
     @Override
-    public @NotNull Nope and(@NotNull Function<T, ? extends One> fcn) {
+    public @NotNull Nope and(@NotNull Function<? super T, ? extends One> fcn) {
         if (isSuccess()) {
             val one = fcn.apply(value);
             if (one.isSuccess()) {
@@ -91,7 +106,7 @@ class PmHope<T> implements Hope<T> {
     }
 
     @Override
-    public @NotNull Glitch onSuccess(@NotNull Consumer<T> action) {
+    public @NotNull Glitch onSuccess(@NotNull Consumer<? super T> action) {
         if (fault == null) {
             action.accept(value);
         }

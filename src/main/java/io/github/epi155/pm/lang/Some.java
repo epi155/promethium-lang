@@ -95,7 +95,18 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      * @param <R> result type
      * @return result {@link Some} instance, if this has errors, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Some<R> andThen(@NotNull Function<T, ? extends SomeOne<R>> fcn);
+    @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends SomeOne<R>> fcn);
+
+    /**
+     * map value
+     *
+     * @param fcn mapping function
+     * @param <R> result type
+     * @return {@link Some} instance with new value,
+     * if this has errors, the transformation is not called and the result has the original error;
+     * RuntimeException are caught as new error
+     */
+    @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * Logical short-circuit and operator
@@ -103,7 +114,7 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      * @param fcn transform value to {@link Some} or {@link None}
      * @return {@link None} instance, if this has errors, the transformation is not called and the result has the original error
      */
-    @NotNull None and(@NotNull Function<T, ? extends Any> fcn);
+    @NotNull None and(@NotNull Function<? super T, ? extends Any> fcn);
 
     /**
      * Logical implies operator
@@ -111,6 +122,6 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      * @param action action on value, executed if there are no errors
      * @return {@link None} instance, with original error, if any
      */
-    @NotNull None implies(@NotNull Consumer<T> action);
+    @NotNull None implies(@NotNull Consumer<? super T> action);
 
 }

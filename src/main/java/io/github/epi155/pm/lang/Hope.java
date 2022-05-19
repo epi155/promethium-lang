@@ -103,7 +103,18 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * @param <R> result type
      * @return result {@link Hope} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Hope<R> andThen(@NotNull Function<T, Hope<R>> fcn);
+    @NotNull <R> Hope<R> andThen(@NotNull Function<? super T, Hope<R>> fcn);
+
+    /**
+     * map value
+     *
+     * @param fcn mapping function
+     * @param <R> result type
+     * @return {@link Hope} instance with new value,
+     * if this has errors, the transformation is not called and the result has the original error;
+     * RuntimeException are caught as new error
+     */
+    @NotNull <R> Hope<R> map(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * Logical implies operator
@@ -111,7 +122,7 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * @param action action on value, executed if there are no errors
      * @return {@link Nope} instance, with original error, if any
      */
-    @NotNull Nope implies(@NotNull Consumer<T> action);
+    @NotNull Nope implies(@NotNull Consumer<? super T> action);
 
     /**
      * Logical short-circuit and operator
@@ -119,7 +130,7 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * @param fcn transform value to {@link Hope} or {@link Nope}
      * @return {@link Nope} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull Nope and(@NotNull Function<T, ? extends One> fcn);
+    @NotNull Nope and(@NotNull Function<? super T, ? extends One> fcn);
 
     /**
      * Set the action on success
@@ -131,7 +142,7 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * @return Glitch to set the action on failure
      * @see Glitch#onFailure(Consumer)
      */
-    @NotNull Glitch onSuccess(@NotNull Consumer<T> action);
+    @NotNull Glitch onSuccess(@NotNull Consumer<? super T> action);
 
     /**
      * Collapse to {@link Nope} instance, keeping only error data, and lost value

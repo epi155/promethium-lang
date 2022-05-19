@@ -55,7 +55,7 @@ class PmSome<T> extends PmAny implements Some<T> {
     }
 
     @Override
-    public @NotNull <R> Some<R> andThen(@NotNull Function<T, ? extends SomeOne<R>> fcn) {
+    public @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends SomeOne<R>> fcn) {
         if (isSuccess()) {
             val so = fcn.apply(value);
             if (so.isSuccess()) {
@@ -68,7 +68,22 @@ class PmSome<T> extends PmAny implements Some<T> {
         }
     }
 
-    public @NotNull None and(@NotNull Function<T, ? extends Any> fcn) {
+    @Override
+    public @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends R> fcn) {
+        if (isSuccess()) {
+            try {
+                val result = fcn.apply(value);
+                return new PmSome<>(result);
+            } catch (Exception e) {
+                return Some.capture(e);
+            }
+        } else {
+            return new PmSome<>(errors());
+        }
+    }
+
+    @Override
+    public @NotNull None and(@NotNull Function<? super T, ? extends Any> fcn) {
         if (isSuccess()) {
             val any = fcn.apply(value);
             if (any.isSuccess()) {
@@ -82,7 +97,7 @@ class PmSome<T> extends PmAny implements Some<T> {
     }
 
     @Override
-    public @NotNull None implies(@NotNull Consumer<T> action) {
+    public @NotNull None implies(@NotNull Consumer<? super T> action) {
         if (isSuccess()) {
             action.accept(value);
             return new PmNone();
