@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * Minimal interface for classes with error data
  */
-public interface AnyOne {
+public interface AnyItem {
     /**
      * Indicates whether at least one error has occurred.
      *

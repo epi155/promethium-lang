@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Error builder interface
  */
-public interface ErrorBuilder extends AnyOne {
+public interface ErrorBuilder extends AnyItem {
     /**
      * Add error when runnable throw an {@link FailureException}
      *
@@ -21,7 +21,7 @@ public interface ErrorBuilder extends AnyOne {
      *
      * @param any object with potential error payload
      */
-    void add(@NotNull AnyOne any);
+    void add(@NotNull AnyItem any);
 
     /**
      * Add failure error

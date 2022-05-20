@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <T> payload type
  */
-public interface SomeOne<T> extends AnyOne {
+public interface AnyValue<T> extends AnyItem {
     /**
      * Returns the value
      *

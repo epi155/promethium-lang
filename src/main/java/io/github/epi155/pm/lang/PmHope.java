@@ -83,7 +83,7 @@ class PmHope<T> implements Hope<T> {
     }
 
     @Override
-    public @NotNull Nope and(@NotNull Function<? super T, ? extends One> fcn) {
+    public @NotNull Nope and(@NotNull Function<? super T, ? extends SingleError> fcn) {
         if (isSuccess()) {
             val one = fcn.apply(value);
             if (one.isSuccess()) {

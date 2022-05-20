@@ -121,7 +121,7 @@ abstract class PmAnyBuilder implements ErrorBuilder {
     }
 
     @Override
-    public void add(@NotNull AnyOne any) {
+    public void add(@NotNull AnyItem any) {
         any.errors().forEach(this::add);
     }
 

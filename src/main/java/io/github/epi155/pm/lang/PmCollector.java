@@ -8,14 +8,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-class PmCollector implements Collector<AnyOne, NoneBuilder, None> {
+class PmCollector implements Collector<AnyItem, NoneBuilder, None> {
     @Override
     public Supplier<NoneBuilder> supplier() {
         return None::builder;
     }
 
     @Override
-    public BiConsumer<NoneBuilder, AnyOne> accumulator() {
+    public BiConsumer<NoneBuilder, AnyItem> accumulator() {
         return ErrorBuilder::add;
     }
 

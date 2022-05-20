@@ -9,7 +9,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-class PmSome<T> extends PmAny implements Some<T> {
+class PmSome<T> extends PmAnyError implements Some<T> {
     private final T value;
 
     protected PmSome(T value) {
@@ -55,7 +55,7 @@ class PmSome<T> extends PmAny implements Some<T> {
     }
 
     @Override
-    public @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends SomeOne<R>> fcn) {
+    public @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
         if (isSuccess()) {
             val so = fcn.apply(value);
             if (so.isSuccess()) {
@@ -83,7 +83,7 @@ class PmSome<T> extends PmAny implements Some<T> {
     }
 
     @Override
-    public @NotNull None and(@NotNull Function<? super T, ? extends Any> fcn) {
+    public @NotNull None and(@NotNull Function<? super T, ? extends AnyError> fcn) {
         if (isSuccess()) {
             val any = fcn.apply(value);
             if (any.isSuccess()) {

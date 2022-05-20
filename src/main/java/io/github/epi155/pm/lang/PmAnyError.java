@@ -9,18 +9,18 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-abstract class PmAny implements Any, Glitches {
+abstract class PmAnyError implements AnyError, Glitches {
     private final Collection<Failure> errors;
 
-    protected PmAny() {
+    protected PmAnyError() {
         this.errors = Collections.emptyList();
     }
 
-    protected PmAny(Queue<Failure> errors) {
+    protected PmAnyError(Queue<Failure> errors) {
         this.errors = Collections.unmodifiableCollection(errors);
     }
 
-    protected PmAny(Collection<Failure> errors) {
+    protected PmAnyError(Collection<Failure> errors) {
         this.errors = Collections.unmodifiableCollection(errors);
     }
 
@@ -49,7 +49,7 @@ abstract class PmAny implements Any, Glitches {
     public @NotNull Optional<String> summary() {
         if (errors.isEmpty()) return Optional.empty();
         int size = errors.size();
-        if (size > 1) return Optional.of(String.format("Rilevati %d errori", size));
+        if (size > 1) return Optional.of(String.format("%d errors found", size));
         Failure error = errors.iterator().next();
         return Optional.of(error.message());
     }

@@ -19,7 +19,7 @@ public interface NoneBuilder extends ErrorBuilder {
      * @param any object with error(s) payload
      * @return {@link NoneBuilder} instance
      */
-    default @NotNull NoneBuilder join(@NotNull AnyOne any) {
+    default @NotNull NoneBuilder join(@NotNull AnyItem any) {
         add(any);
         return this;
     }

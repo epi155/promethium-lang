@@ -5,12 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
  * Utility class for carrying many errors
  */
-public interface None extends Any, Glitches {
+public interface None extends ManyErrors {
     /**
      * static {@link NoneBuilder}
      *
@@ -78,7 +79,7 @@ public interface None extends Any, Glitches {
      *
      * @return collector.
      */
-    static @NotNull Collector<AnyOne, NoneBuilder, None> collect() {
+    static @NotNull Collector<AnyItem, NoneBuilder, None> collect() {
         return new PmCollector();
     }
 
@@ -93,4 +94,27 @@ public interface None extends Any, Glitches {
      * @see Glitches#onFailure(Consumer)
      */
     @NotNull Glitches onSuccess(Runnable successAction);
+
+    /**
+     * Logical short-circuit and operator.
+     *
+     * <p>
+     * If this has errors, the producer is not called
+     * and the result has the original error, else the error
+     * of the producer, is any.
+     * </p>
+     *
+     * @param fcn producer {@link AnyError}
+     * @return {@link None} instance,
+     */
+    @NotNull None and(@NotNull Supplier<? extends AnyError> fcn);
+
+    /**
+     * Logical implies operator
+     *
+     * @param action action executed if there are no errors
+     * @return {@link None} instance, with original error, if any
+     */
+    @NotNull None implies(@NotNull Runnable action);
+
 }

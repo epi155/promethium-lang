@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Generic interface for classes with error data
  */
-public interface Any extends AnyOne {
+public interface AnyError extends AnyItem {
 
     /**
      * amount of errors

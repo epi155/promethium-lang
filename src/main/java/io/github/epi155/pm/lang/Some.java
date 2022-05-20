@@ -12,7 +12,7 @@ import java.util.function.Function;
  *
  * @param <T> value type
  */
-public interface Some<T> extends Any, Glitches, SomeOne<T> {
+public interface Some<T> extends ManyErrors, AnyValue<T> {
     /**
      * {@link Some} builder
      *
@@ -95,7 +95,7 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
      * @param <R> result type
      * @return result {@link Some} instance, if this has errors, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends SomeOne<R>> fcn);
+    @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
 
     /**
      * map value
@@ -109,12 +109,18 @@ public interface Some<T> extends Any, Glitches, SomeOne<T> {
     @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
-     * Logical short-circuit and operator
+     * Logical short-circuit and operator.
      *
-     * @param fcn transform value to {@link Some} or {@link None}
-     * @return {@link None} instance, if this has errors, the transformation is not called and the result has the original error
+     * <p>
+     * If this has errors, the transformation is not called
+     * and the result has the original error, else the error
+     * of the function, is any.
+     * </p>
+     *
+     * @param fcn transform value to {@link AnyError}
+     * @return {@link None} instance,
      */
-    @NotNull None and(@NotNull Function<? super T, ? extends Any> fcn);
+    @NotNull None and(@NotNull Function<? super T, ? extends AnyError> fcn);
 
     /**
      * Logical implies operator

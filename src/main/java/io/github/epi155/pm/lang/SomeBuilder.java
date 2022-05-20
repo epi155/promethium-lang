@@ -29,7 +29,7 @@ public interface SomeBuilder<T> extends ErrorBuilder {
      * @param any object with error(s) payload
      * @return {@link SomeBuilder} instance
      */
-    default @NotNull SomeBuilder<T> join(@NotNull AnyOne any) {
+    default @NotNull SomeBuilder<T> join(@NotNull AnyItem any) {
         add(any);
         return this;
     }

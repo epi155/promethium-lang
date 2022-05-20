@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 /**
  * Generic utility class for carrying a single error
  */
-public interface One extends Any {
+public interface SingleError extends AnyError, Glitch {
 
     /**
      * Returns the error

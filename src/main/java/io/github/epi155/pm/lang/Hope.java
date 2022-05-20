@@ -10,7 +10,7 @@ import java.util.function.Function;
  *
  * @param <T> value type
  */
-public interface Hope<T> extends One, Glitch, SomeOne<T> {
+public interface Hope<T> extends SingleError, AnyValue<T> {
     /**
      * Create a <b> Hope </b> with value
      *
@@ -128,9 +128,10 @@ public interface Hope<T> extends One, Glitch, SomeOne<T> {
      * Logical short-circuit and operator
      *
      * @param fcn transform value to {@link Hope} or {@link Nope}
-     * @return {@link Nope} instance, if this has an error, the transformation is not called and the result has the original error
+     * @return {@link Nope} instance, if this has an error,
+     * the transformation is not called and the result has the original error
      */
-    @NotNull Nope and(@NotNull Function<? super T, ? extends One> fcn);
+    @NotNull Nope and(@NotNull Function<? super T, ? extends SingleError> fcn);
 
     /**
      * Set the action on success

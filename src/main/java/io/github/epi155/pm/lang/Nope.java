@@ -4,11 +4,12 @@ package io.github.epi155.pm.lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Utility class for carrying a single error
  */
-public interface Nope extends One, Glitch {
+public interface Nope extends SingleError {
     /**
      * No error
      *
@@ -91,5 +92,22 @@ public interface Nope extends One, Glitch {
      * @see Glitch#onFailure(Consumer)
      */
     @NotNull Glitch onSuccess(Runnable action);
+
+    /**
+     * Logical short-circuit and operator
+     *
+     * @param fcn producer {@link Hope} or {@link Nope}
+     * @return {@link Nope} instance, if this has an error,
+     * the producer is not called and the result has the original error
+     */
+    @NotNull Nope and(@NotNull Supplier<? extends SingleError> fcn);
+
+    /**
+     * Logical implies operator
+     *
+     * @param action action executed if there are no errors
+     * @return {@link Nope} instance, with original error, if any
+     */
+    @NotNull Nope implies(@NotNull Runnable action);
 
 }
