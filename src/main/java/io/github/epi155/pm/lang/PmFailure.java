@@ -178,7 +178,7 @@ class PmFailure implements Failure {
         if (!properties.isEmpty()) {
             sb.append("    properties {\n");
             properties.forEach((key, value) -> sb
-                    .append("        ").append(key).append(": ").append(value).append("\n"));
+                .append("        ").append(key).append(": ").append(value).append("\n"));
             sb.append("    }");
         }
         sb.append("}");
