@@ -29,7 +29,7 @@ class PmSome<T> extends PmAnyError implements Some<T> {
 
     @Override
     public @NotNull T value() {
-        if (isSuccess() && value!=null)
+        if (isSuccess() && value != null)
             return value;
         else
             throw new NoSuchElementException(summary().orElse("Attempt to get value when there is an error "));

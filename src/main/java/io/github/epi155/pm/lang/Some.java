@@ -28,8 +28,8 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      *
      * @param ce      error message
      * @param objects message parameters
+     * @param <U>     payload type
      * @return instance of {@link Some} (error)
-     * @param <U>   payload type
      */
     static <U> @NotNull Some<U> failure(@NotNull MsgError ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
@@ -39,9 +39,10 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
 
     /**
      * static factory with {@link Throwable}
-     * @param t throwable instance
+     *
+     * @param t   throwable instance
+     * @param <U> payload type
      * @return instance of {@link Some} (error)
-     * @param <U>   payload type
      */
     static <U> @NotNull Some<U> capture(@NotNull Throwable t) {
         return new PmSome<>(Collections.singletonList(PmFailure.of(t)));
@@ -51,8 +52,8 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * static factory with {@link Failure}
      *
      * @param fault {@link Failure} instance
-     * @return instance of {@link Some} (error)
      * @param <U>   payload type
+     * @return instance of {@link Some} (error)
      */
     static <U> @NotNull Some<U> of(@NotNull Failure fault) {
         return new PmSome<>(Collections.singletonList(fault));
@@ -82,7 +83,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
     @NotNull Glitches onSuccess(@NotNull Consumer<? super T> successAction);
 
     /**
-     * Collapse to {@link None} instance, keeping only errors data, and lost value
+     * Collapse to {@link None} instance, keeping only errors' data, and lost value
      *
      * @return {@link None} instance
      */

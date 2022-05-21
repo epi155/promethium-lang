@@ -61,7 +61,7 @@ public interface Failure {
      *
      * @param key          name that identifies the property
      * @param defaultValue value to return if the property is not defined
-     * @param <T>   property type
+     * @param <T>          property type
      * @return property value, or <i> defaultValue </i> if there is no property with that name
      */
     <T> T getProperty(@NotNull String key, @NotNull T defaultValue);
