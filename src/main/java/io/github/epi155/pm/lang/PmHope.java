@@ -17,23 +17,17 @@ import java.util.function.Function;
  *
  * @param <T> type of value to manage
  */
-class PmHope<T> implements Hope<T> {
+class PmHope<T> extends PmSingleError implements Hope<T> {
     private final T value;
-    private final Failure fault;
 
     protected PmHope(T value, Failure fault) {
+        super(fault);
         this.value = value;
-        this.fault = fault;
-    }
-
-    @Override
-    public boolean isSuccess() {
-        return fault == null;
     }
 
     @Override
     public @NotNull T value() {
-        if (fault == null) {
+        if (isSuccess()) {
             return value;
         } else {
             throw new NoSuchElementException();
@@ -42,10 +36,10 @@ class PmHope<T> implements Hope<T> {
 
     @Override
     public T orThrow() throws FailureException {
-        if (fault == null) {
+        if (isSuccess()) {
             return value;
         } else {
-            throw new FailureException(fault);
+            throw new FailureException(fault());
         }
     }
 
@@ -54,7 +48,7 @@ class PmHope<T> implements Hope<T> {
         if (isSuccess()) {
             return fcn.apply(value);
         } else {
-            return Hope.of(fault);
+            return Hope.of(fault());
         }
     }
 
@@ -68,7 +62,7 @@ class PmHope<T> implements Hope<T> {
                 return Hope.capture(e);
             }
         } else {
-            return Hope.of(fault);
+            return Hope.of(fault());
         }
     }
 
@@ -78,7 +72,7 @@ class PmHope<T> implements Hope<T> {
             action.accept(value);
             return Nope.nope();
         } else {
-            return Nope.of(fault);
+            return Nope.of(fault());
         }
     }
 
@@ -92,41 +86,25 @@ class PmHope<T> implements Hope<T> {
                 return new PmNope(one.fault());
             }
         } else {
-            return new PmNope(fault);
+            return new PmNope(fault());
         }
     }
 
-    @Override
-    public @NotNull Failure fault() {
-        if (fault != null) {
-            return fault;
-        } else {
-            throw new NoSuchElementException();
-        }
-    }
 
     @Override
     public @NotNull Glitch onSuccess(@NotNull Consumer<? super T> action) {
-        if (fault == null) {
+        if (isSuccess()) {
             action.accept(value);
         }
         return this.new GlitchImpl();
     }
 
-    @Override
-    public void onFailure(@NotNull Consumer<Failure> errorAction) {
-        if (fault != null) errorAction.accept(fault);
-    }
 
-    @Override
-    public void orThrow(@NotNull Function<Failure, FailureException> fcn) throws FailureException {
-        if (fault != null) throw fcn.apply(fault);
-    }
 
     @Override
     @NotNull
     public Nope asNope() {
-        return isSuccess() ? new PmNope() : new PmNope(fault);
+        return isSuccess() ? new PmNope() : new PmNope(fault());
     }
 
     class GlitchImpl implements Glitch {

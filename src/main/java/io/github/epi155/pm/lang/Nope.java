@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * Utility class for carrying a single error
  */
-public interface Nope extends SingleError {
+public interface Nope extends SingleError, OnlyError {
     /**
      * No error
      *

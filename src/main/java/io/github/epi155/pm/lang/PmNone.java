@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-class PmNone extends PmAnyError implements None {
+class PmNone extends PmManyError implements None {
 
     protected PmNone() {
         super();

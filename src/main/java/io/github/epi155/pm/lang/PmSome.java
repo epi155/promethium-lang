@@ -9,7 +9,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-class PmSome<T> extends PmAnyError implements Some<T> {
+class PmSome<T> extends PmManyError implements Some<T> {
     private final T value;
 
     protected PmSome(T value) {

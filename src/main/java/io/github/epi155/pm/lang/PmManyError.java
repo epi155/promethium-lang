@@ -9,18 +9,18 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-abstract class PmAnyError implements AnyError, Glitches {
+abstract class PmManyError implements ManyErrors, Glitches {
     private final Collection<Failure> errors;
 
-    protected PmAnyError() {
+    protected PmManyError() {
         this.errors = Collections.emptyList();
     }
 
-    protected PmAnyError(Queue<Failure> errors) {
+    protected PmManyError(Queue<Failure> errors) {
         this.errors = Collections.unmodifiableCollection(errors);
     }
 
-    protected PmAnyError(Collection<Failure> errors) {
+    protected PmManyError(Collection<Failure> errors) {
         this.errors = Collections.unmodifiableCollection(errors);
     }
 

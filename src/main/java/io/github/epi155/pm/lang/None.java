@@ -11,7 +11,7 @@ import java.util.stream.Collector;
 /**
  * Utility class for carrying many errors
  */
-public interface None extends ManyErrors {
+public interface None extends ManyErrors, OnlyError {
     /**
      * static {@link NoneBuilder}
      *
