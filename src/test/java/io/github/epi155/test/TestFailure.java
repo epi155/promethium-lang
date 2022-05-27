@@ -26,7 +26,7 @@ class TestFailure {
         try {
             crashMethod();
         } catch (Exception e) {
-            bld.captureException(e);
+            bld.capture(e);
         }
         val esito = bld.build();
         Assertions.assertFalse(esito.isSuccess());
@@ -310,6 +310,102 @@ class TestFailure {
             Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
             Assertions.assertTrue(reason.contains("testCustomError"));
             log.error("* Errore: [{}] - ({},{})", z.message(), z.code(), z.place());
+        });
+    }
+
+    @Test
+    @Order(900)
+    void test900() {
+        val some = Some.of(Failure.of(CUST_ERR));
+        Assertions.assertFalse(some.isSuccess());
+    }
+
+    @Test
+    @Order(901)
+    void test901() {
+        try {
+            crashMethod();
+        } catch (Exception e) {
+            val hope = Hope.captureHere(e);
+            Assertions.assertFalse(hope.isSuccess());
+            val fault = hope.fault();
+            val place = fault.place();
+            Assertions.assertNotNull(place);
+            Assertions.assertTrue(place.contains("test901"));
+        }
+
+        val some = Some.of(Failure.of(CUST_ERR));
+        Assertions.assertFalse(some.isSuccess());
+    }
+
+    @Test
+    @Order(910)
+    void test910() {
+        val none = None.of(Failure.of(CUST_ERR));
+        Assertions.assertFalse(none.isSuccess());
+    }
+
+    @Test
+    @Order(911)
+    void test911() {
+        try {
+            crashMethod();
+        } catch (Exception e) {
+            val none = None.capture(e);
+            Assertions.assertFalse(none.isSuccess());
+        }
+    }
+
+    @Test
+    @Order(922)
+    void test922() {
+        val some = Nope.nope();
+        Assertions.assertTrue(some.isSuccess());
+    }
+
+    @Test
+    @Order(920)
+    void test920() {
+        val some = Nope.of(Failure.of(CUST_ERR));
+        Assertions.assertFalse(some.isSuccess());
+    }
+
+    @Test
+    @Order(921)
+    void test921() {
+        try {
+            crashMethod();
+        } catch (Exception e) {
+            val hope = Nope.captureHere(e);
+            Assertions.assertFalse(hope.isSuccess());
+            val fault = hope.fault();
+            val place = fault.place();
+            Assertions.assertNotNull(place);
+            Assertions.assertTrue(place.contains("test921"));
+        }
+    }
+
+    @Test
+    @Order(930)
+    void test930() {
+        val bld = None.builder();
+        try {
+            crashMethod();
+        } catch (Exception e) {
+            bld.capture(e);
+        }
+        val none = bld.build();
+
+        Assertions.assertFalse(none.isSuccess());
+    }
+
+    @Test
+    @Order(931)
+    void test931() {
+        Assertions.assertDoesNotThrow(() -> {
+            val fault = Failure.builder().code("AZ95").status(404).message("Not Found").build();
+            fault.setProperty("key1", 1).setProperty("key2", "red");
+            log.info(fault.toString());
         });
     }
 

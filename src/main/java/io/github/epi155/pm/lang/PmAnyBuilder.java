@@ -32,11 +32,6 @@ abstract class PmAnyBuilder implements ErrorBuilder {
     }
 
     @Override
-    public void captureException(@NotNull Throwable e) {
-        errors.add(PmFailure.of(e));
-    }
-
-    @Override
     public void captureHere(@NotNull Throwable e) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[J_LOCATE];

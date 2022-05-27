@@ -119,12 +119,24 @@ class TestConcat {
     void test54() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val z = list.stream().map(n -> fun1(n)
-                .and(it -> fun2(it)
-                        .and(jt -> fun3(jt)
-                                .and(this::fun4)
-                        )
+            .and(it -> fun2(it)
+                .and(jt -> fun3(jt)
+                    .and(this::fun4)
                 )
+            )
         ).collect(None.collect());
+        z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
+    }
+
+    @Test
+    void test55() {
+        val list = Arrays.asList(1, 2, 3, 4, 5, 6);
+        None z = list.stream()
+            .map(n -> func1(n)
+                .map(it -> it.value * 2)
+                .map(it -> it + 2)
+            )
+            .collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 

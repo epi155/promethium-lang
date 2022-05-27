@@ -55,14 +55,6 @@ public interface ErrorBuilder extends AnyItem {
 
     /**
      * Add error from exception.
-     * Stacktrace information are registered
-     *
-     * @param e exception
-     */
-    void captureException(@NotNull Throwable e);
-
-    /**
-     * Add error from exception.
      * Stacktrace information are registered, detail is exception and custom error
      *
      * @param e       exception
