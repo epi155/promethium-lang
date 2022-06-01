@@ -17,6 +17,7 @@
 
     <name>Language extension</name>
     <description>Utility to manage values xor errors</description>
+    <url>https://github.com/epi155/promethium-lang</url>
 
     <developers>
         <developer>
