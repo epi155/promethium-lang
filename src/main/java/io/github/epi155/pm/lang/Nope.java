@@ -94,6 +94,13 @@ public interface Nope extends SingleError, OnlyError {
     @NotNull Glitch onSuccess(Runnable action);
 
     /**
+     * If there is an error throw an exception
+     *
+     * @throws FailureException exception with error payload
+     */
+    void orThrow() throws FailureException;
+
+    /**
      * Logical short-circuit and operator
      *
      * @param fcn producer {@link Hope} or {@link Nope}

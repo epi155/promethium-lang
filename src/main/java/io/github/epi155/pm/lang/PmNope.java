@@ -45,4 +45,10 @@ class PmNope extends PmSingleError implements Nope {
         }
     }
 
+    @Override
+    public void orThrow() throws FailureException {
+        if (!isSuccess()) {
+            throw new FailureException(fault());
+        }
+    }
 }
