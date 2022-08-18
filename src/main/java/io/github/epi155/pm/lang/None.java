@@ -3,8 +3,10 @@ package io.github.epi155.pm.lang;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
@@ -117,4 +119,13 @@ public interface None extends ManyErrors, OnlyError {
      */
     @NotNull None implies(@NotNull Runnable action);
 
+    /**
+     * constructs a result using two alternative methods depending on whether the operation completed successfully or failed
+     *
+     * @param onSuccess success builder
+     * @param onFailure failure builder
+     * @param <R>       result type
+     * @return result
+     */
+    <R> R mapTo(Supplier<R> onSuccess, Function<Collection<Failure>, R> onFailure);
 }

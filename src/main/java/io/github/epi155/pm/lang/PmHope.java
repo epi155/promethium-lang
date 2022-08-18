@@ -100,11 +100,15 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
 
-
     @Override
     @NotNull
     public Nope asNope() {
         return isSuccess() ? new PmNope() : new PmNope(fault());
+    }
+
+    @Override
+    public <R> R mapTo(Function<T, R> onSuccess, Function<Failure, R> onFailure) {
+        return isSuccess() ? onSuccess.apply(value) : onFailure.apply(fault());
     }
 
     class GlitchImpl implements Glitch {

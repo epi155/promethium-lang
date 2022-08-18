@@ -4,6 +4,7 @@ package io.github.epi155.pm.lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -117,4 +118,13 @@ public interface Nope extends SingleError, OnlyError {
      */
     @NotNull Nope implies(@NotNull Runnable action);
 
+    /**
+     * constructs a result using two alternative methods depending on whether the operation completed successfully or failed
+     *
+     * @param onSuccess success builder
+     * @param onFailure failure builder
+     * @param <R>       result type
+     * @return result
+     */
+    <R> R mapTo(Supplier<R> onSuccess, Function<Failure, R> onFailure);
 }

@@ -152,4 +152,13 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      */
     @NotNull Nope asNope();
 
+    /**
+     * constructs a result using two alternative methods depending on whether the operation completed successfully or failed
+     *
+     * @param onSuccess success builder
+     * @param onFailure failure builder
+     * @param <R>       result type
+     * @return result
+     */
+    <R> R mapTo(Function<T, R> onSuccess, Function<Failure, R> onFailure);
 }

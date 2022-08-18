@@ -106,4 +106,9 @@ class PmSome<T> extends PmManyError implements Some<T> {
         }
     }
 
+    @Override
+    public <R> R mapTo(Function<T, R> onSuccess, Function<Collection<Failure>, R> onFailure) {
+        return isSuccess() ? onSuccess.apply(value) : onFailure.apply(errors());
+    }
+
 }

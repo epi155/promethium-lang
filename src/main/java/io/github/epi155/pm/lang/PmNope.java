@@ -3,6 +3,7 @@ package io.github.epi155.pm.lang;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 class PmNope extends PmSingleError implements Nope {
@@ -43,6 +44,11 @@ class PmNope extends PmSingleError implements Nope {
         } else {
             return this;
         }
+    }
+
+    @Override
+    public <R> R mapTo(Supplier<R> onSuccess, Function<Failure, R> onFailure) {
+        return isSuccess() ? onSuccess.get() : onFailure.apply(fault());
     }
 
     @Override

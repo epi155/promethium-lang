@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Queue;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 class PmNone extends PmManyError implements None {
@@ -47,6 +48,11 @@ class PmNone extends PmManyError implements None {
         } else {
             return this;
         }
+    }
+
+    @Override
+    public <R> R mapTo(Supplier<R> onSuccess, Function<Collection<Failure>, R> onFailure) {
+        return isSuccess() ? onSuccess.get() : onFailure.apply(errors());
     }
 
 }
