@@ -7,10 +7,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-class PmEnsure<A> implements Ensure<A> {
+class PmNullTrap<A> implements NullTrap<A> {
     private final A value;
 
-    PmEnsure(@Nullable A value) {
+    PmNullTrap(@Nullable A value) {
         this.value = value;
     }
 
@@ -40,36 +40,36 @@ class PmEnsure<A> implements Ensure<A> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <B> Ensure<B> apply(Function<A, B> function) {
+    public <B> NullTrap<B> apply(Function<A, B> function) {
         if (value == null) {
-            return (Ensure<B>) PmEnsureHelper.NULL_INSTANCE;
+            return (NullTrap<B>) PmNullHelper.NULL_INSTANCE;
         } else {
-            return new PmEnsure<>(function.apply(value));
+            return new PmNullTrap<>(function.apply(value));
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Ensure<A> filter(Predicate<A> predicate) {
+    public NullTrap<A> filter(Predicate<A> predicate) {
         if (value != null && predicate.test(value)) {
             return this;
         } else {
-            return (Ensure<A>) PmEnsureHelper.NULL_INSTANCE;
+            return (NullTrap<A>) PmNullHelper.NULL_INSTANCE;
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <B> Ensure<B> join(Function<A, Ensure<B>> function) {
+    public <B> NullTrap<B> join(Function<A, NullTrap<B>> function) {
         if (value == null) {
-            return (Ensure<B>) PmEnsureHelper.NULL_INSTANCE;
+            return (NullTrap<B>) PmNullHelper.NULL_INSTANCE;
         } else {
             return function.apply(value);
         }
     }
 
-    private static class PmEnsureHelper {
-        private static final PmEnsure<?> NULL_INSTANCE = new PmEnsure<>(null);
+    private static class PmNullHelper {
+        private static final PmNullTrap<?> NULL_INSTANCE = new PmNullTrap<>(null);
     }
 
 }

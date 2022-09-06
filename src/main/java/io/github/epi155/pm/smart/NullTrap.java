@@ -12,16 +12,16 @@ import java.util.function.Predicate;
  *
  * @param <A> object type
  */
-public interface Ensure<A> extends OtherAction {
+public interface NullTrap<A> extends OtherAction {
     /**
      * static constructor of Ensure, for the management of nullable fields
      *
      * @param <T>   value type
      * @param value nullable value
-     * @return instance of {@link Ensure}
+     * @return instance of {@link NullTrap}
      */
-    static <T> Ensure<T> ensure(@Nullable T value) {
-        return new PmEnsure<>(value);
+    static <T> NullTrap<T> trap(@Nullable T value) {
+        return new PmNullTrap<>(value);
     }
 
     /**
@@ -54,21 +54,21 @@ public interface Ensure<A> extends OtherAction {
      * @param <B>      final type
      * @return result of function xor null
      */
-    <B> Ensure<B> apply(Function<A, B> function);
+    <B> NullTrap<B> apply(Function<A, B> function);
 
     /**
      * if the predicate is not satisfied it returns an instance of null else it returns <b>this</b>
      *
      * @param predicate predicate to apply
-     * @return {@link Ensure} instance
+     * @return {@link NullTrap} instance
      */
-    Ensure<A> filter(Predicate<A> predicate);
+    NullTrap<A> filter(Predicate<A> predicate);
 
     /**
      * join nullable object
      * <pre>
-     *     ensure(@Nullable a)
-     *       .join(ai -> ensure(@Nullable b)
+     *     trap(@Nullable a)
+     *       .join(ai -> trap(@Nullable b)
      *          .apply(bi -> <i>action(@NotNull ai, @NotNull bi)</i> ))
      * </pre>
      *
@@ -76,6 +76,6 @@ public interface Ensure<A> extends OtherAction {
      * @param <B>      next object type
      * @return result of function xor null
      */
-    <B> Ensure<B> join(Function<A, Ensure<B>> function);
+    <B> NullTrap<B> join(Function<A, NullTrap<B>> function);
 
 }
