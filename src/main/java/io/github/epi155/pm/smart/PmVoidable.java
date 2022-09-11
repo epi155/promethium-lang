@@ -7,10 +7,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-class PmNullTrap<A> implements NullTrap<A> {
+class PmVoidable<A> implements Voidable<A> {
     private final A value;
 
-    PmNullTrap(@Nullable A value) {
+    PmVoidable(@Nullable A value) {
         this.value = value;
     }
 
@@ -40,36 +40,36 @@ class PmNullTrap<A> implements NullTrap<A> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <B> NullTrap<B> apply(Function<A, B> function) {
+    public <B> Voidable<B> apply(Function<A, B> function) {
         if (value == null) {
-            return (NullTrap<B>) PmNullHelper.NULL_INSTANCE;
+            return (Voidable<B>) PmNullHelper.NULL_INSTANCE;
         } else {
-            return new PmNullTrap<>(function.apply(value));
+            return new PmVoidable<>(function.apply(value));
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public NullTrap<A> filter(Predicate<A> predicate) {
+    public Voidable<A> filter(Predicate<A> predicate) {
         if (value != null && predicate.test(value)) {
             return this;
         } else {
-            return (NullTrap<A>) PmNullHelper.NULL_INSTANCE;
+            return (Voidable<A>) PmNullHelper.NULL_INSTANCE;
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <B> NullTrap<B> join(Function<A, NullTrap<B>> function) {
+    public <B> Voidable<B> join(Function<A, Voidable<B>> function) {
         if (value == null) {
-            return (NullTrap<B>) PmNullHelper.NULL_INSTANCE;
+            return (Voidable<B>) PmNullHelper.NULL_INSTANCE;
         } else {
             return function.apply(value);
         }
     }
 
     private static class PmNullHelper {
-        private static final PmNullTrap<?> NULL_INSTANCE = new PmNullTrap<>(null);
+        private static final PmVoidable<?> NULL_INSTANCE = new PmVoidable<>(null);
     }
 
 }

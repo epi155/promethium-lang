@@ -1,5 +1,6 @@
 package io.github.epi155.pm.smart;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,16 +13,17 @@ import java.util.function.Predicate;
  *
  * @param <A> object type
  */
-public interface NullTrap<A> extends OtherAction {
+public interface Voidable<A> extends OtherAction {
     /**
      * static constructor of Ensure, for the management of nullable fields
      *
      * @param <T>   value type
      * @param value nullable value
-     * @return instance of {@link NullTrap}
+     * @return instance of {@link Voidable}
      */
-    static <T> NullTrap<T> trap(@Nullable T value) {
-        return new PmNullTrap<>(value);
+    @Contract(value = "_ -> new", pure = true)
+    static <T> @NotNull Voidable<T> voidable(@Nullable T value) {
+        return new PmVoidable<>(value);
     }
 
     /**
@@ -54,21 +56,21 @@ public interface NullTrap<A> extends OtherAction {
      * @param <B>      final type
      * @return result of function xor null
      */
-    <B> NullTrap<B> apply(Function<A, B> function);
+    <B> Voidable<B> apply(Function<A, B> function);
 
     /**
      * if the predicate is not satisfied it returns an instance of null else it returns <b>this</b>
      *
      * @param predicate predicate to apply
-     * @return {@link NullTrap} instance
+     * @return {@link Voidable} instance
      */
-    NullTrap<A> filter(Predicate<A> predicate);
+    Voidable<A> filter(Predicate<A> predicate);
 
     /**
      * join nullable object
      * <pre>
-     *     trap(@Nullable a)
-     *       .join(ai -> trap(@Nullable b)
+     *     voidable(@Nullable a)
+     *       .join(ai -> voidable(@Nullable b)
      *          .apply(bi -> <i>action(@NotNull ai, @NotNull bi)</i> ))
      * </pre>
      *
@@ -76,6 +78,6 @@ public interface NullTrap<A> extends OtherAction {
      * @param <B>      next object type
      * @return result of function xor null
      */
-    <B> NullTrap<B> join(Function<A, NullTrap<B>> function);
+    <B> Voidable<B> join(Function<A, Voidable<B>> function);
 
 }
