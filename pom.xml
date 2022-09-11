@@ -4,7 +4,7 @@
 
     <groupId>io.github.epi155</groupId>
     <artifactId>promethium-lang</artifactId>
-    <version>0.5.2</version>
+    <version>0.5.3-SNAPSHOT</version>
 
     <!-- mvn versions:set -DnewVersion=x.y.z -->
     <!-- mvn versions:display-dependency-updates -->
@@ -43,7 +43,7 @@
         <connection>scm:git:git://github.com/epi155/promethium-lang.git</connection>
         <developerConnection>scm:git:https://github.com/epi155/promethium-lang.git</developerConnection>
         <url>https://github.com/epi155/promethium-lang</url>
-      <tag>0.5.2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <profiles>
