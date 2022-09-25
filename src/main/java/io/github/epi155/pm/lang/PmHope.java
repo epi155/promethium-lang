@@ -77,19 +77,18 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull Nope and(@NotNull Function<? super T, ? extends SingleError> fcn) {
+    public @NotNull None and(@NotNull Function<? super T, ? extends AnyItem> fcn) {
         if (isSuccess()) {
-            val one = fcn.apply(value);
-            if (one.isSuccess()) {
-                return new PmNope();
+            val many = fcn.apply(value);
+            if (many.isSuccess()) {
+                return new PmNone();
             } else {
-                return new PmNope(one.fault());
+                return new PmNone(many.errors());
             }
         } else {
-            return new PmNope(fault());
+            return None.of(fault());
         }
     }
-
 
     @Override
     public @NotNull Glitch onSuccess(@NotNull Consumer<? super T> action) {

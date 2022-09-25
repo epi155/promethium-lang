@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -33,9 +34,16 @@ public interface ErrorBuilder extends AnyItem {
     /**
      * Add many errors
      *
-     * @param failureStream stram of error detail
+     * @param stream stream of error detail
      */
-    void add(@NotNull Stream<Failure> failureStream);
+    void add(@NotNull Stream<Failure> stream);
+
+    /**
+     * Add many errors
+     *
+     * @param collection collection of error detail
+     */
+    void add(@NotNull Collection<Failure> collection);
 
     /**
      * Add error from exception.

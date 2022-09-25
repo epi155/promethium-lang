@@ -61,7 +61,7 @@ class TestConcat {
                 .and(it -> fun2(it)
                         .and(jt -> fun3(jt)
                                 .and(this::fun4)));
-        k1.onFailure(e -> log.warn(e.message()));
+        k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
     @Test

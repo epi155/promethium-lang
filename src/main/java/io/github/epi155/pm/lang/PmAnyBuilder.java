@@ -121,8 +121,13 @@ abstract class PmAnyBuilder implements ErrorBuilder {
     }
 
     @Override
-    public void add(@NotNull Stream<Failure> failureStream) {
-        failureStream.forEach(errors::add);
+    public void add(@NotNull Stream<Failure> stream) {
+        stream.forEach(errors::add);
+    }
+
+    @Override
+    public void add(@NotNull Collection<Failure> collection) {
+        errors.addAll(collection);
     }
 
     @Override

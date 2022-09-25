@@ -31,4 +31,5 @@ public interface SingleError extends AnyError, Glitch {
     default @NotNull Collection<Failure> errors() {
         return isSuccess() ? Collections.emptyList() : Collections.singletonList(fault());
     }
+
 }

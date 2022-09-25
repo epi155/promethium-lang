@@ -89,6 +89,29 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     }
 
     /**
+     * Takes the value and catches any exception
+     *
+     * @param <S> value type
+     * @return instance of {@link Hope} with value or exception
+     */
+    static <S> @NotNull Hope<S> seize(@NotNull SupplierCatch<S> supplier) {
+        try {
+            return Hope.of(supplier.get());
+        } catch (Exception e) {
+            return Hope.capture(e);
+        }
+    }
+
+    /**
+     * Logical short-circuit and operator
+     *
+     * @param fcn transform value to {@link AnyItem}
+     * @return {@link None} instance, if this has an error,
+     * the transformation is not called and the result has the original error
+     */
+    @NotNull None and(@NotNull Function<? super T, ? extends AnyItem> fcn);
+
+    /**
      * Retrieve the value if there is no error or throw an exception
      *
      * @return value
@@ -124,14 +147,9 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      */
     @NotNull Nope implies(@NotNull Consumer<? super T> action);
 
-    /**
-     * Logical short-circuit and operator
-     *
-     * @param fcn transform value to {@link Hope} or {@link Nope}
-     * @return {@link Nope} instance, if this has an error,
-     * the transformation is not called and the result has the original error
-     */
-    @NotNull Nope and(@NotNull Function<? super T, ? extends SingleError> fcn);
+    interface SupplierCatch<U> {
+        U get() throws Exception;
+    }
 
     /**
      * Set the action on success
