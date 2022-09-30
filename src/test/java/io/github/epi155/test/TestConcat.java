@@ -14,17 +14,17 @@ class TestConcat {
     @Test
     void test01() {
         val k1 = func1(3)
-                .andThen(this::func2)
-                .andThen(this::func3)
-                .andThen(this::func4);
+            .map(this::func2)
+            .map(this::func3)
+            .map(this::func4);
     }
 
     @Test
     void test02() {
         val k1 = func1(1)
-                .andThen(this::func2)
-                .andThen(this::func3)
-                .andThen(this::func4)
+            .map(this::func2)
+            .map(this::func3)
+            .map(this::func4)
                 .asNone();
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
@@ -48,9 +48,9 @@ class TestConcat {
 
     void test32() {
         val k1 = fun1(1)
-                .andThen(this::fun2)
-                .andThen(this::fun3)
-                .andThen(this::fun4)
+            .map(this::fun2)
+            .map(this::fun3)
+            .map(this::fun4)
                 .asNope();
         k1.onFailure(e -> log.warn(e.message()));
     }
@@ -87,9 +87,9 @@ class TestConcat {
     void test51() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> func1(n)
-                .andThen(this::func2)
-                .andThen(this::func3)
-                .andThen(this::func4)).collect(None.collect());
+            .map(this::func2)
+            .map(this::func3)
+            .map(this::func4)).collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -97,9 +97,9 @@ class TestConcat {
     void test52() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> fun1(n)
-                .andThen(this::fun2)
-                .andThen(this::fun3)
-                .andThen(this::fun4)).collect(None.collect());
+            .map(this::fun2)
+            .map(this::fun3)
+            .map(this::fun4)).collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
 
     }
@@ -133,8 +133,8 @@ class TestConcat {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream()
             .map(n -> func1(n)
-                .map(it -> it.value * 2)
-                .map(it -> it + 2)
+                .mapOf(it -> it.value * 2)
+                .mapOf(it -> it + 2)
             )
             .collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));

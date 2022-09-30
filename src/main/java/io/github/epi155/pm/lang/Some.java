@@ -97,7 +97,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <R> result type
      * @return result {@link Some} instance, if this has errors, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
+    @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
 
     /**
      * map value
@@ -108,7 +108,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * if this has errors, the transformation is not called and the result has the original error;
      * RuntimeException are caught as new error
      */
-    @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends R> fcn);
+    @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * Logical short-circuit and operator.

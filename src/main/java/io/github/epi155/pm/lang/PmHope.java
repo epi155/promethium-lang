@@ -44,7 +44,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull <R> Hope<R> andThen(@NotNull Function<? super T, Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> map(@NotNull Function<? super T, Hope<R>> fcn) {
         if (isSuccess()) {
             return fcn.apply(value);
         } else {
@@ -53,7 +53,21 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull <R> Hope<R> map(@NotNull Function<? super T, ? extends R> fcn) {
+    public @NotNull <R> Some<R> mapOut(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
+        if (isSuccess()) {
+            val so = fcn.apply(value);
+            if (so.isSuccess()) {
+                return new PmSome<>(so.value());
+            } else {
+                return new PmSome<>(so.errors());
+            }
+        } else {
+            return Some.of(fault());
+        }
+    }
+
+    @Override
+    public @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
         if (isSuccess()) {
             try {
                 val result = fcn.apply(value);

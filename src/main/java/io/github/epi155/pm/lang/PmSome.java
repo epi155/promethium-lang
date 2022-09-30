@@ -55,7 +55,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
-    public @NotNull <R> Some<R> andThen(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
+    public @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
         if (isSuccess()) {
             val so = fcn.apply(value);
             if (so.isSuccess()) {
@@ -69,7 +69,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
-    public @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends R> fcn) {
+    public @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
         if (isSuccess()) {
             try {
                 val result = fcn.apply(value);

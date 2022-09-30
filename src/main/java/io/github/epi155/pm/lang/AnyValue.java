@@ -18,6 +18,33 @@ public interface AnyValue<T> extends AnyItem {
      */
     @NotNull T value();
 
+    /**
+     * Transforms one value into many values
+     *
+     * @param fcn fallible function returning iterable values
+     * @param <U> iterable values type
+     * @return iterable values
+     */
+    default <U> @NotNull LoopValue<U> timesOf(@NotNull Function<? super T, Iterable<U>> fcn) {
+        if (isSuccess()) {
+            val list = fcn.apply(value());
+            return fcn1 -> {
+                val bld = None.builder();
+                list.forEach(u -> bld.add(fcn1.apply(u)));
+                return bld.build();
+            };
+        } else {
+            return fcn2 -> None.of(AnyValue.this);
+        }
+    }
+
+    /**
+     * Transforms one value into many values
+     *
+     * @param fcn fallible function returning iterable fallible values
+     * @param <U> iterable values type
+     * @return iterable values
+     */
     default <U> @NotNull LoopValue<U> times(@NotNull Function<? super T, Iterable<? extends AnyValue<U>>> fcn) {
         if (isSuccess()) {
             val list = fcn.apply(value());

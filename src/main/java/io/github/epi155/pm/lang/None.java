@@ -56,6 +56,12 @@ public interface None extends ManyErrors, OnlyError {
         return new PmNone(Collections.singletonList(fault));
     }
 
+    /**
+     * Static constructor
+     *
+     * @param item instance of {@link AnyValue}
+     * @return instance of {@link None}
+     */
     static @NotNull None of(@NotNull AnyItem item) {
         if (item instanceof None) return (None) item;
         return item.isSuccess() ? new PmNone() : new PmNone(item.errors());

@@ -1,5 +1,6 @@
 package io.github.epi155.pm.lang;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -91,9 +92,11 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     /**
      * Takes the value and catches any exception
      *
-     * @param <S> value type
+     * @param supplier value supplier
+     * @param <S>      value type
      * @return instance of {@link Hope} with value or exception
      */
+    @ApiStatus.Experimental
     static <S> @NotNull Hope<S> seize(@NotNull SupplierCatch<S> supplier) {
         try {
             return Hope.of(supplier.get());
@@ -126,7 +129,16 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <R> result type
      * @return result {@link Hope} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Hope<R> andThen(@NotNull Function<? super T, Hope<R>> fcn);
+    @NotNull <R> Hope<R> map(@NotNull Function<? super T, Hope<R>> fcn);
+
+    /**
+     * External compose operator to {@link Some}
+     *
+     * @param fcn transform value to result {@link AnyValue}
+     * @param <R> result type
+     * @return result {@link Some} instance, if this has an error, the transformation is not called and the result has the original error
+     */
+    @NotNull <R> Some<R> mapOut(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
 
     /**
      * map value
@@ -137,7 +149,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * if this has errors, the transformation is not called and the result has the original error;
      * RuntimeException are caught as new error
      */
-    @NotNull <R> Hope<R> map(@NotNull Function<? super T, ? extends R> fcn);
+    @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * Logical implies operator
@@ -147,7 +159,20 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      */
     @NotNull Nope implies(@NotNull Consumer<? super T> action);
 
+    /**
+     * Supplier with exception
+     *
+     * @param <U> type of value provided
+     */
+    @ApiStatus.Experimental
     interface SupplierCatch<U> {
+        /**
+         * value getter
+         *
+         * @return value
+         * @throws Exception errot getting value
+         */
+        @SuppressWarnings("RedundantThrows")
         U get() throws Exception;
     }
 
