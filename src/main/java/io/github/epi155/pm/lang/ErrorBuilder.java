@@ -137,5 +137,4 @@ public interface ErrorBuilder extends AnyItem {
      * @return empty stream on errors, singleton stream when no errors
      */
     <T> @NotNull Stream<T> flat(@NotNull Some<T> some);
-
 }

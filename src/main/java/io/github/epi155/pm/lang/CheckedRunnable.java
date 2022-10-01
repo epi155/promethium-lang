@@ -8,7 +8,7 @@ public interface CheckedRunnable {
     /**
      * execute method
      *
-     * @throws FailureException exception throwed
+     * @throws FailureException exception thrown
      */
     void run() throws FailureException;
 }

@@ -139,4 +139,42 @@ public interface None extends ManyErrors, OnlyError {
      * @return result
      */
     <R> R mapTo(Supplier<R> onSuccess, Function<Collection<Failure>, R> onFailure);
+
+    /**
+     * Transforms one value into many values
+     *
+     * @param fcn fallible function returning iterable fallible values
+     * @param <U> iterable values type
+     * @return iterable values
+     */
+    static <U> @NotNull LoopNone<U> times(@NotNull Supplier<Iterable<? extends AnyValue<U>>> fcn) {
+        val list = fcn.get();
+        return fcn1 -> {
+            val bld = None.builder();
+            list.forEach(u -> {
+                if (u.isSuccess()) {
+                    bld.add(fcn1.apply(u.value()));
+                } else {
+                    bld.add(u.errors());
+                }
+            });
+            return bld.build();
+        };
+    }
+
+    /**
+     * Transforms one value into many values
+     *
+     * @param fcn fallible function returning iterable values
+     * @param <U> iterable values type
+     * @return iterable values
+     */
+    static <U> @NotNull LoopNone<U> timesOf(@NotNull Supplier<Iterable<? extends U>> fcn) {
+        val list = fcn.get();
+        return fcn1 -> {
+            val bld = None.builder();
+            list.forEach(u -> bld.add(fcn1.apply(u)));
+            return bld.build();
+        };
+    }
 }

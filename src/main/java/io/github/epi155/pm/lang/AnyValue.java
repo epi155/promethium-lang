@@ -25,7 +25,7 @@ public interface AnyValue<T> extends AnyItem {
      * @param <U> iterable values type
      * @return iterable values
      */
-    default <U> @NotNull LoopValue<U> timesOf(@NotNull Function<? super T, Iterable<U>> fcn) {
+    default <U> @NotNull LoopNone<U> timesOf(@NotNull Function<? super T, Iterable<U>> fcn) {
         if (isSuccess()) {
             val list = fcn.apply(value());
             return fcn1 -> {
@@ -45,7 +45,7 @@ public interface AnyValue<T> extends AnyItem {
      * @param <U> iterable values type
      * @return iterable values
      */
-    default <U> @NotNull LoopValue<U> times(@NotNull Function<? super T, Iterable<? extends AnyValue<U>>> fcn) {
+    default <U> @NotNull LoopNone<U> times(@NotNull Function<? super T, Iterable<? extends AnyValue<U>>> fcn) {
         if (isSuccess()) {
             val list = fcn.apply(value());
             return fcn1 -> {

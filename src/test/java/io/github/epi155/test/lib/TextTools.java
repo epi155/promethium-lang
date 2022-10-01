@@ -1,4 +1,4 @@
-package io.github.epi155.pm.lib;
+package io.github.epi155.test.lib;
 
 import java.nio.CharBuffer;
 

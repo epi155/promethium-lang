@@ -1,4 +1,4 @@
-package io.github.epi155.pm.lib;
+package io.github.epi155.test.lib;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
