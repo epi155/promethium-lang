@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -19,49 +18,28 @@ public interface AnyValue<T> extends AnyItem {
     @NotNull T value();
 
     /**
-     * Transforms one value into many values
-     *
-     * @param fcn fallible function returning iterable values
-     * @param <U> iterable values type
-     * @return iterable values
+     * @param src function that generates the values to iterate
+     * @param fcn fallible function to iterate over
+     * @param <U> type of value generated
+     * @return {@link None} instance
      */
-    default <U> @NotNull LoopNone<U> timesOf(@NotNull Function<? super T, Iterable<U>> fcn) {
-        if (isSuccess()) {
-            val list = fcn.apply(value());
-            return fcn1 -> {
-                val bld = None.builder();
-                list.forEach(u -> bld.add(fcn1.apply(u)));
-                return bld.build();
-            };
-        } else {
-            return fcn2 -> None.of(AnyValue.this);
-        }
+    default <U> @NotNull None forEachOf(
+        @NotNull Function<? super T, Iterable<? extends U>> src,
+        @NotNull Function<? super U, ? extends AnyItem> fcn) {
+        return isSuccess() ? None.forEachOf(src.apply(value()), fcn) : None.of(this);
     }
 
     /**
-     * Transforms one value into many values
      *
-     * @param fcn fallible function returning iterable fallible values
-     * @param <U> iterable values type
-     * @return iterable values
+     * @param src   function that generates the fallible values to iterate
+     * @param fcn   fallible function to iterate over
+     * @return      {@link None} instance
+     * @param <U>   type of value generated
      */
-    default <U> @NotNull LoopNone<U> times(@NotNull Function<? super T, Iterable<? extends AnyValue<U>>> fcn) {
-        if (isSuccess()) {
-            val list = fcn.apply(value());
-            return fcn1 -> {
-                val bld = None.builder();
-                list.forEach(u -> {
-                    if (u.isSuccess()) {
-                        bld.add(fcn1.apply(u.value()));
-                    } else {
-                        bld.add(u.errors());
-                    }
-                });
-                return bld.build();
-            };
-        } else {
-            return fcn2 -> None.of(AnyValue.this);
-        }
+    default <U> @NotNull None forEach(
+        @NotNull Function<? super T, Iterable<? extends AnyValue<U>>> src,
+        @NotNull Function<? super U, ? extends AnyItem> fcn) {
+        return isSuccess() ? None.forEach(src.apply(value()), fcn) : None.of(this);
     }
 
 }

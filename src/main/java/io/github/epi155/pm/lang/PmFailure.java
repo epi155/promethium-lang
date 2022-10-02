@@ -22,20 +22,20 @@ class PmFailure implements Failure {
     private final StackTraceElement theStackTraceElement;
     private final Map<String, Object> properties = new HashMap<>();
 
-    protected PmFailure(String code, MsgError ce, String mesg) {
-        this(code, statusOf(ce), mesg, null);
+    protected PmFailure(String code, MsgError ce, String text) {
+        this(code, statusOf(ce), text, null);
     }
 
     protected static @NotNull Failure ofException(@NotNull StackTraceElement ste, @NotNull Throwable t) {
         if (t instanceof FailureException) {
             FailureException fe = (FailureException) t;
-            String mesg = t.getMessage();
-            return new PmFailure(fe.getCode(), fe.getStatus(), mesg, ste);
+            String text = t.getMessage();
+            return new PmFailure(fe.getCode(), fe.getStatus(), text, ste);
         } else if (t instanceof FaultException) {
             return copy(((FaultException) t).fault, ste);
         } else {
-            String mesg = t.toString();
-            return new PmFailure(JAVA_EXCEPTION_CODE, 500, mesg, ste);
+            String text = t.toString();
+            return new PmFailure(JAVA_EXCEPTION_CODE, 500, text, ste);
         }
     }
 
@@ -63,13 +63,13 @@ class PmFailure implements Failure {
         StackTraceElement ste = guessLine(ex, caller());
         if (ex instanceof FailureException) {
             FailureException fe = (FailureException) ex;
-            String mesg = ex.getMessage();
-            return new PmFailure(fe.getCode(), fe.getStatus(), mesg, fe.getSte() == null ? ste : fe.getSte());
+            String text = ex.getMessage();
+            return new PmFailure(fe.getCode(), fe.getStatus(), text, fe.getSte() == null ? ste : fe.getSte());
         } else if (ex instanceof FaultException) {
             return ((FaultException) ex).fault;
         } else {
-            String mesg = ex.toString();
-            return new PmFailure(JAVA_EXCEPTION_CODE, 500, mesg, ste);
+            String text = ex.toString();
+            return new PmFailure(JAVA_EXCEPTION_CODE, 500, text, ste);
         }
     }
 
@@ -98,35 +98,35 @@ class PmFailure implements Failure {
 
     protected static @NotNull Failure ofMessage(@NotNull Throwable t, String packagePrefix, @NotNull MsgError ce, Object[] objects) {
         String code = ce.code();
-        String mesg = ce.message(objects) + " >> " + t.getMessage();
+        String text = ce.message(objects) + " >> " + t.getMessage();
         StackTraceElement ste = scan(t, packagePrefix);
-        return new PmFailure(code, statusOf(ce), mesg, ste);
+        return new PmFailure(code, statusOf(ce), text, ste);
     }
 
     protected static @NotNull Failure ofException(@NotNull Throwable t, String packagePrefix, @NotNull MsgError ce, Object[] objects) {
         String code = ce.code();
-        String mesg = ce.message(objects) + " >> " + t;
-        StackTraceElement linstee = scan(t, packagePrefix);
-        return new PmFailure(code, statusOf(ce), mesg, linstee);
+        String text = ce.message(objects) + " >> " + t;
+        StackTraceElement ste = scan(t, packagePrefix);
+        return new PmFailure(code, statusOf(ce), text, ste);
     }
 
     protected static @NotNull Failure of(@NotNull Throwable t, @NotNull MsgError ce, Object[] objects) {
         String code = ce.code();
-        String mesg = ce.message(objects) + " >> " + t;
+        String text = ce.message(objects) + " >> " + t;
         StackTraceElement ste = guessLine(t, caller());
-        return new PmFailure(code, statusOf(ce), mesg, ste);
+        return new PmFailure(code, statusOf(ce), text, ste);
     }
 
     protected static @NotNull Failure ofMessage(StackTraceElement ste, @NotNull Throwable t, @NotNull MsgError ce, Object[] objects) {
         String code = ce.code();
-        String mesg = ce.message(objects) + " >> " + t.getMessage();
-        return new PmFailure(code, statusOf(ce), mesg, ste);
+        String text = ce.message(objects) + " >> " + t.getMessage();
+        return new PmFailure(code, statusOf(ce), text, ste);
     }
 
     protected static @NotNull Failure ofException(StackTraceElement ste, @NotNull Throwable t, @NotNull MsgError ce, Object[] objects) {
         String code = ce.code();
-        String mesg = ce.message(objects) + " >> " + t;
-        return new PmFailure(code, statusOf(ce), mesg, ste);
+        String text = ce.message(objects) + " >> " + t;
+        return new PmFailure(code, statusOf(ce), text, ste);
     }
 
     static int statusOf(MsgError ce) {
@@ -138,8 +138,8 @@ class PmFailure implements Failure {
 
     protected static @NotNull Failure of(StackTraceElement ste, @NotNull MsgError ce, Object... objects) {
         String code = ce.code();
-        String mesg = ce.message(objects);
-        return new PmFailure(code, statusOf(ce), mesg, ste);
+        String text = ce.message(objects);
+        return new PmFailure(code, statusOf(ce), text, ste);
     }
 
     //___ delegate Properties___

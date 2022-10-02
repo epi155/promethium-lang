@@ -141,40 +141,31 @@ public interface None extends ManyErrors, OnlyError {
     <R> R mapTo(Supplier<R> onSuccess, Function<Collection<Failure>, R> onFailure);
 
     /**
-     * Transforms one value into many values
+     * It cycles on iterable and collects errors
      *
-     * @param fcn fallible function returning iterable fallible values
-     * @param <U> iterable values type
-     * @return iterable values
+     * @param iterable iterable to be cycled
+     * @param fcn      fallible function to apply
+     * @param <U>      iterable type/function argument type
+     * @return {@link None} instance
      */
-    static <U> @NotNull LoopNone<U> times(@NotNull Supplier<Iterable<? extends AnyValue<U>>> fcn) {
-        val list = fcn.get();
-        return fcn1 -> {
-            val bld = None.builder();
-            list.forEach(u -> {
-                if (u.isSuccess()) {
-                    bld.add(fcn1.apply(u.value()));
-                } else {
-                    bld.add(u.errors());
-                }
-            });
-            return bld.build();
-        };
+    static @NotNull <U> None forEachOf(
+        @NotNull Iterable<? extends U> iterable,
+        @NotNull Function<? super U, ? extends AnyItem> fcn) {
+        return None.builder().forEachOf(iterable, fcn).build();
     }
 
     /**
-     * Transforms one value into many values
+     * It cycles on fallible iterable and collects errors
      *
-     * @param fcn fallible function returning iterable values
-     * @param <U> iterable values type
-     * @return iterable values
+     * @param iterable fallible iterable
+     * @param fcn      fallible function to apply
+     * @param <U>      iterable type/function argument type
+     * @return {@link None} instance
      */
-    static <U> @NotNull LoopNone<U> timesOf(@NotNull Supplier<Iterable<? extends U>> fcn) {
-        val list = fcn.get();
-        return fcn1 -> {
-            val bld = None.builder();
-            list.forEach(u -> bld.add(fcn1.apply(u)));
-            return bld.build();
-        };
+    static @NotNull <U> None forEach(
+        @NotNull Iterable<? extends AnyValue<U>> iterable,
+        @NotNull Function<? super U, ? extends AnyItem> fcn) {
+        return None.builder().forEach(iterable, fcn).build();
     }
+
 }

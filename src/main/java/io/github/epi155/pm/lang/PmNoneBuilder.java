@@ -1,9 +1,8 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
     @Override
@@ -12,27 +11,24 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
     }
 
     @Override
-    public <U> LoopBuilder<U> timesOf(@NotNull Supplier<Iterable<? extends U>> fcn) {
-        val list = fcn.get();
-        return fcn1 -> {
-            list.forEach(u -> PmNoneBuilder.this.add(fcn1.apply(u)));
-            return PmNoneBuilder.this;
-        };
+    public @NotNull <U> NoneBuilder forEachOf(
+        @NotNull Iterable<? extends U> iterable,
+        @NotNull Function<? super U, ? extends AnyItem> fcn) {
+        iterable.forEach(u -> add(fcn.apply(u)));
+        return this;
     }
 
     @Override
-    public <U> LoopBuilder<U> times(@NotNull Supplier<Iterable<? extends AnyValue<U>>> fcn) {
-        val list = fcn.get();
-        return fcn1 -> {
-            list.forEach(u -> {
-                if (u.isSuccess()) {
-                    PmNoneBuilder.this.add(fcn1.apply(u.value()));
-                } else {
-                    PmNoneBuilder.this.add(u.errors());
-                }
-            });
-            return PmNoneBuilder.this;
-        };
+    public @NotNull <U> NoneBuilder forEach(
+        @NotNull Iterable<? extends AnyValue<U>> iterable,
+        @NotNull Function<? super U, ? extends AnyItem> fcn) {
+        iterable.forEach(u -> {
+            if (isSuccess())
+                add(fcn.apply(u.value()));
+            else
+                add(u.errors());
+        });
+        return this;
     }
 
 }

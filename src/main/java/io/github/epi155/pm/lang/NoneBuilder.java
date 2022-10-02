@@ -2,7 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * Error builder extension for {@link None}
@@ -39,21 +39,26 @@ public interface NoneBuilder extends ErrorBuilder {
     }
 
     /**
-     * Transforms one value into many values
+     * It cycles on iterable and collects errors
      *
-     * @param fcn fallible function returning iterable values
-     * @param <U> iterable values type
-     * @return iterable values
+     * @param iterable iterable to be cycled
+     * @param fcn      fallible function to apply
+     * @param <U>      iterable type/function argument type
+     * @return this
      */
-    <U> LoopBuilder<U> timesOf(@NotNull Supplier<Iterable<? extends U>> fcn);
+    @NotNull <U> NoneBuilder forEachOf(
+        @NotNull Iterable<? extends U> iterable,
+        @NotNull Function<? super U, ? extends AnyItem> fcn);
 
     /**
-     * Transforms one value into many values
+     * It cycles on fallible iterable and collects errors
      *
-     * @param fcn fallible function returning iterable fallible values
-     * @param <U> iterable values type
-     * @return iterable values
+     * @param iterable fallible iterable
+     * @param fcn      fallible function to apply
+     * @param <U>      iterable type/function argument type
+     * @return this
      */
-    <U> LoopBuilder<U> times(@NotNull Supplier<Iterable<? extends AnyValue<U>>> fcn);
-
+    @NotNull <U> NoneBuilder forEach(
+        @NotNull Iterable<? extends AnyValue<U>> iterable,
+        @NotNull Function<? super U, ? extends AnyItem> fcn);
 }

@@ -172,7 +172,6 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
          * @return value
          * @throws Exception error getting value
          */
-        @SuppressWarnings("RedundantThrows")
         U get() throws Exception;
     }
 
