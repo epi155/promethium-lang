@@ -92,6 +92,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
 
     /**
      * Compose operator
+     * <p>Some &bull; AnyValue<sup>+</sup> &rarr; Some</p>
      *
      * @param fcn transform value to result {@link Some}
      * @param <R> result type
@@ -101,6 +102,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
 
     /**
      * map value
+     * <p>Some &bull; <i>value</i> &rarr; Some</p>
      *
      * @param fcn mapping function
      * @param <R> result type
@@ -112,6 +114,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
 
     /**
      * Logical short-circuit and operator.
+     * <p>Some &and; AnyValue<sup>+</sup> &rarr; None</p>
      *
      * <p>
      * If this has errors, the transformation is not called

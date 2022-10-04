@@ -76,8 +76,8 @@ public interface None extends ManyErrors, OnlyError {
      * <pre>
      *     None none = list.stream()
      *      .map(n -> fun1(n)
-     *          .andThen(n1 -> fun2(n,n1))
-     *          .andThen(n2 -> fun3(n,n2))
+     *          .map(n1 -> fun2(n,n1))
+     *          .map(n2 -> fun3(n,n2))
      *        ).collect(None.collect());
      * </pre>
      * or
@@ -110,6 +110,7 @@ public interface None extends ManyErrors, OnlyError {
 
     /**
      * Logical short-circuit and operator.
+     * <p>None &and; AnyValue<sup>+</sup> &rarr; None</p>
      *
      * <p>
      * If this has errors, the producer is not called

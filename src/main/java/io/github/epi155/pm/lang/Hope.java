@@ -97,7 +97,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @return instance of {@link Hope} with value or exception
      */
     @ApiStatus.Experimental
-    static <S> @NotNull Hope<S> seize(@NotNull SupplierCatch<S> supplier) {
+    static <S> @NotNull Hope<S> seize(@NotNull CheckSupplier<S> supplier) {
         try {
             return Hope.of(supplier.get());
         } catch (Exception e) {
@@ -107,6 +107,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
 
     /**
      * Logical short-circuit and operator
+     * <p>Hope &and; AnyValue<sup>+</sup> &rarr; None</p>
      *
      * @param fcn transform value to {@link AnyItem}
      * @return {@link None} instance, if this has an error,
@@ -124,6 +125,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
 
     /**
      * Compose operator
+     * <p>Hope &bull; Hope &rarr; Hope</p>
      *
      * @param fcn transform value to result {@link Hope}
      * @param <R> result type
@@ -133,6 +135,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
 
     /**
      * External compose operator to {@link Some}
+     * <p>Hope &bull; AnyValue<sup>+</sup> &rarr; Some</p>
      *
      * @param fcn transform value to result {@link AnyValue}
      * @param <R> result type
@@ -142,6 +145,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
 
     /**
      * map value
+     * <p>Hope &bull; <i>value</i> &rarr; Hope</p>
      *
      * @param fcn mapping function
      * @param <R> result type
@@ -158,22 +162,6 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @return {@link Nope} instance, with original error, if any
      */
     @NotNull Nope implies(@NotNull Consumer<? super T> action);
-
-    /**
-     * Supplier with exception
-     *
-     * @param <U> type of value provided
-     */
-    @ApiStatus.Experimental
-    interface SupplierCatch<U> {
-        /**
-         * value getter
-         *
-         * @return value
-         * @throws Exception error getting value
-         */
-        U get() throws Exception;
-    }
 
     /**
      * Set the action on success
