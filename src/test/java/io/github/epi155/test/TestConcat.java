@@ -153,7 +153,7 @@ class TestConcat {
     void test63() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
-        val k1 = bld.forEachOf(list, n -> fun1(n)
+        val k1 = bld.iterableOf(list).forEach(n -> fun1(n)
                 .and(it -> fun2(it)
                     .and(jt -> fun3(jt)
                         .and(this::fun4))))
@@ -164,7 +164,7 @@ class TestConcat {
     @Test
     void test64() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
-        val k1 = None.forEachOf(list, n -> fun1(n)
+        val k1 = None.iterableOf(list).forEach(n -> fun1(n)
             .and(it -> fun2(it)
                 .and(jt -> fun3(jt)
                     .and(this::fun4))));
@@ -174,7 +174,7 @@ class TestConcat {
     @Test
     void test65() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
-        val k1 = None.forEachOf(list, n -> fun1(n)
+        val k1 = None.iterableOf(list).forEach(n -> fun1(n)
             .map(this::fun2)
             .map(this::fun3)
             .map(this::fun4));
