@@ -9,11 +9,11 @@ import java.util.function.Function;
 /**
  * Interface to manage forEach loop over {@link AnyValue}
  *
- * @param <A> value type
+ * @param <E> value type
  */
-public interface LoopConsumer<A> {
+public interface LoopConsumer<E> {
     /**
-     * creates a LoopConsumer from a LoopBuilderConsumer
+     * Creates a {@link LoopConsumer} from a {@link LoopBuilderConsumer}
      *
      * @param loop {@link LoopBuilderConsumer} instance
      * @param <U>  loop data type
@@ -46,7 +46,7 @@ public interface LoopConsumer<A> {
      * @param fcn fallible function to loop over
      * @return {@link None} instance
      */
-    @NotNull None forEach(@NotNull Function<? super A, ? extends AnyItem> fcn);
+    @NotNull None forEach(@NotNull Function<? super E, ? extends AnyItem> fcn);
 
     /**
      * It loops in parallel on fallible function and collects errors
@@ -55,7 +55,7 @@ public interface LoopConsumer<A> {
      * @param fcn       fallible function to loop over
      * @return {@link None} instance
      */
-    @NotNull None forEachParallel(int maxThread, @NotNull Function<? super A, ? extends AnyItem> fcn);
+    @NotNull None forEachParallel(int maxThread, @NotNull Function<? super E, ? extends AnyItem> fcn);
 
     /**
      * It loops in parallel on fallible function and collects errors
@@ -64,5 +64,5 @@ public interface LoopConsumer<A> {
      * @param fcn      fallible function to loop over
      * @return {@link None} instance
      */
-    @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super A, ? extends AnyItem> fcn);
+    @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super E, ? extends AnyItem> fcn);
 }
