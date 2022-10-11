@@ -68,16 +68,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     public @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
-        if (isSuccess()) {
-            try {
-                val result = fcn.apply(value);
-                return Hope.of(result);
-            } catch (Exception e) {
-                return Hope.capture(e);
-            }
-        } else {
-            return Hope.of(fault());
-        }
+        return isSuccess() ? Hope.of(fcn.apply(value)) : Hope.of(fault());
     }
 
     @Override

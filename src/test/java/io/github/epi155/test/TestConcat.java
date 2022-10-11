@@ -6,6 +6,8 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Slf4j
 class TestConcat {
@@ -175,6 +177,16 @@ class TestConcat {
     void test65() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val k1 = None.iterableOf(list).forEach(n -> fun1(n)
+            .map(this::fun2)
+            .map(this::fun3)
+            .map(this::fun4));
+        k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
+    }
+
+    @Test
+    void test66() {
+        Stream<Integer> stream = IntStream.range(0, 100).boxed();
+        val k1 = None.streamOf(stream).forEachParallel(5, n -> fun1(n)
             .map(this::fun2)
             .map(this::fun3)
             .map(this::fun4));

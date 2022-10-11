@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 abstract class PmAnyBuilder implements ErrorBuilder {
@@ -72,34 +73,29 @@ abstract class PmAnyBuilder implements ErrorBuilder {
         errors.add(PmFailure.ofException(t, packagePrefix, ce, argv));
     }
 
-    @Override
-    public void captureHereMessage(@NotNull Throwable e, @NotNull MsgError ce, Object... objects) {
-        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+    private void captureHere(StackTraceElement[] stPtr, Throwable e, Function<StackTraceElement, Failure> krn) {
         StackTraceElement caller = stPtr[J_LOCATE];
         StackTraceElement[] stErr = e.getStackTrace();
         for (int i = 1; i < stErr.length; i++) {
             StackTraceElement error = stErr[i];
             if (caller.getClassName().equals(error.getClassName()) && caller.getMethodName().equals(error.getMethodName())) {
-                errors.add(PmFailure.ofMessage(error, e, ce, objects));
+                errors.add(krn.apply(error));
                 return;
             }
         }
-        errors.add(PmFailure.ofMessage(caller, e, ce, objects));
+        errors.add(krn.apply(caller));
+    }
+
+    @Override
+    public void captureHereMessage(@NotNull Throwable e, @NotNull MsgError ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        captureHere(stPtr, e, (StackTraceElement error) -> PmFailure.ofMessage(error, e, ce, objects));
     }
 
     @Override
     public void captureHereException(@NotNull Throwable e, @NotNull MsgError ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        StackTraceElement caller = stPtr[J_LOCATE];
-        StackTraceElement[] stErr = e.getStackTrace();
-        for (int i = 1; i < stErr.length; i++) {
-            StackTraceElement error = stErr[i];
-            if (caller.getClassName().equals(error.getClassName()) && caller.getMethodName().equals(error.getMethodName())) {
-                errors.add(PmFailure.ofException(error, e, ce, objects));
-                return;
-            }
-        }
-        errors.add(PmFailure.ofException(caller, e, ce, objects));
+        captureHere(stPtr, e, (StackTraceElement error) -> PmFailure.ofException(error, e, ce, objects));
     }
 
     @Override

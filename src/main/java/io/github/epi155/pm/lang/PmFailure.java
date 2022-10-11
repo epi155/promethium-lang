@@ -146,13 +146,13 @@ class PmFailure implements Failure {
     @Override
     public String getStrProperty(@NotNull String key) {
         val value = properties.get(key);
-        return (value instanceof String) ? (String) value : null;
+        return value instanceof String ? (String) value : null;
     }
 
     @Override
     public String getStrProperty(@NotNull String key, @NotNull String defaultValue) {
         val value = properties.get(key);
-        return (value instanceof String) ? (String) value : defaultValue;
+        return value instanceof String ? (String) value : defaultValue;
     }
 
     @Override

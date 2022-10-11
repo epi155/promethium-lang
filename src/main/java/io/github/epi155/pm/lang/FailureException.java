@@ -79,6 +79,11 @@ public class FailureException extends Exception {
     /**
      * Constructor
      *
+     * <p>
+     * Use {@link Hope#orThrow()} or {@link Nope#orThrow()}
+     * to use this constructor
+     * </p>
+     *
      * @param fault error payload of exception
      */
     FailureException(@NotNull Failure fault) {

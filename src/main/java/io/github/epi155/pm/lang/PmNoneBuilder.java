@@ -27,7 +27,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             @Override
             public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
                 if (maxThread < 1)
-                    throw new java.lang.IllegalArgumentException();
+                    throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
                 val p = new Phaser(1);
                 iterable.forEach(u -> consumeUsingThread(u, fcn, s, p));
@@ -46,7 +46,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
     }
 
     private <U> void consume(AnyValue<U> u, Function<? super U, ? extends AnyItem> fcn) {
-        if (isSuccess())
+        if (u.isSuccess())
             add(fcn.apply(u.value()));
         else
             add(u.errors());
@@ -64,7 +64,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             @Override
             public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
                 if (maxThread < 1)
-                    throw new java.lang.IllegalArgumentException();
+                    throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
                 val p = new Phaser(1);
                 iterable.forEach(u -> consumeOfUsingThread(u, fcn, s, p));
@@ -122,7 +122,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             @Override
             public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
                 if (maxThread < 1)
-                    throw new java.lang.IllegalArgumentException();
+                    throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
                 val p = new Phaser(1);
                 stream.forEach(u -> consumeUsingThread(u, fcn, s, p));
@@ -142,7 +142,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
     }
 
     private <U> void consumeUsingExecutor(AnyValue<U> u, Function<? super U, ? extends AnyItem> fcn, ExecutorService executor, Phaser p) {
-        if (isSuccess()) {
+        if (u.isSuccess()) {
             p.register();
             executor.submit(() -> {
                 try {
@@ -187,10 +187,10 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             @Override
             public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
                 if (maxThread < 1)
-                    throw new java.lang.IllegalArgumentException();
+                    throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
                 val p = new Phaser(1);
-                stream.forEach((u -> consumeOfUsingThread(u, fcn, s, p)));
+                stream.forEach(u -> consumeOfUsingThread(u, fcn, s, p));
                 p.arriveAndAwaitAdvance();
                 return PmNoneBuilder.this;
             }
@@ -198,7 +198,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             @Override
             public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends AnyItem> fcn) {
                 val p = new Phaser(1);
-                stream.forEach((u -> consumeOfUsingExecutor(u, fcn, executor, p)));
+                stream.forEach(u -> consumeOfUsingExecutor(u, fcn, executor, p));
                 p.arriveAndAwaitAdvance();
                 return PmNoneBuilder.this;
             }
