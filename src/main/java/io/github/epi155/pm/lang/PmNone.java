@@ -4,7 +4,6 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Queue;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -12,10 +11,6 @@ class PmNone extends PmManyError implements None {
 
     protected PmNone() {
         super();
-    }
-
-    protected PmNone(Queue<Failure> errors) {
-        super(errors);
     }
 
     protected PmNone(Collection<Failure> errors) {

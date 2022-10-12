@@ -107,10 +107,6 @@ abstract class PmAnyBuilder implements ErrorBuilder {
         return Collections.unmodifiableCollection(errors);
     }
 
-    protected void capture(StackTraceElement ste, Throwable t) {
-        errors.add(PmFailure.ofException(ste, t));
-    }
-
     @Override
     public void add(@NotNull AnyItem any) {
         any.errors().forEach(this::add);
@@ -139,7 +135,6 @@ abstract class PmAnyBuilder implements ErrorBuilder {
     public void add(@NotNull Failure failure) {
         errors.add(failure);
     }
-
 
     @Override
     public <T> @NotNull Stream<T> flat(@NotNull Hope<T> hope) {

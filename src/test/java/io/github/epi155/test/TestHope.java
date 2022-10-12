@@ -44,6 +44,7 @@ class TestHope {
     void test5() {
         val hope = Hope.of(1);
         Assertions.assertDoesNotThrow(() -> hope.orThrow());
+        Assertions.assertDoesNotThrow(() -> hope.onSuccess(k -> log.info("Hi")).orThrow(f -> new FailureException(new NullPointerException())));
     }
 
     @Test

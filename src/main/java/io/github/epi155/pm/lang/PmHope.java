@@ -103,7 +103,6 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
         return this.new GlitchImpl();
     }
 
-
     @Override
     @NotNull
     public Nope asNope() {

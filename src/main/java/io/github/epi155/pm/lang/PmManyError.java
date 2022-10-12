@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -14,10 +13,6 @@ abstract class PmManyError implements ManyErrors, Glitches {
 
     protected PmManyError() {
         this.errors = Collections.emptyList();
-    }
-
-    protected PmManyError(Queue<Failure> errors) {
-        this.errors = Collections.unmodifiableCollection(errors);
     }
 
     protected PmManyError(Collection<Failure> errors) {

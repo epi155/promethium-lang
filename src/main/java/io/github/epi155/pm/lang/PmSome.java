@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -15,11 +14,6 @@ class PmSome<T> extends PmManyError implements Some<T> {
     protected PmSome(T value) {
         super();
         this.value = value;
-    }
-
-    protected PmSome(Queue<Failure> errors) {
-        super(errors);
-        this.value = null;
     }
 
     protected PmSome(Collection<Failure> errors) {
@@ -70,16 +64,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
 
     @Override
     public @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
-        if (isSuccess()) {
-            try {
-                val result = fcn.apply(value);
-                return new PmSome<>(result);
-            } catch (Exception e) {
-                return Some.capture(e);
-            }
-        } else {
-            return new PmSome<>(errors());
-        }
+        return isSuccess() ? new PmSome<>(fcn.apply(value)) : new PmSome<>(errors());
     }
 
     @Override

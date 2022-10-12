@@ -74,13 +74,28 @@ class TestConcat {
                 .map(this::func1)
                 .flatMap(bld::flat)
                 .map(this::func2)
-                .flatMap(bld::flat)
-                .map(this::func3)
-                .flatMap(bld::flat)
-                .map(this::func4)
-                .flatMap(bld::flat)
-                .forEach(it -> {
-                });
+            .flatMap(bld::flat)
+            .map(this::func3)
+            .flatMap(bld::flat)
+            .map(this::func4)
+            .flatMap(bld::flat)
+            .forEach(it -> {
+            });
+        val z = bld.build();
+        z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
+    }
+
+    @Test
+    void test50b() {
+        val list = Arrays.asList(1, 2, 3, 4, 5, 6);
+        val bld = None.builder();
+        list.stream()
+            .map(k -> Hope.of(2 * k))
+            .flatMap(bld::flat)
+            .map(k -> Hope.<String>captureHere(new NullPointerException()))
+            .flatMap(bld::flat)
+            .forEach(it -> {
+            });
         val z = bld.build();
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }

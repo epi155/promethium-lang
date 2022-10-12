@@ -53,19 +53,6 @@ public class FailureException extends Exception {
     /**
      * Constructor
      *
-     * @param ste custom stack trace
-     * @param e   original exception
-     */
-    public FailureException(StackTraceElement ste, Exception e) {
-        super(e);
-        this.code = Failure.JAVA_EXCEPTION_CODE;
-        this.status = PmFailure.JAVA_EXCEPTION_STATUS;
-        this.ste = ste;
-    }
-
-    /**
-     * Constructor
-     *
      * @param ce      custom error
      * @param objects error parameter
      */

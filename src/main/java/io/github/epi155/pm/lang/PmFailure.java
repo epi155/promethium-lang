@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.UnaryOperator;
 
 @RequiredArgsConstructor(access = lombok.AccessLevel.PACKAGE)
 class PmFailure implements Failure {
@@ -41,12 +40,6 @@ class PmFailure implements Failure {
 
     private static @NotNull Failure copy(@NotNull Failure source, @NotNull StackTraceElement ste) {
         PmFailure target = new PmFailure(source.code(), source.status(), source.message(), ste);
-        source.forEach(target::setProperty);
-        return target;
-    }
-
-    protected static @NotNull Failure copy(@NotNull Failure source, @NotNull UnaryOperator<String> transform) {
-        PmFailure target = new PmFailure(source.code(), source.status(), transform.apply(source.message()), source.stackTraceElement());
         source.forEach(target::setProperty);
         return target;
     }
@@ -107,13 +100,6 @@ class PmFailure implements Failure {
         String code = ce.code();
         String text = ce.message(objects) + " >> " + t;
         StackTraceElement ste = scan(t, packagePrefix);
-        return new PmFailure(code, statusOf(ce), text, ste);
-    }
-
-    protected static @NotNull Failure of(@NotNull Throwable t, @NotNull MsgError ce, Object[] objects) {
-        String code = ce.code();
-        String text = ce.message(objects) + " >> " + t;
-        StackTraceElement ste = guessLine(t, caller());
         return new PmFailure(code, statusOf(ce), text, ste);
     }
 
@@ -236,10 +222,6 @@ class PmFailure implements Failure {
     @Override
     public StackTraceElement stackTraceElement() {
         return theStackTraceElement;
-    }
-
-    public String getMessage() {
-        return theMessage;
     }
 
 }
