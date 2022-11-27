@@ -50,4 +50,8 @@ class PmNone extends PmManyError implements None {
         return isSuccess() ? onSuccess.get() : onFailure.apply(errors());
     }
 
+    @Override
+    public @NotNull ChoiceEmptyContext choice() {
+        return new PmChoiceEmptyContext(this);
+    }
 }

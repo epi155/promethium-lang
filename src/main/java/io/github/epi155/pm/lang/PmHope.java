@@ -114,6 +114,11 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
         return isSuccess() ? onSuccess.apply(value) : onFailure.apply(fault());
     }
 
+    @Override
+    public @NotNull ChoiceValueContext<T> choice() {
+        return new PmChoiceValueContext<>(this);
+    }
+
     class GlitchImpl implements Glitch {
 
         @Override
@@ -125,7 +130,5 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
         public void orThrow(@NotNull Function<Failure, FailureException> fcn) throws FailureException {
             PmHope.this.orThrow(fcn);
         }
-
     }
-
 }

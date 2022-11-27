@@ -106,16 +106,6 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     }
 
     /**
-     * Logical short-circuit and operator
-     * <p>Hope &and; AnyValue<sup>+</sup> &rarr; None</p>
-     *
-     * @param fcn transform value to {@link AnyItem}
-     * @return {@link None} instance, if this has an error,
-     * the transformation is not called and the result has the original error
-     */
-    @NotNull None and(@NotNull Function<? super T, ? extends AnyItem> fcn);
-
-    /**
      * Retrieve the value if there is no error or throw an exception
      *
      * @return value
@@ -191,4 +181,5 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @return result
      */
     <R> R mapTo(Function<T, R> onSuccess, Function<Failure, R> onFailure);
+
 }

@@ -6,10 +6,10 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-class PmSingleError implements SingleError {
+abstract class PmSingleError implements SingleError {
     private final Failure fault;
 
-    public PmSingleError(Failure fault) {
+    protected PmSingleError(Failure fault) {
         this.fault = fault;
     }
 

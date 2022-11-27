@@ -68,7 +68,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
-    public @NotNull None and(@NotNull Function<? super T, ? extends AnyError> fcn) {
+    public @NotNull None and(@NotNull Function<? super T, ? extends AnyItem> fcn) {
         if (isSuccess()) {
             val any = fcn.apply(value);
             if (any.isSuccess()) {
@@ -79,6 +79,11 @@ class PmSome<T> extends PmManyError implements Some<T> {
         } else {
             return new PmNone(errors());
         }
+    }
+
+    @Override
+    public @NotNull ChoiceValueContext<T> choice() {
+        return new PmChoiceValueContext<>(this);
     }
 
     @Override

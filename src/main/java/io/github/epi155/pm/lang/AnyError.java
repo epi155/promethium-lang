@@ -53,5 +53,4 @@ public interface AnyError extends AnyItem {
         action.run();
         return None.of(this);
     }
-
 }

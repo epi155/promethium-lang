@@ -113,21 +113,6 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
     @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
-     * Logical short-circuit and operator.
-     * <p>Some &and; AnyValue<sup>+</sup> &rarr; None</p>
-     *
-     * <p>
-     * If this has errors, the transformation is not called
-     * and the result has the original error, else the error
-     * of the function, is any.
-     * </p>
-     *
-     * @param fcn transform value to {@link AnyError}
-     * @return {@link None} instance,
-     */
-    @NotNull None and(@NotNull Function<? super T, ? extends AnyError> fcn);
-
-    /**
      * Logical implies operator
      *
      * @param action action on value, executed if there are no errors
