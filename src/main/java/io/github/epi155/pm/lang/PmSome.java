@@ -87,6 +87,11 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
+    public @NotNull <R> ChoiceMapContext<T, R> choiceTo() {
+        return new PmChoiceMapContext<>(this);
+    }
+
+    @Override
     public @NotNull None implies(@NotNull Consumer<? super T> action) {
         if (isSuccess()) {
             action.accept(value);

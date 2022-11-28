@@ -119,6 +119,11 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
         return new PmChoiceValueContext<>(this);
     }
 
+    @Override
+    public @NotNull <R> ChoiceMapContext<T, R> choiceTo() {
+        return new PmChoiceMapContext<>(this);
+    }
+
     class GlitchImpl implements Glitch {
 
         @Override

@@ -4,4 +4,5 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ChoiceValue<T> {
     @NotNull ChoiceValueContext<T> choice();
+    @NotNull <R> ChoiceMapContext<T,R> choiceTo();
 }

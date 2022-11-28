@@ -1,14 +1,13 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.Failure;
-import io.github.epi155.pm.lang.Hope;
-import io.github.epi155.pm.lang.None;
-import io.github.epi155.pm.lang.Nope;
+import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -102,7 +101,27 @@ public class TestCustom2 {
             })
             .otherwise().perform(() -> Nope.nope())
             .end();
+        searchFor(1)
+            .choice()
+            .when(Optional::isPresent).implies(it -> log.info("match at {}", it.get()))
+            .otherwise().implies(it -> log.info("None match"))
+            .end().onFailure(es -> es.forEach(e -> log.warn("Error: {}", e.message())));
+        searchFor(1)
+            .<Integer>choiceTo()
+                .when(Optional::isPresent)
+                    .map(it -> Hope.of(it.get()+1))
+                .otherwise()
+                    .map(it->Hope.of(0))
+            .end()
+            .onSuccess(it -> log.info("Found {}", it));
         report(none.errors());
+    }
+
+    private @NotNull Hope<Optional<Integer>> searchFor(int i) {
+        int k = new Random(1).nextInt(5);
+        if (i<k) return Hope.of(Optional.of(k));
+        if (i>k) return Hope.of(Optional.empty());
+        return Hope.failure(MsgError.of("NF100P", "Collision at {}"), i);
     }
 
     private interface CustomReader {
