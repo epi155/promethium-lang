@@ -4,12 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
-public class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
+class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
     private final AnyValue<T> parent;
     private boolean branchExecuted = false;
     private AnyValue<R> result;
 
-    public PmChoiceMapContext(AnyValue<T> anyValue) {
+    PmChoiceMapContext(AnyValue<T> anyValue) {
         this.parent = anyValue;
     }
 
@@ -20,7 +20,7 @@ public class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
                 result = fcn.apply(parent.value());
                 branchExecuted = true;
             }
-            return PmChoiceMapContext.this;
+            return this;
         };
     }
 
@@ -31,7 +31,7 @@ public class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
                 result = fcn.apply(parent.value());
                 branchExecuted = true;
             }
-            return PmChoiceMapContext.this;
+            return this;
         };
     }
 
@@ -40,9 +40,18 @@ public class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
         return fcn -> {
             if (parent.isSuccess() && !branchExecuted) {
                 result = fcn.apply(parent.value());
-                branchExecuted = true;
             }
-            return () -> result.isSuccess() ? new PmSome<>(result.value()) : new PmSome<>(result.errors());
+            return () -> {
+                if (parent.isSuccess()) {
+                    if (result.isSuccess()) {
+                        return new PmSome<>(result.value());
+                    } else {
+                        return new PmSome<>(result.errors());
+                    }
+                } else {
+                    return new PmSome<>(parent.errors());
+                }
+            };
         };
     }
 }

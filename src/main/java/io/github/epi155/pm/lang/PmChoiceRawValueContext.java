@@ -6,14 +6,22 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
-    private final AnyValue<T> parent;
+class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
+    private final T origin;
     private boolean branchExecuted = false;
     private AnyError result;
 
-    PmChoiceValueContext(AnyValue<T> anyValue) {
-        this.parent = anyValue;
-        this.result = anyValue;
+    PmChoiceRawValueContext(@NotNull T value) {
+        this.origin = value;
+    }
+
+    @Override
+    public @NotNull None end() {
+        if (result == null || result.isSuccess()) {
+            return new PmNone();
+        } else {
+            return new PmNone(result.errors());
+        }
     }
 
     @Override
@@ -21,20 +29,20 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         return new WhenValueContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted && predicate.test(parent.value())) {
-                    action.accept(parent.value());
+                if (!branchExecuted && predicate.test(origin)) {
+                    action.accept(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return PmChoiceRawValueContext.this;
             }
 
             @Override
             public @NotNull ChoiceValueContext<T> perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted && predicate.test(parent.value())) {
-                    result = fcn.apply(parent.value());
+                if (!branchExecuted && predicate.test(origin)) {
+                    result = fcn.apply(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return PmChoiceRawValueContext.this;
             }
         };
     }
@@ -44,27 +52,22 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         return new WhenValueContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted && test) {
-                    action.accept(parent.value());
+                if (!branchExecuted && test) {
+                    action.accept(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return PmChoiceRawValueContext.this;
             }
 
             @Override
             public @NotNull ChoiceValueContext<T> perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted && test) {
-                    result = fcn.apply(parent.value());
+                if (!branchExecuted && test) {
+                    result = fcn.apply(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return PmChoiceRawValueContext.this;
             }
         };
-    }
-
-    @Override
-    public @NotNull None end() {
-        return result.isSuccess() ? new PmNone() : new PmNone(result.errors());
     }
 
     @Override
@@ -72,20 +75,20 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         return new ElseValueContext<T>() {
             @Override
             public @NotNull ChoiceExitContext implies(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted) {
-                    action.accept(parent.value());
+                if (!branchExecuted) {
+                    action.accept(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return PmChoiceRawValueContext.this;
             }
 
             @Override
             public @NotNull ChoiceExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted) {
-                    result = fcn.apply(parent.value());
+                if (!branchExecuted) {
+                    result = fcn.apply(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return PmChoiceRawValueContext.this;
             }
         };
     }

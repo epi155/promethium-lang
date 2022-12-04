@@ -5,8 +5,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * context to perform an action on a condition
+ * @param <T>   value type of the chosen value
+ */
 public interface WhenValueContext<T> {
-    @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> consumer);
+    /**
+     * performs an action on the value
+     * @param action    action on the value
+     * @return      instance of {@link ChoiceValueContext}
+     */
+    @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action);
 
+    /**
+     * performs a fallible function on the value
+     * @param fcn       fallible function on the value
+     * @return      instance of {@link ChoiceValueContext}
+     */
     @NotNull ChoiceValueContext<T> perform(@NotNull Function<? super T, ? extends AnyError> fcn);
 }

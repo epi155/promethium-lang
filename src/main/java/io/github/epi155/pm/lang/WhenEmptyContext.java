@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
+@Deprecated
 public interface WhenEmptyContext {
     @NotNull ChoiceEmptyContext implies(@NotNull Runnable action);
 

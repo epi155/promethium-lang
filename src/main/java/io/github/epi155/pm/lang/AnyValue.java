@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  *
  * @param <T> payload type
  */
-public interface AnyValue<T> extends AnyError, ChoiceValue<T> {
+public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
     /**
      * Returns the value
      *
