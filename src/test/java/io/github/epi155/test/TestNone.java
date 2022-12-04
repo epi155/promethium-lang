@@ -32,6 +32,12 @@ class TestNone {
         val result = None.builder().build()
             .mapTo(() -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
+
+        Assertions.assertDoesNotThrow(() -> {
+            Some.capture(new NullPointerException()).implies(it -> { throw new NullPointerException(); });
+        });
+        Some.of("hello").mapOf(it -> it.charAt(0));
+        Some.<String>capture(new NullPointerException()).mapOf(it -> it.charAt(0));
     }
 
     @Test
