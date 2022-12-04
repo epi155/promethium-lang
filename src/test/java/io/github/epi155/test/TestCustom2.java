@@ -1,6 +1,9 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.*;
+import io.github.epi155.pm.lang.Failure;
+import io.github.epi155.pm.lang.Hope;
+import io.github.epi155.pm.lang.MsgError;
+import io.github.epi155.pm.lang.None;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -89,18 +92,6 @@ public class TestCustom2 {
                     .implies(wr::write))
                 .end()
             );
-        none
-            .choice()
-            .when(true).perform(() -> Nope.nope())
-            .otherwise().implies(() -> {
-            })
-            .end();
-        none
-            .choice()
-            .when(true).implies(() -> {
-            })
-            .otherwise().perform(() -> Nope.nope())
-            .end();
         searchFor(1)
             .choice()
             .when(Optional::isPresent).implies(it -> log.info("match at {}", it.get()))

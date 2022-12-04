@@ -9,7 +9,7 @@ import java.util.function.Function;
  * context to perform an action on a condition
  * @param <T>   value type of the chosen value
  */
-public interface WhenValueContext<T> {
+public interface ChoiceValueWhenContext<T> {
     /**
      * performs an action on the value
      * @param action    action on the value

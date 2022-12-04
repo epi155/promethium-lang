@@ -145,7 +145,10 @@ public interface None extends ManyErrors, OnlyError {
 
     /**
      * It generates a {@link LoopConsumer} instance to loop on
-     *
+     * <pre>
+     *     Iterable&lt;AnyValue&lt;U&gt;&gt; list = ..
+     *     None none = None.iterable(list).forEach(u -&gt; ..);
+     * </pre>
      * @param iterable fallible values to loop on
      * @param <U>      type of value generated
      * @return {@link LoopConsumer} instance
@@ -158,7 +161,10 @@ public interface None extends ManyErrors, OnlyError {
 
     /**
      * It generates a {@link LoopConsumer} instance to loop on
-     *
+     * <pre>
+     *     Iterable&lt;U&gt; list = ..
+     *     None none = None.iterableOf(list).forEach(u -&gt; ..);
+     * </pre>
      * @param iterable values to loop on
      * @param <U>      type of value generated
      * @return {@link LoopConsumer} instance
@@ -171,7 +177,10 @@ public interface None extends ManyErrors, OnlyError {
 
     /**
      * It generates a {@link LoopConsumer} instance to loop on
-     *
+     * <pre>
+     *     Stream&lt;AnyValue&lt;U&gt;&gt; stream = ..
+     *     None none = None.stream(stream).forEach(u -&gt; ..);
+     * </pre>
      * @param stream fallible values to loop on
      * @param <U>    type of value generated
      * @return {@link LoopConsumer} instance
@@ -184,7 +193,10 @@ public interface None extends ManyErrors, OnlyError {
 
     /**
      * It generates a {@link LoopConsumer} instance to loop on
-     *
+     * <pre>
+     *     Stream&lt;U&gt; stream = ..
+     *     None none = None.streamOf(stream).forEach(u -&gt; ..);
+     * </pre>
      * @param stream values to loop on
      * @param <U>    type of value generated
      * @return {@link LoopConsumer} instance

@@ -58,8 +58,4 @@ class PmNope extends PmSingleError implements Nope {
         }
     }
 
-    @Override
-    public @NotNull ChoiceEmptyContext choice() {
-        return new PmChoiceEmptyContext(this);
-    }
 }

@@ -17,8 +17,8 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull WhenValueContext<T> when(@NotNull Predicate<T> predicate) {
-        return new WhenValueContext<T>() {
+    public @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate) {
+        return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
                 if (parent.isSuccess() && !branchExecuted && predicate.test(parent.value())) {
@@ -40,8 +40,8 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull WhenValueContext<T> when(boolean test) {
-        return new WhenValueContext<T>() {
+    public @NotNull ChoiceValueWhenContext<T> when(boolean test) {
+        return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
                 if (parent.isSuccess() && !branchExecuted && test) {
@@ -68,10 +68,10 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull ElseValueContext<T> otherwise() {
-        return new ElseValueContext<T>() {
+    public @NotNull ChoiceValueElseContext<T> otherwise() {
+        return new ChoiceValueElseContext<T>() {
             @Override
-            public @NotNull ChoiceExitContext implies(@NotNull Consumer<? super T> action) {
+            public @NotNull ChoiceValueExitContext implies(@NotNull Consumer<? super T> action) {
                 if (parent.isSuccess() && !branchExecuted) {
                     action.accept(parent.value());
                     branchExecuted = true;
@@ -80,7 +80,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
             }
 
             @Override
-            public @NotNull ChoiceExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
+            public @NotNull ChoiceValueExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
                 if (parent.isSuccess() && !branchExecuted) {
                     result = fcn.apply(parent.value());
                     branchExecuted = true;

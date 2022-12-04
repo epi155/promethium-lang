@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * interface to collect any errors that occurred in the execution of actions
  */
-public interface ChoiceExitContext {
+public interface ChoiceValueExitContext {
     /**
      * collect any errors that occurred in the execution of actions
      * @return  instance of {@link None} with collected errors

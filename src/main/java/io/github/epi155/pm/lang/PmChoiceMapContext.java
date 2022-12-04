@@ -14,7 +14,7 @@ class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
     }
 
     @Override
-    public @NotNull WhenMapContext<T, R> when(@NotNull Predicate<T> predicate) {
+    public @NotNull ChoiceMapWhenContext<T, R> when(@NotNull Predicate<T> predicate) {
         return fcn -> {
             if (parent.isSuccess() && !branchExecuted && predicate.test(parent.value())) {
                 result = fcn.apply(parent.value());
@@ -25,7 +25,7 @@ class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
     }
 
     @Override
-    public @NotNull WhenMapContext<T, R> when(boolean test) {
+    public @NotNull ChoiceMapWhenContext<T, R> when(boolean test) {
         return fcn -> {
             if (parent.isSuccess() && !branchExecuted && test) {
                 result = fcn.apply(parent.value());
@@ -36,7 +36,7 @@ class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
     }
 
     @Override
-    public @NotNull ElseMapContext<T, R> otherwise() {
+    public @NotNull ChoiceMapElseContext<T, R> otherwise() {
         return fcn -> {
             if (parent.isSuccess() && !branchExecuted) {
                 result = fcn.apply(parent.value());

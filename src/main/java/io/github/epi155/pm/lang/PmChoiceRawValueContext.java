@@ -25,8 +25,8 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull WhenValueContext<T> when(@NotNull Predicate<T> predicate) {
-        return new WhenValueContext<T>() {
+    public @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate) {
+        return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
                 if (!branchExecuted && predicate.test(origin)) {
@@ -48,8 +48,8 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull WhenValueContext<T> when(boolean test) {
-        return new WhenValueContext<T>() {
+    public @NotNull ChoiceValueWhenContext<T> when(boolean test) {
+        return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
                 if (!branchExecuted && test) {
@@ -71,10 +71,10 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull ElseValueContext<T> otherwise() {
-        return new ElseValueContext<T>() {
+    public @NotNull ChoiceValueElseContext<T> otherwise() {
+        return new ChoiceValueElseContext<T>() {
             @Override
-            public @NotNull ChoiceExitContext implies(@NotNull Consumer<? super T> action) {
+            public @NotNull ChoiceValueExitContext implies(@NotNull Consumer<? super T> action) {
                 if (!branchExecuted) {
                     action.accept(origin);
                     branchExecuted = true;
@@ -83,7 +83,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
             }
 
             @Override
-            public @NotNull ChoiceExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
+            public @NotNull ChoiceValueExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
                 if (!branchExecuted) {
                     result = fcn.apply(origin);
                     branchExecuted = true;

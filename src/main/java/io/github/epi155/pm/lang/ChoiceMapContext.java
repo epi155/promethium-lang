@@ -4,10 +4,29 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
+/**
+ * context to set the condition to the value
+ * @param <T>   value type of the chosen value
+ * @param <R>   value type of the final value
+ */
 public interface ChoiceMapContext<T, R> {
-    @NotNull WhenMapContext<T,R> when(@NotNull Predicate<T> predicate);
+    /**
+     * sets condition to value as predicate
+     * @param predicate condition to the value
+     * @return          instance of {@link ChoiceMapWhenContext}
+     */
+    @NotNull ChoiceMapWhenContext<T,R> when(@NotNull Predicate<T> predicate);
 
-    @NotNull WhenMapContext<T,R> when(boolean test);
+    /**
+     * set an external condition
+     * @param test  external condition
+     * @return      instance of {@link ChoiceMapWhenContext}
+     */
+    @NotNull ChoiceMapWhenContext<T,R> when(boolean test);
 
-    @NotNull ElseMapContext<T,R> otherwise();
+    /**
+     * context if no previous condition is met
+     * @return      instance of {@link ChoiceMapElseContext}
+     */
+    @NotNull ChoiceMapElseContext<T,R> otherwise();
 }

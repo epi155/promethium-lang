@@ -9,18 +9,18 @@ import java.util.function.Function;
  * context to perform an action if none of the other conditions are met
  * @param <T>   value type of the chosen value
  */
-public interface ElseValueContext<T> {
+public interface ChoiceValueElseContext<T> {
     /**
      * performs an action on the value
      * @param action    action on the value
-     * @return      instance of {@link ChoiceExitContext}
+     * @return      instance of {@link ChoiceValueExitContext}
      */
-    @NotNull ChoiceExitContext implies(@NotNull Consumer<? super T> action);
+    @NotNull ChoiceValueExitContext implies(@NotNull Consumer<? super T> action);
 
     /**
      * performs a fallible function on the value
      * @param fcn       fallible function on the value
-     * @return      instance of {@link ChoiceExitContext}
+     * @return      instance of {@link ChoiceValueExitContext}
      */
-    @NotNull ChoiceExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn);
+    @NotNull ChoiceValueExitContext perform(@NotNull Function<? super T, ? extends AnyError> fcn);
 }

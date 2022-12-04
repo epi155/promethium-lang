@@ -7,9 +7,36 @@ import org.jetbrains.annotations.NotNull;
  * @param <T>   value type of the chosen value
  */
 public interface ChoiceContext<T> {
+    /**
+     * static constructor of a choice value context with an external value
+     * <pre>
+     *     None none = ChoiceContext.choice(..)
+     *          .when(..).perform(..)
+     *          .when(..).implies(..)
+     *          .otherwise().perform(..)
+     *          .end();
+     * </pre>
+     * @param value     external value
+     * @return          instance of {@link ChoiceValueContext}
+     * @param <S>       value type of the chosen/external value
+     */
     static @NotNull <S> ChoiceValueContext<S> choice(@NotNull S value) {
         return new PmChoiceRawValueContext<>(value);
     }
+
+    /**
+     * static constructor of a choice map context with an external value
+     * <pre>
+     *     Some&lt;R&gt; some = ChoiceContext.&lt;S,R&gt;choiceTo(..)
+     *          .when(..).map(..)
+     *          .otherwise().map(..)
+     *          .end();
+     * </pre>
+     * @param value     external value
+     * @return          instance of {@link ChoiceMapContext}
+     * @param <S>       value type of the chosen/external value
+     * @param <R>       value type of the mapped to value
+     */
     static @NotNull <S,R> ChoiceMapContext<S,R> choiceTo(@NotNull S value) {
         return new PmChoiceRawMapContext<>(value);
     }

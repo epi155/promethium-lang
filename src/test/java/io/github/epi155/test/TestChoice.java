@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Slf4j
 class TestChoice {
@@ -75,37 +74,6 @@ class TestChoice {
                     .onSuccess(s -> log.info("result is {}", s))
                     .onFailure(es -> es.forEach(e -> log.warn("Error is: {}", e.message())));
             });
-    }
-
-
-    @Test
-    void testC4() {
-        val randm = new Random();
-        for(int k=0; k<20; k++) {
-            val stream = Stream.of(Nope.nope(), Nope.capture(new NullPointerException()));
-            stream.forEach(it -> it.choice()
-                .when(randm.nextDouble()> 0.84).implies(() -> log.info("Hello"))
-                .when(randm.nextDouble()> 0.84).perform(Nope::nope)
-                .when(randm.nextDouble()> 0.84).perform(() -> Nope.capture(new NoSuchElementException()))
-                .otherwise().implies(() -> log.warn("Hola"))
-                .end()
-            );
-        }
-    }
-    @Test
-    void testC5() {
-        val randm = new Random();
-        val bld = None.builder();
-        for(int k=0; k<20; k++) {
-            val stream = Stream.of(None.builder().build(), None.capture(new NullPointerException()));
-            stream.forEach(it -> bld.add(it.choice()
-                .when(randm.nextDouble()> 0.84).implies(() -> log.info("Hello"))
-                .when(randm.nextDouble()> 0.84).perform(Nope::nope)
-                .when(randm.nextDouble()> 0.84).perform(() -> Nope.capture(new NoSuchElementException()))
-                .otherwise().perform(Nope::nope)
-                .end())
-            );
-        }
     }
 
     @Test
