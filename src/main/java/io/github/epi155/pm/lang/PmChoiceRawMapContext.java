@@ -50,4 +50,15 @@ class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
             };
         };
     }
+
+    @Override
+    public @NotNull <U> ChoiceMapWhenAsContext<U, T, R> whenInstanceOf(Class<U> cls) {
+        return fcn -> {
+            if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
+                result = fcn.apply(cls.cast(origin));
+                branchExecuted = true;
+            }
+            return this;
+        };
+    }
 }

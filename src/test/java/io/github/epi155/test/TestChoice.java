@@ -116,6 +116,33 @@ class TestChoice {
         });
     }
     @Test
+    void testC8() {
+        Number[] nn = { 1, 2L, 3F, 3.1415926535_8979323846_2643383279 };
+        for(Number z: nn) {
+            val a = Hope.of(z).choice()
+                .whenInstanceOf(Integer.class).implies(n -> n++)
+                .whenInstanceOf(Double.class).perform(n -> Hope.of(Math.sqrt(n)))
+                .otherwise().perform(x -> Nope.failure(MY_FAULT))
+                .end();
+            val b = Hope.of(z).<String>choiceTo()
+                .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
+                .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
+                .otherwise().map(x -> Hope.failure(MY_FAULT))
+                .end();
+            val c = ChoiceContext.choice(z)
+                .whenInstanceOf(Integer.class).implies(n -> n++)
+                .whenInstanceOf(Double.class).perform(n -> Hope.of(Math.sqrt(n)))
+                .otherwise().perform(x -> Nope.failure(MY_FAULT))
+                .end();
+            val d = ChoiceContext.<Number,String>choiceTo(z)
+                .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
+                .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
+                .otherwise().map(x -> Hope.failure(MY_FAULT))
+                .end();
+        }
+
+    }
+    @Test
     void testSC1() {
         val randm = new Random();
         List<Integer> values = IntStream.rangeClosed(1, 50).boxed().collect(Collectors.toList());

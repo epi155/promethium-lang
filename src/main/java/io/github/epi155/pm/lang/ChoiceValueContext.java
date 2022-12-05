@@ -28,4 +28,6 @@ public interface ChoiceValueContext<T> extends ChoiceValueExitContext {
      * @return      instance of {@link ChoiceValueElseContext}
      */
     @NotNull ChoiceValueElseContext<T> otherwise();
+
+    @NotNull <U> ChoiceValueWhenAsContext<U,T> whenInstanceOf(@NotNull Class<U> cls);
 }

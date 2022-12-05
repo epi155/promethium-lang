@@ -29,4 +29,6 @@ public interface ChoiceMapContext<T, R> {
      * @return      instance of {@link ChoiceMapElseContext}
      */
     @NotNull ChoiceMapElseContext<T,R> otherwise();
+
+    @NotNull <U> ChoiceMapWhenAsContext<U,T,R> whenInstanceOf(Class<U> cls);
 }

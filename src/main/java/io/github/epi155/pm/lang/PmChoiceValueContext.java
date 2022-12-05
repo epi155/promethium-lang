@@ -89,4 +89,27 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
             }
         };
     }
+
+    @Override
+    public @NotNull <U> ChoiceValueWhenAsContext<U, T> whenInstanceOf(@NotNull Class<U> cls) {
+        return new ChoiceValueWhenAsContext<U, T>() {
+            @Override
+            public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super U> action) {
+                if (parent.isSuccess() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                    action.accept(cls.cast(parent.value()));
+                    branchExecuted = true;
+                }
+                return PmChoiceValueContext.this;
+            }
+
+            @Override
+            public @NotNull ChoiceValueContext<T> perform(@NotNull Function<? super U, ? extends AnyError> fcn) {
+                if (parent.isSuccess() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                    result = fcn.apply(cls.cast(parent.value()));
+                    branchExecuted = true;
+                }
+                return PmChoiceValueContext.this;
+            }
+        };
+    }
 }

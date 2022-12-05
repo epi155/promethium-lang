@@ -176,7 +176,6 @@
                             <goal>aggregate-pmd</goal>
                             <goal>aggregate-cpd</goal>
                         </goals>
-                        <!--                        <phase>site</phase>-->
                         <phase>prepare-package</phase>
                     </execution>
                 </executions>
@@ -274,6 +273,15 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.4.0.905</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>
