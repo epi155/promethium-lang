@@ -140,7 +140,90 @@ class TestChoice {
                 .otherwise().map(x -> Hope.failure(MY_FAULT))
                 .end();
         }
+        ChoiceContext.choice(1)
+            .when(1).implies(k -> log.info("one"))
+            .when(2).implies(k -> log.info("two"))
+            .end();
+        ChoiceContext.choice(2)
+            .when(1).implies(k -> log.info("one"))
+            .when(2).implies(k -> log.info("two"))
+            .end();
+        ChoiceContext.<Integer,String>choiceTo(1)
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
+        ChoiceContext.<Integer,String>choiceTo(1)
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
+        ChoiceContext.<Integer,String>choiceTo(2)
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
+        ChoiceContext.<Integer,String>choiceTo(3)
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
 
+        ChoiceContext.choice(1)
+            .when(1).perform(k -> Hope.of("a"))
+            .when(2).implies(k -> Nope.nope())
+            .end();
+        ChoiceContext.choice(2)
+            .when(1).perform(k -> Hope.of("a"))
+            .when(2).implies(k -> Nope.nope())
+            .end();
+
+        Hope.of(1).choice()
+            .when(1).implies(k -> log.info("one"))
+            .when(2).implies(k -> log.info("two"))
+            .end();
+        Hope.of(2).choice()
+            .when(1).implies(k -> log.info("one"))
+            .when(2).implies(k -> log.info("two"))
+            .end();
+        Hope.of(1).<String>choiceTo()
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
+        Hope.of(2).<String>choiceTo()
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
+        Hope.of(3).<String>choiceTo()
+            .when(1).map(k -> Hope.of("one"))
+            .when(2).map(k -> Hope.of("two"))
+            .when(false).map(f -> Hope.of("dead"))
+            .when(true).map(f -> Hope.of("bingo"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
+
+        Hope.of(1).choice()
+            .when(1).perform(k -> Hope.of("a"))
+            .when(2).implies(k -> Nope.nope())
+            .end();
+        Hope.of(2).choice()
+            .when(1).perform(k -> Hope.of("a"))
+            .when(2).implies(k -> Nope.nope())
+            .end();
+
+        Hope.<Integer>capture(new NullPointerException()).choice()
+            .when(1).perform(k -> Hope.of("a"))
+            .when(2).implies(k -> Nope.nope())
+            .end();
+        Hope.<Number>capture(new NullPointerException()).<String>choiceTo()
+            .when(1).map(k -> Hope.of("a"))
+            .whenInstanceOf(Float.class).map(f -> Hope.of("float"))
+            .when(false).map(f -> Hope.of("dead"))
+            .when(true).map(f -> Hope.of("bingo"))
+            .otherwise().map(k -> Hope.of("boh"))
+            .end();
     }
     @Test
     void testSC1() {

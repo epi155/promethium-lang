@@ -30,5 +30,18 @@ public interface ChoiceMapContext<T, R> {
      */
     @NotNull ChoiceMapElseContext<T,R> otherwise();
 
+    /**
+     * context when value is instance of selected class
+     * @param cls       class instance of
+     * @return          instance of {@link ChoiceMapWhenAsContext}
+     * @param <U>       instance class type
+     */
     @NotNull <U> ChoiceMapWhenAsContext<U,T,R> whenInstanceOf(Class<U> cls);
+
+    /**
+     * context when direct value is matched
+     * @param value     value to be equals
+     * @return          instance of {@link ChoiceMapWhenContext}
+     */
+    @NotNull ChoiceMapWhenContext<T,R> when(@NotNull T value);
 }

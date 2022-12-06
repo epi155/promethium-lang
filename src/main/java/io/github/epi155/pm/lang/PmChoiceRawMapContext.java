@@ -61,4 +61,15 @@ class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
             return this;
         };
     }
+
+    @Override
+    public @NotNull ChoiceMapWhenContext<T, R> when(@NotNull T t) {
+        return fcn -> {
+            if (!branchExecuted && origin.equals(t)) {
+                result = fcn.apply(origin);
+                branchExecuted = true;
+            }
+            return this;
+        };
+    }
 }

@@ -29,5 +29,19 @@ public interface ChoiceValueContext<T> extends ChoiceValueExitContext {
      */
     @NotNull ChoiceValueElseContext<T> otherwise();
 
+    /**
+     * context when value is instance of selected class
+     * @param cls       class instance of
+     * @return          instance of {@link ChoiceValueWhenAsContext}
+     * @param <U>       instance class type
+     */
     @NotNull <U> ChoiceValueWhenAsContext<U,T> whenInstanceOf(@NotNull Class<U> cls);
+
+    /**
+     * context when direct value is matched
+     * @param value     value to be equals
+     * @return          instance of {@link ChoiceValueWhenContext}
+     */
+    @NotNull ChoiceValueWhenContext<T> when(@NotNull T value);
+
 }

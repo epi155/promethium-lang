@@ -65,4 +65,15 @@ class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
             return this;
         };
     }
+
+    @Override
+    public @NotNull ChoiceMapWhenContext<T, R> when(@NotNull T t) {
+        return fcn -> {
+            if (parent.isSuccess() && !branchExecuted && parent.value().equals(t)) {
+                result = fcn.apply(parent.value());
+                branchExecuted = true;
+            }
+            return this;
+        };
+    }
 }

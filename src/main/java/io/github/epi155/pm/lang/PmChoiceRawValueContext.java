@@ -115,4 +115,27 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
             }
         };
     }
+
+    @Override
+    public @NotNull ChoiceValueWhenContext<T> when(@NotNull T t) {
+        return new ChoiceValueWhenContext<T>() {
+            @Override
+            public @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action) {
+                if (!branchExecuted && origin.equals(t)) {
+                    action.accept(origin);
+                    branchExecuted = true;
+                }
+                return PmChoiceRawValueContext.this;
+            }
+
+            @Override
+            public @NotNull ChoiceValueContext<T> perform(@NotNull Function<? super T, ? extends AnyError> fcn) {
+                if (!branchExecuted && origin.equals(t)) {
+                    result = fcn.apply(origin);
+                    branchExecuted = true;
+                }
+                return PmChoiceRawValueContext.this;
+            }
+        };
+    }
 }
