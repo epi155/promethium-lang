@@ -101,16 +101,19 @@ public interface Nope extends SingleError, OnlyError {
     void orThrow() throws FailureException;
 
     /**
-     * Logical short-circuit and operator
+     * If there is no error, the supplier is called,
+     * if this ends with an error, this error is returned.
+     * In the presence of an error, the supplier is not called, and the initial error is returned
      *
      * @param fcn producer {@link Hope} or {@link Nope}
      * @return {@link Nope} instance, if this has an error,
      * the producer is not called and the result has the original error
      */
-    @NotNull Nope and(@NotNull Supplier<? extends SingleError> fcn);
+    @NotNull Nope ergo(@NotNull Supplier<? extends SingleError> fcn);
 
     /**
-     * Logical implies operator
+     * If there is no error, the action is performed.
+     * In any case, the initial error is returned.
      *
      * @param action action executed if there are no errors
      * @return {@link Nope} instance, with original error, if any

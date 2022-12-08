@@ -70,25 +70,25 @@ class TestNope {
     @Test
     void test9() {
         val nope = Nope.nope();
-        nope.and(Nope::nope);
+        nope.ergo(Nope::nope);
     }
 
     @Test
     void test10() {
         val nope = Nope.nope();
-        nope.and(() -> Nope.capture(new NullPointerException()));
+        nope.ergo(() -> Nope.capture(new NullPointerException()));
     }
 
     @Test
     void test11() {
         val nope = Nope.nope();
-        nope.and(() -> Nope.captureHere(new NullPointerException()));
+        nope.ergo(() -> Nope.captureHere(new NullPointerException()));
     }
 
     @Test
     void test12() {
         val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
-        nope.and(Nope::nope);
+        nope.ergo(Nope::nope);
     }
 
     @Test

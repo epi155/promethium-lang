@@ -33,7 +33,7 @@ public class TestCustom2 {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
-                .and(temp -> secondStep(temp)
+                .ergo(temp -> secondStep(temp)
                     .implies(wr::write)));
         report(none.errors());
     }

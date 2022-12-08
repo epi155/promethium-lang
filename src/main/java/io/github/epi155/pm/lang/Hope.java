@@ -146,7 +146,8 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
-     * Logical implies operator
+     * If there is no error and the value is present, the action on the value is performed.
+     * In any case the initial error is returned.
      *
      * @param action action on value, executed if there are no errors
      * @return {@link Nope} instance, with original error, if any

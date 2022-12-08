@@ -23,7 +23,7 @@ class PmNone extends PmManyError implements None {
         return this;
     }
 
-    public @NotNull None and(@NotNull Supplier<? extends AnyError> fcn) {
+    public @NotNull None ergo(@NotNull Supplier<? extends AnyError> fcn) {
         if (isSuccess()) {
             val any = fcn.get();
             if (any.isSuccess()) {

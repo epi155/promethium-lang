@@ -26,12 +26,13 @@ public interface AnyError extends AnyItem {
     @NotNull Optional<String> summary();
 
     /**
-     * performs a fallible action and adds any errors to any previous ones
+     * performs a fallible action and adds any errors to any previous ones,
+     * the action is performed regardless of the error status.
      *
      * @param action fallible action to be performed
      * @return instance of {@link None} collecting the errors
      */
-    default @NotNull None then(@NotNull Supplier<? extends AnyItem> action) {
+    default @NotNull None anyway(@NotNull Supplier<? extends AnyItem> action) {
         val status = action.get();
         if (status.isSuccess()) {
             return None.of(this);
@@ -44,12 +45,13 @@ public interface AnyError extends AnyItem {
     }
 
     /**
-     * performs an action keeping any previous errors
+     * performs an action keeping any previous errors,
+     * the action is performed regardless of the error status.
      *
      * @param action action to be performed
      * @return instance of {@link None} with any previous errors
      */
-    default @NotNull None then(@NotNull Runnable action) {
+    default @NotNull None anyway(@NotNull Runnable action) {
         action.run();
         return None.of(this);
     }

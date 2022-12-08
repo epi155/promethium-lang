@@ -32,7 +32,7 @@ class TestBld {
     void test2() {
         val bld = None.builder();
         bld.join(() -> Some.of(1)
-            .and(k -> Some.of(2 * k)
+            .ergo(k -> Some.of(2 * k)
                 .mapOf(l -> 3 * l)
                 .implies(m -> log.info("it was {}", m))));
         bld.join(Nope.nope());

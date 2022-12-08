@@ -68,25 +68,25 @@ class TestHope {
     @Test
     void test9() {
         val hope = Hope.of(1);
-        hope.and(Hope::of);
+        hope.ergo(Hope::of);
     }
 
     @Test
     void test10() {
         val hope = Hope.of(1);
-        hope.and(i -> Hope.capture(new NullPointerException()));
+        hope.ergo(i -> Hope.capture(new NullPointerException()));
     }
 
     @Test
     void test11() {
         val hope = Hope.of(1);
-        hope.and(i -> Hope.captureHere(new NullPointerException()));
+        hope.ergo(i -> Hope.captureHere(new NullPointerException()));
     }
 
     @Test
     void test12() {
         val hope = Hope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
-        hope.and(Hope::of);
+        hope.ergo(Hope::of);
     }
 
     @Test

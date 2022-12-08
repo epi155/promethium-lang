@@ -6,6 +6,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -34,17 +35,17 @@ class TestConcat {
     @Test
     void test03() {
         val k1 = func1(1)
-                .and(it -> func2(it)
-                        .and(jt -> func3(jt)
-                                .and(this::func4)));
+                .ergo(it -> func2(it)
+                        .ergo(jt -> func3(jt)
+                                .ergo(this::func4)));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
     void test23() {
         val k1 = func1(1)
-                .and(it -> func2(it)
-                        .and(jt -> fun3(jt)
-                                .and(this::fun4)));
+                .ergo(it -> func2(it)
+                        .ergo(jt -> fun3(jt)
+                                .ergo(this::fun4)));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -60,9 +61,9 @@ class TestConcat {
     @Test
     void test33() {
         val k1 = fun1(1)
-                .and(it -> fun2(it)
-                        .and(jt -> fun3(jt)
-                                .and(this::fun4)));
+                .ergo(it -> fun2(it)
+                        .ergo(jt -> fun3(jt)
+                                .ergo(this::fun4)));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -126,9 +127,9 @@ class TestConcat {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
         list.forEach(n -> bld.join(fun1(n)
-                .and(it -> fun2(it)
-                        .and(jt -> fun3(jt)
-                                .and(this::fun4)))));
+                .ergo(it -> fun2(it)
+                        .ergo(jt -> fun3(jt)
+                                .ergo(this::fun4)))));
         val k1 = bld.build();
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
@@ -136,9 +137,9 @@ class TestConcat {
     void test54() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val z = list.stream().map(n -> fun1(n)
-            .and(it -> fun2(it)
-                .and(jt -> fun3(jt)
-                    .and(this::fun4)
+            .ergo(it -> fun2(it)
+                .ergo(jt -> fun3(jt)
+                    .ergo(this::fun4)
                 )
             )
         ).collect(None.collect());
@@ -171,9 +172,9 @@ class TestConcat {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
         val k1 = bld.iterableOf(list).forEach(n -> fun1(n)
-                .and(it -> fun2(it)
-                    .and(jt -> fun3(jt)
-                        .and(this::fun4))))
+                .ergo(it -> fun2(it)
+                    .ergo(jt -> fun3(jt)
+                        .ergo(this::fun4))))
             .build();
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
@@ -182,9 +183,9 @@ class TestConcat {
     void test64() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val k1 = None.iterableOf(list).forEach(n -> fun1(n)
-            .and(it -> fun2(it)
-                .and(jt -> fun3(jt)
-                    .and(this::fun4))));
+            .ergo(it -> fun2(it)
+                .ergo(jt -> fun3(jt)
+                    .ergo(this::fun4))));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -208,6 +209,11 @@ class TestConcat {
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
+    void test67() {
+        AnyValue<Integer> anyVal = Hope.of(10);
+        anyVal.iterable(n -> IntStream.range(0, n).mapToObj(Hope::of).collect(Collectors.toList()))
+            .forEach(k -> Nope.nope());
+    }
     Hope<Eins> fun1(int k) {
         try {
             Eins value = new Eins(k);

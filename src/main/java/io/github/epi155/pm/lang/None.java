@@ -86,8 +86,8 @@ public interface None extends ManyErrors, OnlyError {
      * <pre>
      *      None none = list.stream()
      *          .map(n -> fun1(n)
-     *              .and(n1 -> fun2(n,n1)
-     *                  .and(n2 -> fun3(n,n1,n2)
+     *              .ergo(n1 -> fun2(n,n1)
+     *                  .ergo(n2 -> fun3(n,n1,n2)
      *              )
      *          ).collect(None.collect());
      * </pre>
@@ -111,22 +111,18 @@ public interface None extends ManyErrors, OnlyError {
     @NotNull Glitches onSuccess(Runnable successAction);
 
     /**
-     * Logical short-circuit and operator.
-     * <p>None &and; AnyValue<sup>+</sup> &rarr; None</p>
-     *
-     * <p>
-     * If this has errors, the producer is not called
-     * and the result has the original error, else the error
-     * of the producer, is any.
-     * </p>
+     * If there are no errors, the supplier is called,
+     * if this ends with errors, these errors are returned.
+     * In the presence of errors, the supplier is not called, and the initial errors are returned
      *
      * @param fcn producer {@link AnyError}
      * @return {@link None} instance,
      */
-    @NotNull None and(@NotNull Supplier<? extends AnyError> fcn);
+    @NotNull None ergo(@NotNull Supplier<? extends AnyError> fcn);
 
     /**
-     * Logical implies operator
+     * If there are no errors, the action is performed.
+     * In any case the initial errors are returned.
      *
      * @param action action executed if there are no errors
      * @return {@link None} instance, with original error, if any
@@ -156,7 +152,7 @@ public interface None extends ManyErrors, OnlyError {
     @Contract(value = "_ -> new", pure = true)
     static <U> @NotNull LoopConsumer<U> iterable(@NotNull Iterable<? extends AnyValue<U>> iterable) {
         val loop = None.builder().iterable(iterable);
-        return LoopConsumer.of(loop);
+        return PmLoopFactory.of(loop);
     }
 
     /**
@@ -172,7 +168,7 @@ public interface None extends ManyErrors, OnlyError {
     @Contract(value = "_ -> new", pure = true)
     static <U> @NotNull LoopConsumer<U> iterableOf(@NotNull Iterable<? extends U> iterable) {
         val loop = None.builder().iterableOf(iterable);
-        return LoopConsumer.of(loop);
+        return PmLoopFactory.of(loop);
     }
 
     /**
@@ -188,7 +184,7 @@ public interface None extends ManyErrors, OnlyError {
     @Contract(value = "_ -> new", pure = true)
     static <U> @NotNull LoopConsumer<U> stream(@NotNull Stream<? extends AnyValue<U>> stream) {
         val loop = None.builder().stream(stream);
-        return LoopConsumer.of(loop);
+        return PmLoopFactory.of(loop);
     }
 
     /**
@@ -204,6 +200,6 @@ public interface None extends ManyErrors, OnlyError {
     @Contract(value = "_ -> new", pure = true)
     static <U> @NotNull LoopConsumer<U> streamOf(@NotNull Stream<? extends U> stream) {
         val loop = None.builder().streamOf(stream);
-        return LoopConsumer.of(loop);
+        return PmLoopFactory.of(loop);
     }
 }

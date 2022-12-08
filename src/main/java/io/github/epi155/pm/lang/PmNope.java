@@ -24,7 +24,7 @@ class PmNope extends PmSingleError implements Nope {
         return this;
     }
 
-    public @NotNull Nope and(@NotNull Supplier<? extends SingleError> fcn) {
+    public @NotNull Nope ergo(@NotNull Supplier<? extends SingleError> fcn) {
         if (isSuccess()) {
             val one = fcn.get();
             if (one.isSuccess()) {

@@ -12,7 +12,11 @@ import java.util.stream.Stream;
  */
 public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
     /**
-     * Returns the value
+     * Returns the value.
+     * <p>
+     *     in the presence of errors and the value is not present,
+     *     the {@link java.util.NoSuchElementException} error is thrown
+     * </p>
      *
      * @return value
      */
@@ -63,12 +67,13 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
     }
 
     /**
-     * Logical short-circuit and operator
-     * <p>Hope &and; AnyValue<sup>+</sup> &rarr; None</p>
+     * If there are no errors and the value is present, apply the function to the value,
+     * if the function ends with errors, these errors are returned.
+     * In the presence of errors, the function is not called, and the initial errors are returned.
      *
      * @param fcn transform value to {@link AnyItem}
      * @return {@link None} instance, if this has an error,
      * the transformation is not called and the result has the original error
      */
-    @NotNull None and(@NotNull Function<? super T, ? extends AnyItem> fcn);
+    @NotNull None ergo(@NotNull Function<? super T, ? extends AnyItem> fcn);
 }

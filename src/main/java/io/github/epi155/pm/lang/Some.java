@@ -113,7 +113,8 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
     @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
-     * Logical implies operator
+     * If there are no errors and the value is present, the action on the value is performed.
+     * In any case the initial errors are returned.
      *
      * @param action action on value, executed if there are no errors
      * @return {@link None} instance, with original error, if any

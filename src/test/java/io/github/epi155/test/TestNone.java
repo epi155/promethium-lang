@@ -52,18 +52,18 @@ class TestNone {
         None.builder()
             .build()
             .implies(() -> log.info("I was here"))
-            .and(Nope::nope);
+            .ergo(Nope::nope);
         None.builder()
             .build()
             .implies(() -> log.info("I was here"))
-            .and(() -> Nope.capture(new NullPointerException()));
+            .ergo(() -> Nope.capture(new NullPointerException()));
         None.builder()
             .build()
-            .and(Nope::nope)
+            .ergo(Nope::nope)
             .implies(() -> log.info("I was here"));
         None.builder()
             .build()
-            .and(() -> Nope.capture(new NullPointerException()))
+            .ergo(() -> Nope.capture(new NullPointerException()))
             .implies(() -> log.info("I was here"));
     }
 
@@ -73,25 +73,25 @@ class TestNone {
             .join(Nope.capture(new NullPointerException()))
             .build()
             .implies(() -> log.info("I was here"))
-            .and(Nope::nope)
-            .then(() -> log.info("In any case"))
-            .then(Nope::nope)
-            .then(() -> Nope.capture(new NullPointerException()))
-            .then(Nope::nope);
+            .ergo(Nope::nope)
+            .anyway(() -> log.info("In any case"))
+            .anyway(Nope::nope)
+            .anyway(() -> Nope.capture(new NullPointerException()))
+            .anyway(Nope::nope);
         None.builder()
             .join(Nope.of(Failure.of(new NullPointerException())))
             .build()
             .implies(() -> log.info("I was here"))
-            .and(() -> Nope.capture(new NullPointerException()));
+            .ergo(() -> Nope.capture(new NullPointerException()));
         None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build()
-            .and(Nope::nope)
+            .ergo(Nope::nope)
             .implies(() -> log.info("I was here"));
         None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build()
-            .and(() -> Nope.capture(new NullPointerException()))
+            .ergo(() -> Nope.capture(new NullPointerException()))
             .implies(() -> log.info("I was here"));
     }
 

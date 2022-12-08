@@ -82,7 +82,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull None and(@NotNull Function<? super T, ? extends AnyItem> fcn) {
+    public @NotNull None ergo(@NotNull Function<? super T, ? extends AnyItem> fcn) {
         if (isSuccess()) {
             val many = fcn.apply(value);
             if (many.isSuccess()) {
