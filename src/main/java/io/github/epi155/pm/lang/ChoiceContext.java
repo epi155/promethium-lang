@@ -11,9 +11,9 @@ public interface ChoiceContext<T> {
      * static constructor of a choice value context with an external value
      * <pre>
      *     None none = ChoiceContext.choice(..)
-     *          .when(..).perform(..)
-     *          .when(..).implies(..)
-     *          .otherwise().perform(..)
+     *          .when(..).apply(..)
+     *          .when(..).accept(..)
+     *          .otherwise().apply(..)
      *          .end();
      * </pre>
      * @param value     external value
@@ -47,8 +47,8 @@ public interface ChoiceContext<T> {
      * </p>
      * <pre>
      *      None none = anyValue.choice()
-     *          .when(..).perform(..)
-     *          .otherwise().perform(..)
+     *          .when(..).apply(..)
+     *          .otherwise().apply(..)
      *          .end();
      * </pre>
      * @return instance of {@link ChoiceValueContext}

@@ -34,7 +34,7 @@ class TestNone {
         log.info("Result is {}", result);
 
         Assertions.assertDoesNotThrow(() -> {
-            Some.capture(new NullPointerException()).implies(it -> { throw new NullPointerException(); });
+            Some.capture(new NullPointerException()).peek(it -> { throw new NullPointerException(); });
         });
         Some.of("hello").mapOf(it -> it.charAt(0));
         Some.<String>capture(new NullPointerException()).mapOf(it -> it.charAt(0));
@@ -51,20 +51,20 @@ class TestNone {
     void test5() {
         None.builder()
             .build()
-            .implies(() -> log.info("I was here"))
+            .peek(() -> log.info("I was here"))
             .ergo(Nope::nope);
         None.builder()
             .build()
-            .implies(() -> log.info("I was here"))
+            .peek(() -> log.info("I was here"))
             .ergo(() -> Nope.capture(new NullPointerException()));
         None.builder()
             .build()
             .ergo(Nope::nope)
-            .implies(() -> log.info("I was here"));
+            .peek(() -> log.info("I was here"));
         None.builder()
             .build()
             .ergo(() -> Nope.capture(new NullPointerException()))
-            .implies(() -> log.info("I was here"));
+            .peek(() -> log.info("I was here"));
     }
 
     @Test
@@ -72,7 +72,7 @@ class TestNone {
         None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build()
-            .implies(() -> log.info("I was here"))
+            .peek(() -> log.info("I was here"))
             .ergo(Nope::nope)
             .anyway(() -> log.info("In any case"))
             .anyway(Nope::nope)
@@ -81,18 +81,18 @@ class TestNone {
         None.builder()
             .join(Nope.of(Failure.of(new NullPointerException())))
             .build()
-            .implies(() -> log.info("I was here"))
+            .peek(() -> log.info("I was here"))
             .ergo(() -> Nope.capture(new NullPointerException()));
         None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build()
             .ergo(Nope::nope)
-            .implies(() -> log.info("I was here"));
+            .peek(() -> log.info("I was here"));
         None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build()
             .ergo(() -> Nope.capture(new NullPointerException()))
-            .implies(() -> log.info("I was here"));
+            .peek(() -> log.info("I was here"));
     }
 
     @Test

@@ -34,7 +34,7 @@ class TestBld {
         bld.join(() -> Some.of(1)
             .ergo(k -> Some.of(2 * k)
                 .mapOf(l -> 3 * l)
-                .implies(m -> log.info("it was {}", m))));
+                .peek(m -> log.info("it was {}", m))));
         bld.join(Nope.nope());
         val none = bld.build();
 

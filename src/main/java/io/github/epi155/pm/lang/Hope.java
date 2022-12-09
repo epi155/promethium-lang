@@ -152,7 +152,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param action action on value, executed if there are no errors
      * @return {@link Nope} instance, with original error, if any
      */
-    @NotNull Nope implies(@NotNull Consumer<? super T> action);
+    @NotNull Nope peek(@NotNull Consumer<? super T> action);
 
     /**
      * Set the action on success

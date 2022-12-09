@@ -119,7 +119,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param action action on value, executed if there are no errors
      * @return {@link None} instance, with original error, if any
      */
-    @NotNull None implies(@NotNull Consumer<? super T> action);
+    @NotNull None peek(@NotNull Consumer<? super T> action);
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed

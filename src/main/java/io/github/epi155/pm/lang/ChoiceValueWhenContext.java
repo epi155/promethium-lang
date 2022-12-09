@@ -15,12 +15,12 @@ public interface ChoiceValueWhenContext<T> {
      * @param action    action on the value
      * @return      instance of {@link ChoiceValueContext}
      */
-    @NotNull ChoiceValueContext<T> implies(@NotNull Consumer<? super T> action);
+    @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action);
 
     /**
      * performs a fallible function on the value
      * @param fcn       fallible function on the value
      * @return      instance of {@link ChoiceValueContext}
      */
-    @NotNull ChoiceValueContext<T> perform(@NotNull Function<? super T, ? extends AnyError> fcn);
+    @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn);
 }

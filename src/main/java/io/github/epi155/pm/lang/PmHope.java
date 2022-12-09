@@ -72,7 +72,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull Nope implies(@NotNull Consumer<? super T> action) {
+    public @NotNull Nope peek(@NotNull Consumer<? super T> action) {
         if (isSuccess()) {
             action.accept(value);
             return Nope.nope();

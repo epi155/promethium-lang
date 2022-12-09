@@ -118,7 +118,7 @@ public interface Nope extends SingleError, OnlyError {
      * @param action action executed if there are no errors
      * @return {@link Nope} instance, with original error, if any
      */
-    @NotNull Nope implies(@NotNull Runnable action);
+    @NotNull Nope peek(@NotNull Runnable action);
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed

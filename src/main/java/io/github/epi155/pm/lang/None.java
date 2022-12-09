@@ -118,7 +118,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param fcn producer {@link AnyError}
      * @return {@link None} instance,
      */
-    @NotNull None ergo(@NotNull Supplier<? extends AnyError> fcn);
+    @NotNull None ergo(@NotNull Supplier<? extends AnyItem> fcn);
 
     /**
      * If there are no errors, the action is performed.
@@ -127,7 +127,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param action action executed if there are no errors
      * @return {@link None} instance, with original error, if any
      */
-    @NotNull None implies(@NotNull Runnable action);
+    @NotNull None peek(@NotNull Runnable action);
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed

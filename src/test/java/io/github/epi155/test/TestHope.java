@@ -56,13 +56,13 @@ class TestHope {
     @Test
     void test7() {
         val hope = Hope.of(1);
-        hope.implies(i -> log.info("to be continue"));
+        hope.peek(i -> log.info("to be continue"));
     }
 
     @Test
     void test8() {
         val hope = Hope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
-        hope.implies(i -> log.info("to be continue"));
+        hope.peek(i -> log.info("to be continue"));
     }
 
     @Test
@@ -108,17 +108,13 @@ class TestHope {
     @Test
     void test15() {
         val hope = Hope.of(1);
-        Assertions.assertDoesNotThrow(() -> {
-            hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message()));
-        });
+        Assertions.assertDoesNotThrow(() -> hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
     void test16() {
         val hope = Hope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
-        Assertions.assertThrows(FailureException.class, () -> {
-            hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message()));
-        });
+        Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test

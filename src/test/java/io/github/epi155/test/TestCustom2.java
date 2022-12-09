@@ -34,7 +34,7 @@ public class TestCustom2 {
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
                 .ergo(temp -> secondStep(temp)
-                    .implies(wr::write)));
+                    .peek(wr::write)));
         report(none.errors());
     }
 
@@ -43,7 +43,7 @@ public class TestCustom2 {
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
                 .map(this::secondStep)
-                .implies(wr::write));
+                .peek(wr::write));
         report(none.errors());
     }
 
@@ -52,7 +52,7 @@ public class TestCustom2 {
         None none = stream
             .map(input -> firstStep(input)
                 .map(this::secondStep)
-                .implies(wr::write))
+                .peek(wr::write))
             .collect(None.collect());
         report(none.errors());
     }
@@ -62,7 +62,7 @@ public class TestCustom2 {
         None none = None.streamOf(stream)
             .forEach(input -> firstStep(input)
                 .map(this::secondStep)
-                .implies(wr::write));
+                .peek(wr::write));
         report(none.errors());
     }
 
@@ -83,19 +83,19 @@ public class TestCustom2 {
             .forEach(input -> firstStep(input)
                 .choice()
                 .when(it -> it.equals("r"))
-                .implies(it -> {
+                .accept(it -> {
                 })
                 .when(System.nanoTime() > 1_000_000_000)
-                .implies(it -> log.info("hrrlo2"))
+                .accept(it -> log.info("hrrlo2"))
                 .otherwise()
-                .perform(temp -> secondStep(temp)
-                    .implies(wr::write))
+                .apply(temp -> secondStep(temp)
+                    .peek(wr::write))
                 .end()
             );
         searchFor(1)
             .choice()
-            .when(Optional::isPresent).implies(it -> log.info("match at {}", it.get()))
-            .otherwise().implies(it -> log.info("None match"))
+            .when(Optional::isPresent).accept(it -> log.info("match at {}", it.get()))
+            .otherwise().accept(it -> log.info("None match"))
             .end().onFailure(es -> es.forEach(e -> log.warn("Error: {}", e.message())));
         searchFor(1)
             .<Integer>choiceTo()

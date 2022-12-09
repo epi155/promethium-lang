@@ -58,13 +58,13 @@ class TestNope {
     @Test
     void test7() {
         val nope = Nope.nope();
-        nope.implies(() -> log.info("to be continue"));
+        nope.peek(() -> log.info("to be continue"));
     }
 
     @Test
     void test8() {
         val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
-        nope.implies(() -> log.info("to be continue"));
+        nope.peek(() -> log.info("to be continue"));
     }
 
     @Test
@@ -110,16 +110,12 @@ class TestNope {
     @Test
     void test15() {
         val nope = Nope.nope();
-        Assertions.assertDoesNotThrow(() -> {
-            nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message()));
-        });
+        Assertions.assertDoesNotThrow(() -> nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
     void test16() {
         val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
-        Assertions.assertThrows(FailureException.class, () -> {
-            nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message()));
-        });
+        Assertions.assertThrows(FailureException.class, () -> nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
     }
 }

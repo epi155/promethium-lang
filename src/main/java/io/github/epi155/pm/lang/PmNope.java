@@ -37,7 +37,7 @@ class PmNope extends PmSingleError implements Nope {
         }
     }
 
-    public @NotNull Nope implies(@NotNull Runnable action) {
+    public @NotNull Nope peek(@NotNull Runnable action) {
         if (isSuccess()) {
             action.run();
             return Nope.nope();
