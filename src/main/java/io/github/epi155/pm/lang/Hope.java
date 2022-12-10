@@ -147,12 +147,12 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
 
     /**
      * If there is no error and the value is present, the action on the value is performed.
-     * In any case the initial error is returned.
+     * In any case the initial class is returned.
      *
      * @param action action on value, executed if there are no errors
-     * @return {@link Nope} instance, with original error, if any
+     * @return original {@link Hope} instance, with value/error
      */
-    @NotNull Nope peek(@NotNull Consumer<? super T> action);
+    @NotNull Hope<T> peek(@NotNull Consumer<? super T> action);
 
     /**
      * Set the action on success

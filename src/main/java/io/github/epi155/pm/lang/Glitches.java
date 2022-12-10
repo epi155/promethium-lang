@@ -2,8 +2,8 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * Custom action in case of errors
@@ -17,5 +17,5 @@ public interface Glitches {
      *
      * @param errorAction action to be taken in case of failure
      */
-    void onFailure(@NotNull Consumer<Stream<Failure>> errorAction);
+    void onFailure(@NotNull Consumer<Collection<Failure>> errorAction);
 }

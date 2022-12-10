@@ -6,9 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestFailure {
@@ -230,10 +227,9 @@ class TestFailure {
         log.info("5.0 Some non valorizzato ...");
         envelope1()
                 .onSuccess(k -> log.info("Result is {}", k))
-                .onFailure(es -> {
-                    List<Failure> le = es.collect(Collectors.toList());
+                .onFailure(le -> {
                     Assertions.assertEquals(1, le.size());
-                    val e = le.get(0);
+                    val e = le.iterator().next();
                     Assertions.assertEquals("java.util.NoSuchElementException", e.message());
                     val reason = e.place();
                     Assertions.assertNotNull(reason);
@@ -281,10 +277,9 @@ class TestFailure {
         log.info("6.2 Custom Error ...");
         val error = MsgError.of("T033", "Custom Error");
         val e = Some.failure(error);
-        e.onFailure(zs -> {
-            List<Failure> le = zs.collect(Collectors.toList());
+        e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
-            val z = le.get(0);
+            val z = le.iterator().next();
             Assertions.assertEquals("Custom Error", z.message());
             val reason = z.place();
             Assertions.assertNotNull(reason);
@@ -300,10 +295,9 @@ class TestFailure {
         log.info("6.3 Custom Error ...");
         val error = MsgError.of("T033", "Custom Error");
         val e = None.failure(error);
-        e.onFailure(zs -> {
-            List<Failure> le = zs.collect(Collectors.toList());
+        e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
-            val z = le.get(0);
+            val z = le.iterator().next();
             Assertions.assertEquals("Custom Error", z.message());
             val reason = z.place();
             Assertions.assertNotNull(reason);

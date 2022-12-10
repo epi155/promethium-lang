@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 abstract class PmManyError implements ManyErrors, Glitches {
     private final Collection<Failure> errors;
@@ -35,9 +34,9 @@ abstract class PmManyError implements ManyErrors, Glitches {
     }
 
     @Override
-    public void onFailure(@NotNull Consumer<Stream<Failure>> errorAction) {
+    public void onFailure(@NotNull Consumer<Collection<Failure>> errorAction) {
         if (!isSuccess())
-            errorAction.accept(errors().stream());
+            errorAction.accept(errors());
     }
 
     @Override

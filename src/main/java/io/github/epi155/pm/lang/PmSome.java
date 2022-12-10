@@ -92,13 +92,11 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
-    public @NotNull None peek(@NotNull Consumer<? super T> action) {
+    public @NotNull Some<T> peek(@NotNull Consumer<? super T> action) {
         if (isSuccess()) {
             action.accept(value);
-            return new PmNone();
-        } else {
-            return new PmNone(errors());
         }
+        return this;
     }
 
     @Override

@@ -34,13 +34,6 @@ public interface ErrorBuilder extends AnyItem {
     /**
      * Add many errors
      *
-     * @param stream stream of error detail
-     */
-    void add(@NotNull Stream<Failure> stream);
-
-    /**
-     * Add many errors
-     *
      * @param collection collection of error detail
      */
     void add(@NotNull Collection<Failure> collection);

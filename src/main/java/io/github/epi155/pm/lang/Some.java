@@ -114,12 +114,12 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
 
     /**
      * If there are no errors and the value is present, the action on the value is performed.
-     * In any case the initial errors are returned.
+     * In any case the initial class is returned.
      *
      * @param action action on value, executed if there are no errors
-     * @return {@link None} instance, with original error, if any
+     * @return original {@link Some} instance, with value/errors
      */
-    @NotNull None peek(@NotNull Consumer<? super T> action);
+    @NotNull Some<T> peek(@NotNull Consumer<? super T> action);
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed
