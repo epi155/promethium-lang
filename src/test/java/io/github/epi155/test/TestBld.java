@@ -10,11 +10,11 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
-class TestBld {
+public class TestBld {
 
 
     @Test
-    void test1() {
+    public void test1() {
         val bld = Some.<Integer>builder();
         bld.join(() -> {
         });
@@ -29,7 +29,7 @@ class TestBld {
     }
 
     @Test
-    void test2() {
+    public void test2() {
         val bld = None.builder();
         bld.join(() -> Some.of(1)
             .ergo(k -> Some.of(2 * k)
@@ -42,14 +42,14 @@ class TestBld {
     }
 
     @Test
-    void test3() {
+    public void test3() {
         val result = Some.of(2)
             .mapTo(k -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 
     @Test
-    void test4() {
+    public void test4() {
         val bld = Some.<Integer>builder();
         val fault = bld.fault(MsgError.of("E01", "Houston we have had a problem"));
         fault.setProperty("MissionName", "Apollo");
@@ -81,21 +81,21 @@ class TestBld {
     }
 
     @Test
-    void test5() {
+    public void test5() {
         Some.of(1)
             .onSuccess(k -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    void test6() {
+    public void test6() {
         Some.capture(new NullPointerException())
             .onSuccess(k -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    void test7() {
+    public void test7() {
         val bld = Some.<Integer>builder();
         val some = bld.build();
         Assertions.assertTrue(some.isSuccess());
@@ -103,7 +103,7 @@ class TestBld {
     }
 
     @Test
-    void test8() {
+    public void test8() {
         val bld = None.builder();
         try {
             throw new FailureException(new NullPointerException());
@@ -113,7 +113,7 @@ class TestBld {
     }
 
     @Test
-    void test9() {
+    public void test9() {
         val bld = None.builder();
         try {
             throw new FaultException(Failure.of(MsgError.of("E01", "we havr had a problem")));

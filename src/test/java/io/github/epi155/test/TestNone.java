@@ -12,23 +12,23 @@ import org.junit.jupiter.api.Test;
 import java.util.stream.Collectors;
 
 @Slf4j
-class TestNone {
+public class TestNone {
     @Test
-    void test1() {
+    public void test1() {
         None.builder().build()
             .onSuccess(() -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    void test2() {
+    public void test2() {
         None.builder().join(Nope.capture(new NullPointerException())).build()
             .onSuccess(() -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    void test3() {
+    public void test3() {
         val result = None.builder().build()
             .mapTo(() -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
@@ -41,14 +41,14 @@ class TestNone {
     }
 
     @Test
-    void test4() {
+    public void test4() {
         val result = None.builder().join(Nope.capture(new NullPointerException())).build()
             .mapTo(() -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 
     @Test
-    void test5() {
+    public void test5() {
         None.builder()
             .build()
             .peek(() -> log.info("I was here"))
@@ -68,7 +68,7 @@ class TestNone {
     }
 
     @Test
-    void test6() {
+    public void test6() {
         None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build()
@@ -96,7 +96,7 @@ class TestNone {
     }
 
     @Test
-    void test7() {
+    public void test7() {
         val some = Some.of(1);
         val none = None.of(some);
         Assertions.assertEquals(0, none.count());

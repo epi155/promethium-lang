@@ -8,7 +8,7 @@ import org.junit.jupiter.api.*;
 
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TestFailure {
+public class TestFailure {
     static final MsgError CUST_ERR = MsgError.of("AZ15", "Errore Gestito");
 
     static {
@@ -17,7 +17,7 @@ class TestFailure {
 
     @Test
     @Order(10)
-    void testCapture() {
+    public void testCapture() {
         log.info("1.0 Cattura eccezione (package) ...");
         val bld = None.builder();
         try {
@@ -39,7 +39,7 @@ class TestFailure {
     }
 
     @Test @Order(20)
-    void testCaptureHere() {
+    public void testCaptureHere() {
         log.info("2.0 Cattura eccezione (class) ...");
         val bld = None.builder();
         try {
@@ -61,7 +61,7 @@ class TestFailure {
     }
 
     @Test @Order(30)
-    void testCaptureCustomE() {
+    public void testCaptureCustomE() {
         log.info("3.0 Cattura eccezione (package/custom) ...");
         val bld = None.builder();
         try {
@@ -84,7 +84,7 @@ class TestFailure {
         log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
     }
     @Test @Order(31)
-    void testCaptureCustomM() {
+    public void testCaptureCustomM() {
         log.info("3.1 Cattura eccezione/message (package/custom) ...");
         val bld = None.builder();
         try {
@@ -107,7 +107,7 @@ class TestFailure {
         log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
     }
     @Test @Order(41)
-    void testCaptureCustomHM() {
+    public void testCaptureCustomHM() {
         log.info("4.1 Cattura eccezione/message (class/custom) ...");
         val bld = None.builder();
         try {
@@ -130,7 +130,7 @@ class TestFailure {
         log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
     }
     @Test @Order(40)
-    void testCaptureCustomHE() {
+    public void testCaptureCustomHE() {
         log.info("4.0 Cattura eccezione (class/custom) ...");
         val bld = None.builder();
         try {
@@ -155,7 +155,7 @@ class TestFailure {
 
     @Test
     @Order(42)
-    void testCaptureHope() {
+    public void testCaptureHope() {
         log.info("4.2 Cattura eccezione Hope ...");
         Hope<String> hope;
         try {
@@ -177,7 +177,7 @@ class TestFailure {
 
     @Test
     @Order(43)
-    void testCaptureHopeHere() {
+    public void testCaptureHopeHere() {
         log.info("4.3 Cattura eccezione Hope Here ...");
         Hope<String> hope;
         try {
@@ -199,7 +199,7 @@ class TestFailure {
 
     @Test
     @Order(44)
-    void testFailureException() {
+    public void testFailureException() {
         log.info("4.4 Cattura eccezione Hope Here ...");
         val error = MsgError.of("T034", "Custom Error");
         try {
@@ -223,7 +223,7 @@ class TestFailure {
 
     @Test
     @Order(50)
-    void testEmpty() {
+    public void testEmpty() {
         log.info("5.0 Some non valorizzato ...");
         envelope1()
                 .onSuccess(k -> log.info("Result is {}", k))
@@ -241,7 +241,7 @@ class TestFailure {
 
     @Test
     @Order(60)
-    void testCustomError0() {
+    public void testCustomError0() {
         log.info("6.0 Custom Error ...");
         val error = MsgError.of("T033", "Custom Error");
         val e = Hope.failure(error);
@@ -257,7 +257,7 @@ class TestFailure {
 
     @Test
     @Order(61)
-    void testCustomError1() {
+    public void testCustomError1() {
         log.info("6.1 Custom Error ...");
         val error = MsgError.of("T033", "Custom Error");
         val e = Nope.failure(error);
@@ -273,7 +273,7 @@ class TestFailure {
 
     @Test
     @Order(62)
-    void testCustomError2() {
+    public void testCustomError2() {
         log.info("6.2 Custom Error ...");
         val error = MsgError.of("T033", "Custom Error");
         val e = Some.failure(error);
@@ -291,7 +291,7 @@ class TestFailure {
 
     @Test
     @Order(63)
-    void testCustomError3() {
+    public void testCustomError3() {
         log.info("6.3 Custom Error ...");
         val error = MsgError.of("T033", "Custom Error");
         val e = None.failure(error);
@@ -309,14 +309,14 @@ class TestFailure {
 
     @Test
     @Order(900)
-    void test900() {
+    public void test900() {
         val some = Some.of(Failure.of(CUST_ERR));
         Assertions.assertFalse(some.isSuccess());
     }
 
     @Test
     @Order(901)
-    void test901() {
+    public void test901() {
         try {
             crashMethod();
         } catch (Exception e) {
@@ -334,14 +334,14 @@ class TestFailure {
 
     @Test
     @Order(910)
-    void test910() {
+    public void test910() {
         val none = None.of(Failure.of(CUST_ERR));
         Assertions.assertFalse(none.isSuccess());
     }
 
     @Test
     @Order(911)
-    void test911() {
+    public void test911() {
         try {
             crashMethod();
         } catch (Exception e) {
@@ -352,21 +352,21 @@ class TestFailure {
 
     @Test
     @Order(922)
-    void test922() {
+    public void test922() {
         val some = Nope.nope();
         Assertions.assertTrue(some.isSuccess());
     }
 
     @Test
     @Order(920)
-    void test920() {
+    public void test920() {
         val some = Nope.of(Failure.of(CUST_ERR));
         Assertions.assertFalse(some.isSuccess());
     }
 
     @Test
     @Order(921)
-    void test921() {
+    public void test921() {
         try {
             crashMethod();
         } catch (Exception e) {
@@ -381,7 +381,7 @@ class TestFailure {
 
     @Test
     @Order(930)
-    void test930() {
+    public void test930() {
         val bld = None.builder();
         try {
             crashMethod();
@@ -395,7 +395,7 @@ class TestFailure {
 
     @Test
     @Order(931)
-    void test931() {
+    public void test931() {
         Assertions.assertDoesNotThrow(() -> {
             val fault = Failure.builder().code("AZ95").status(404).message("Not Found").build();
             fault.setProperty("key1", 1).setProperty("key2", "red");

@@ -17,11 +17,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-class TestLoop {
+public class TestLoop {
 
 
     @Test
-    void testLoop1() {
+    public void testLoop1() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val sum = new AtomicInteger();
         val k1 = None.iterableOf(list).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -30,7 +30,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop2() {
+    public void testLoop2() {
         val list = IntStream.rangeClosed(1, 6).boxed();
         val sum = new AtomicInteger();
         val k1 = None.streamOf(list).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -39,7 +39,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop3() {
+    public void testLoop3() {
         Iterable<Integer> list = IntStream.rangeClosed(1, 100).boxed()::iterator;
         val sum = new AtomicInteger();
         val k1 = None.iterableOf(list).forEachParallel(5, n -> Hope.of(sum.addAndGet(n)));
@@ -48,7 +48,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop4() {
+    public void testLoop4() {
         val list = IntStream.rangeClosed(1, 100).boxed();
         val sum = new AtomicInteger();
         val k1 = None.streamOf(list).forEachParallel(5, n -> Hope.of(sum.addAndGet(n)));
@@ -57,7 +57,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop5() {
+    public void testLoop5() {
         Iterable<Integer> list = IntStream.rangeClosed(1, 100).boxed()::iterator;
         val sum = new AtomicInteger();
         val w1 = None.iterableOf(list);
@@ -67,7 +67,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop6() {
+    public void testLoop6() {
         val list = IntStream.rangeClosed(1, 100).boxed();
         val sum = new AtomicInteger();
         val w1 = None.streamOf(list);
@@ -77,7 +77,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop7() {
+    public void testLoop7() {
         Iterable<Integer> list = IntStream.rangeClosed(1, 100).boxed()::iterator;
         val exec = Executors.newFixedThreadPool(8);
         val sum = new AtomicInteger();
@@ -88,7 +88,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop8() {
+    public void testLoop8() {
         val list = IntStream.rangeClosed(1, 100).boxed();
         val exec = Executors.newFixedThreadPool(8);
         val sum = new AtomicInteger();
@@ -101,7 +101,7 @@ class TestLoop {
     //____________________________________
     //
     @Test
-    void testLoop11() {
+    public void testLoop11() {
         val list = Stream.of(1, 2, 3, 4, 5, 6).map(Hope::of).collect(Collectors.toList());
         val sum = new AtomicInteger();
         val k1 = None.iterable(list).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -110,7 +110,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop12() {
+    public void testLoop12() {
         val list = Stream.of(1, 2, 3, 4, 5, 6).map(Hope::of);
         val sum = new AtomicInteger();
         val k1 = None.stream(list).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -119,7 +119,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop13() {
+    public void testLoop13() {
         val list = IntStream.rangeClosed(1, 100).boxed().map(Hope::of).collect(Collectors.toList());
         val sum = new AtomicInteger();
         val k1 = None.iterable(list).forEachParallel(5, n -> Hope.of(sum.addAndGet(n)));
@@ -128,7 +128,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop14() {
+    public void testLoop14() {
         val list = IntStream.rangeClosed(1, 100).boxed().map(Hope::of);
         val sum = new AtomicInteger();
         val k1 = None.stream(list).forEachParallel(5, n -> Hope.of(sum.addAndGet(n)));
@@ -137,7 +137,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop15() {
+    public void testLoop15() {
         val list = IntStream.rangeClosed(1, 100).boxed().map(Hope::of).collect(Collectors.toList());
         val sum = new AtomicInteger();
         val w1 = None.iterable(list);
@@ -147,7 +147,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop16() {
+    public void testLoop16() {
         val list = IntStream.rangeClosed(1, 100).boxed().map(Hope::of);
         val sum = new AtomicInteger();
         val w1 = None.stream(list);
@@ -157,7 +157,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop17() {
+    public void testLoop17() {
         val list = IntStream.rangeClosed(1, 100).boxed().map(Hope::of).collect(Collectors.toList());
         val exec = Executors.newFixedThreadPool(8);
         val sum = new AtomicInteger();
@@ -168,7 +168,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop18() {
+    public void testLoop18() {
         val list = IntStream.rangeClosed(1, 100).boxed().map(Hope::of);
         val exec = Executors.newFixedThreadPool(8);
         val sum = new AtomicInteger();
@@ -179,7 +179,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop20() {
+    public void testLoop20() {
         val list = Stream.of(Hope.of(1), Hope.<Integer>capture(new NullPointerException())).collect(Collectors.toList());
         val sum = new AtomicInteger();
         None.iterable(list).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -190,7 +190,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop21() {
+    public void testLoop21() {
         val list = Stream.of(Hope.of(1), Hope.<Integer>capture(new NullPointerException())).collect(Collectors.toList());
         val sum = new AtomicInteger();
         None.iterable(list).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -201,7 +201,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop22() {
+    public void testLoop22() {
         val list = Stream.of(Hope.of(1), Hope.<Integer>capture(new NullPointerException())).collect(Collectors.toList());
         val sum = new AtomicInteger();
         None.builder().join(() -> {
@@ -218,7 +218,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop23() {
+    public void testLoop23() {
         val list = Stream.of(Hope.of(1), Hope.<Integer>capture(new NullPointerException())).collect(Collectors.toList());
         val sum = new AtomicInteger();
         Some.of(list).iterable(it -> it).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -229,7 +229,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop24() {
+    public void testLoop24() {
         val list = Stream.of(Hope.of(1), Hope.<Integer>capture(new NullPointerException())).collect(Collectors.toList());
         val sum = new AtomicInteger();
         Some.<List<Hope<Integer>>>capture(new NullPointerException()).iterable(it -> it).forEach(n -> Hope.of(sum.addAndGet(n)));
@@ -240,7 +240,7 @@ class TestLoop {
     }
 
     @Test
-    void testLoop25() {
+    public void testLoop25() {
         val list = Stream.of(1, 2, 3).collect(Collectors.toList());
         val sum = new AtomicInteger();
         Some.of(list).iterableOf(it -> it).forEach(n -> Hope.of(sum.addAndGet(n)));

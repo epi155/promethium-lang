@@ -11,11 +11,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
-class TestConcat {
+public class TestConcat {
     static final MsgError NEG = MsgError.of("NEG", "Negative at {}");
 
     @Test
-    void test01() {
+    public void test01() {
         val k1 = func1(3)
             .map(this::func2)
             .map(this::func3)
@@ -23,7 +23,7 @@ class TestConcat {
     }
 
     @Test
-    void test02() {
+    public void test02() {
         val k1 = func1(1)
             .map(this::func2)
             .map(this::func3)
@@ -33,7 +33,7 @@ class TestConcat {
     }
 
     @Test
-    void test03() {
+    public void test03() {
         val k1 = func1(1)
                 .ergo(it -> func2(it)
                         .ergo(jt -> func3(jt)
@@ -41,7 +41,7 @@ class TestConcat {
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
-    void test23() {
+    public void test23() {
         val k1 = func1(1)
                 .ergo(it -> func2(it)
                         .ergo(jt -> fun3(jt)
@@ -49,7 +49,7 @@ class TestConcat {
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
-    void test32() {
+    public void test32() {
         val k1 = fun1(1)
             .map(this::fun2)
             .map(this::fun3)
@@ -59,7 +59,7 @@ class TestConcat {
     }
 
     @Test
-    void test33() {
+    public void test33() {
         val k1 = fun1(1)
                 .ergo(it -> fun2(it)
                         .ergo(jt -> fun3(jt)
@@ -68,7 +68,7 @@ class TestConcat {
     }
 
     @Test
-    void test50() {
+    public void test50() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
         list.stream()
@@ -87,7 +87,7 @@ class TestConcat {
     }
 
     @Test
-    void test50b() {
+    public void test50b() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
         list.stream()
@@ -102,7 +102,7 @@ class TestConcat {
     }
 
     @Test
-    void test51() {
+    public void test51() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> func1(n)
             .map(this::func2)
@@ -112,7 +112,7 @@ class TestConcat {
     }
 
     @Test
-    void test52() {
+    public void test52() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> fun1(n)
             .map(this::fun2)
@@ -123,7 +123,7 @@ class TestConcat {
     }
 
     @Test
-    void test53() {
+    public void test53() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
         list.forEach(n -> bld.join(fun1(n)
@@ -134,7 +134,7 @@ class TestConcat {
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
     @Test
-    void test54() {
+    public void test54() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val z = list.stream().map(n -> fun1(n)
             .ergo(it -> fun2(it)
@@ -147,7 +147,7 @@ class TestConcat {
     }
 
     @Test
-    void test55() {
+    public void test55() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream()
             .map(n -> func1(n)
@@ -168,7 +168,7 @@ class TestConcat {
     }
 
     @Test
-    void test63() {
+    public void test63() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
         val k1 = bld.iterableOf(list).forEach(n -> fun1(n)
@@ -180,7 +180,7 @@ class TestConcat {
     }
 
     @Test
-    void test64() {
+    public void test64() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val k1 = None.iterableOf(list).forEach(n -> fun1(n)
             .ergo(it -> fun2(it)
@@ -190,7 +190,7 @@ class TestConcat {
     }
 
     @Test
-    void test65() {
+    public void test65() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val k1 = None.iterableOf(list).forEach(n -> fun1(n)
             .map(this::fun2)
@@ -200,7 +200,7 @@ class TestConcat {
     }
 
     @Test
-    void test66() {
+    public void test66() {
         Stream<Integer> stream = IntStream.range(0, 100).boxed();
         val k1 = None.streamOf(stream).forEachParallel(5, n -> fun1(n)
             .map(this::fun2)
@@ -209,7 +209,7 @@ class TestConcat {
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
-    void test67() {
+    public void test67() {
         AnyValue<Integer> anyVal = Hope.of(10);
         anyVal.iterable(n -> IntStream.range(0, n).mapToObj(Hope::of).collect(Collectors.toList()))
             .forEach(k -> Nope.nope());

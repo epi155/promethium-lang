@@ -9,14 +9,14 @@ import org.junit.jupiter.api.*;
 
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TestNopeFailure {
+public class TestNopeFailure {
 
     private void crashMethod() {
         throw new NullPointerException();
     }
 
     @Test @Order(10)
-    void testCapture() {
+    public void testCapture() {
         log.info("1.0 Cattura eccezione (package) ...");
         Nope nope;
         try {
@@ -36,7 +36,7 @@ class TestNopeFailure {
     }
 
     @Test @Order(11)
-    void testCaptureHere() {
+    public void testCaptureHere() {
         log.info("1.1 Cattura eccezione (class) ...");
         Nope nope;
         try {
@@ -55,7 +55,7 @@ class TestNopeFailure {
     }
 
     @Test @Order(20)
-    void testCaptureH() {
+    public void testCaptureH() {
         log.info("2.0 Cattura eccezione (package) ...");
         Hope<Integer> hope;
         try {
@@ -74,7 +74,7 @@ class TestNopeFailure {
         log.error("* Errore: [{}] - ({},{})", fault.message(), fault.code(), fault.place());
     }
     @Test @Order(21)
-    void testCaptureHereH() {
+    public void testCaptureHereH() {
         log.info("2.1 Cattura eccezione (class) ...");
         Hope<Integer> hope;
         try {

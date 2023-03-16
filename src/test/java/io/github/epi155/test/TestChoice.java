@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
-class TestChoice {
+public class TestChoice {
     private static final MsgError MY_FAULT = MsgError.of("CA01", "Oop error {} !!");
     @Test
-    void testC1() {
+    public void testC1() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
@@ -33,7 +33,7 @@ class TestChoice {
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
     }
     @Test
-    void testC2() {
+    public void testC2() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
@@ -54,7 +54,7 @@ class TestChoice {
     }
 
     @Test
-    void testC3() {
+    public void testC3() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
@@ -75,7 +75,7 @@ class TestChoice {
     }
 
     @Test
-    void testC6() {
+    public void testC6() {
         val randm = new Random();
         List<Some<Integer>> values = IntStream.rangeClosed(1, 50)
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>failure(MY_FAULT, k) : Some.of(k))
@@ -92,7 +92,7 @@ class TestChoice {
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
     }
     @Test
-    void testC7() {
+    public void testC7() {
         val randm = new Random();
         List<Some<Integer>> values = IntStream.rangeClosed(1, 50)
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>failure(MY_FAULT, k) : Some.of(k))
@@ -112,7 +112,7 @@ class TestChoice {
             .onFailure(es -> es.forEach(e -> log.warn("Error is: {}", e.message()))));
     }
     @Test
-    void testC8() {
+    public void testC8() {
         Number[] nn = { 1, 2L, 3F, 3.1415926535_8979323846_2643383279 };
         for(Number z: nn) {
             val a = Hope.of(z).choice()
@@ -222,7 +222,7 @@ class TestChoice {
             .end();
     }
     @Test
-    void testSC1() {
+    public void testSC1() {
         val randm = new Random();
         List<Integer> values = IntStream.rangeClosed(1, 50).boxed().collect(Collectors.toList());
         values.forEach(value -> {
