@@ -98,7 +98,7 @@ public class TestCustom2 {
             .otherwise().accept(it -> log.info("None match"))
             .end().onFailure(es -> es.forEach(e -> log.warn("Error: {}", e.message())));
         searchFor(1)
-            .<Integer>choiceTo()
+            .<Integer>choiceMap()
                 .when(Optional::isPresent)
                     .map(it -> Hope.of(it.get()+1))
                 .otherwise()

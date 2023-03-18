@@ -60,7 +60,7 @@ public class TestChoice {
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
             .collect(Collectors.toList());
         AtomicBoolean fst = new AtomicBoolean(true);
-        values.forEach(it -> it.<String>choiceTo()
+        values.forEach(it -> it.<String>choiceMap()
             .when(fst.get()).map(k -> {
                 fst.set(false);
                 return Hope.of("zero");
@@ -98,7 +98,7 @@ public class TestChoice {
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>failure(MY_FAULT, k) : Some.of(k))
             .collect(Collectors.toList());
         AtomicBoolean fst = new AtomicBoolean(true);
-        values.forEach(it -> it.<String>choiceTo()
+        values.forEach(it -> it.<String>choiceMap()
             .when(fst.get()).map(k -> {
                 fst.set(false);
                 return Hope.of("zero");
@@ -120,7 +120,7 @@ public class TestChoice {
                 .whenInstanceOf(Double.class).apply(n -> Hope.of(Math.sqrt(n)))
                 .otherwise().apply(x -> Nope.failure(MY_FAULT))
                 .end();
-            val b = Hope.of(z).<String>choiceTo()
+            val b = Hope.of(z).<String>choiceMap()
                 .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
                 .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
                 .otherwise().map(x -> Hope.failure(MY_FAULT))
@@ -130,7 +130,7 @@ public class TestChoice {
                 .whenInstanceOf(Double.class).apply(n -> Hope.of(Math.sqrt(n)))
                 .otherwise().apply(x -> Nope.failure(MY_FAULT))
                 .end();
-            val d = ChoiceContext.<Number,String>choiceTo(z)
+            val d = ChoiceContext.<Number,String>choiceMap(z)
                 .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
                 .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
                 .otherwise().map(x -> Hope.failure(MY_FAULT))
@@ -144,22 +144,22 @@ public class TestChoice {
             .when(1).accept(k -> log.info("one"))
             .when(2).accept(k -> log.info("two"))
             .end();
-        ChoiceContext.<Integer,String>choiceTo(1)
+        ChoiceContext.<Integer,String>choiceMap(1)
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .otherwise().map(k -> Hope.of("boh"))
             .end();
-        ChoiceContext.<Integer,String>choiceTo(1)
+        ChoiceContext.<Integer,String>choiceMap(1)
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .otherwise().map(k -> Hope.of("boh"))
             .end();
-        ChoiceContext.<Integer,String>choiceTo(2)
+        ChoiceContext.<Integer,String>choiceMap(2)
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .otherwise().map(k -> Hope.of("boh"))
             .end();
-        ChoiceContext.<Integer,String>choiceTo(3)
+        ChoiceContext.<Integer,String>choiceMap(3)
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .otherwise().map(k -> Hope.of("boh"))
@@ -182,17 +182,17 @@ public class TestChoice {
             .when(1).accept(k -> log.info("one"))
             .when(2).accept(k -> log.info("two"))
             .end();
-        Hope.of(1).<String>choiceTo()
+        Hope.of(1).<String>choiceMap()
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .otherwise().map(k -> Hope.of("boh"))
             .end();
-        Hope.of(2).<String>choiceTo()
+        Hope.of(2).<String>choiceMap()
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .otherwise().map(k -> Hope.of("boh"))
             .end();
-        Hope.of(3).<String>choiceTo()
+        Hope.of(3).<String>choiceMap()
             .when(1).map(k -> Hope.of("one"))
             .when(2).map(k -> Hope.of("two"))
             .when(false).map(f -> Hope.of("dead"))
@@ -213,7 +213,7 @@ public class TestChoice {
             .when(1).apply(k -> Hope.of("a"))
             .when(2).accept(k -> Nope.nope())
             .end();
-        Hope.<Number>capture(new NullPointerException()).<String>choiceTo()
+        Hope.<Number>capture(new NullPointerException()).<String>choiceMap()
             .when(1).map(k -> Hope.of("a"))
             .whenInstanceOf(Float.class).map(f -> Hope.of("float"))
             .when(false).map(f -> Hope.of("dead"))
@@ -236,7 +236,7 @@ public class TestChoice {
                 .otherwise().accept(v -> log.info("{} is odd", v))
                 .end();
 
-            Some<Integer> value1 = ChoiceContext.<Integer,Integer>choiceTo(value)
+            Some<Integer> value1 = ChoiceContext.<Integer,Integer>choiceMap(value)
                 .when(v -> v%2 == 0).map(v -> Hope.of(v*v))
                 .when(randm.nextDouble()<0.1).map(v -> Some.of(v/2))
                 .when(v -> v%3 == 0).map(v -> Hope.capture(new NullPointerException()))

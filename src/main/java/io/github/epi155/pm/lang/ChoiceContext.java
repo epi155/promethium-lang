@@ -27,7 +27,7 @@ public interface ChoiceContext<T> {
     /**
      * static constructor of a choice map context with an external value
      * <pre>
-     *     Some&lt;R&gt; some = ChoiceContext.&lt;S,R&gt;choiceTo(..)
+     *     Some&lt;R&gt; some = ChoiceContext.&lt;S,R&gt;choiceMap(..)
      *          .when(..).map(..)
      *          .otherwise().map(..)
      *          .end();
@@ -37,7 +37,7 @@ public interface ChoiceContext<T> {
      * @param <S>       value type of the chosen/external value
      * @param <R>       value type of the mapped to value
      */
-    static @NotNull <S,R> ChoiceMapContext<S,R> choiceTo(@NotNull S value) {
+    static @NotNull <S,R> ChoiceMapContext<S,R> choiceMap(@NotNull S value) {
         return new PmChoiceRawMapContext<>(value);
     }
     /**
@@ -61,7 +61,7 @@ public interface ChoiceContext<T> {
      *     if the initial value contains errors, the final result is these errors. no conditional action is performed
      * </p>
      * <pre>
-     *      Some&lt;R&gt; value = anyValue.&lt;R&gt;choiceTo()
+     *      Some&lt;R&gt; value = anyValue.&lt;R&gt;choiceMap()
      *          .when(..).map(..)
      *          .otherwise().map(..)
      *          .end();
@@ -69,5 +69,5 @@ public interface ChoiceContext<T> {
      * @return instance of {@link ChoiceMapContext}
      * @param <R>   value type of the final value
      */
-    @NotNull <R> ChoiceMapContext<T,R> choiceTo();
+    @NotNull <R> ChoiceMapContext<T,R> choiceMap();
 }
