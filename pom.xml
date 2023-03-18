@@ -157,6 +157,13 @@
                 <executions>
                     <execution>
                         <id>default-compile</id>
+                        <!-- recompile with Java 9 only the module-info.java -->
+                        <configuration>
+                            <includes>
+                                <include>module-info.java</include>
+                            </includes>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>java8-compile</id>
@@ -196,7 +203,6 @@
                 </dependencies>
             </plugin>
 
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -209,6 +215,7 @@
                         </manifest>
                         <manifestEntries>
                             <Build-Time>${maven.build.timestamp}</Build-Time>
+                            <Multi-Release>true</Multi-Release>
                         </manifestEntries>
                     </archive>
                 </configuration>

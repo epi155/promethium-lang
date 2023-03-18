@@ -78,7 +78,7 @@ class PmFailure implements Failure {
 
     private static @Nullable StackTraceElement scan(@NotNull Throwable t, String packagePrefix) {
         StackTraceElement[] stackElems = t.getStackTrace();
-        if (stackElems != null && stackElems.length > 0) {
+        if (stackElems != null) {
             for (StackTraceElement stackElem : stackElems) {
                 String className = stackElem.getClassName();
                 if (className.startsWith(packagePrefix)) {
