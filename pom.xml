@@ -165,7 +165,6 @@
                             <revisionOnScmFailure>UNKNOWN</revisionOnScmFailure>
                             <doCheck>false</doCheck>
                             <doUpdate>false</doUpdate>
-                            <shortRevisionLength>11</shortRevisionLength>
                         </configuration>
                     </execution>
                 </executions>
@@ -235,10 +234,13 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <Build-Time>${maven.build.timestamp}</Build-Time>
                             <Multi-Release>true</Multi-Release>
-                            <Build-Number>${buildNumber}</Build-Number>
                             <Build-SCMBranch>${scmBranch}</Build-SCMBranch>
+                            <Build-By>${user.name}</Build-By>
+                            <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+                            <Build-Revision>${buildNumber}</Build-Revision>
+                            <Build-OS>${os.name} (${os.arch}) ${os.version}</Build-OS>
+                            <Build-Jdk>${java.vm.name} (${java.vm.vendor}) ${java.vm.version}</Build-Jdk>
                         </manifestEntries>
                     </archive>
                 </configuration>
