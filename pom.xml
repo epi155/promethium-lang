@@ -151,6 +151,27 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>buildnumber</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <revisionOnScmFailure>UNKNOWN</revisionOnScmFailure>
+                            <doCheck>false</doCheck>
+                            <doUpdate>false</doUpdate>
+                            <shortRevisionLength>11</shortRevisionLength>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
@@ -216,6 +237,8 @@
                         <manifestEntries>
                             <Build-Time>${maven.build.timestamp}</Build-Time>
                             <Multi-Release>true</Multi-Release>
+                            <Build-Number>${buildNumber}</Build-Number>
+                            <Build-SCMBranch>${scmBranch}</Build-SCMBranch>
                         </manifestEntries>
                     </archive>
                 </configuration>
