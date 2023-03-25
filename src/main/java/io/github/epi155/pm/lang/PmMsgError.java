@@ -1,9 +1,7 @@
 package io.github.epi155.pm.lang;
 
-import org.slf4j.helpers.MessageFormatter;
-
 /**
- * Error messages with formatting {@link MessageFormatter#format(String, Object)}
+ * Error messages with formatting {@link PmFormatter#format(String, Object[])}
  */
 class PmMsgError implements MsgError {
     private final String code;
@@ -21,6 +19,6 @@ class PmMsgError implements MsgError {
 
     @Override
     public String message(Object... objects) {
-        return MessageFormatter.arrayFormat(pattern, objects).getMessage();
+        return PmFormatter.format(pattern, objects);
     }
 }

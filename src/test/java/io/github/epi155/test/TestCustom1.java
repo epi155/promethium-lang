@@ -1,9 +1,20 @@
 package io.github.epi155.test;
 
+import io.github.epi155.pm.lang.MsgError;
+import io.github.epi155.pm.lang.Nope;
+import lombok.val;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestCustom1 {
+    static final MsgError CUST_ERR = MsgError.of("AZ15", "Errore non Gestito: {}");
+    //@Test
+    void hello() {
+        Nope nope = Nope.failure(CUST_ERR, "ops", new NullPointerException("Azz"));
+        val s = nope.fault().message();
+        System.out.println(s);
+    }
     void example1(CustomReader rd, CustomWriter wr) {
         List<CustomError> errors = new ArrayList<>();
         Iterable<CustomInput> iterable = rd.Iterable();

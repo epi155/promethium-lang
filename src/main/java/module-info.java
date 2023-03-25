@@ -6,5 +6,4 @@ module promethium.lang {
 
     requires org.jetbrains.annotations;
     requires lombok;
-    requires org.slf4j;
 }
