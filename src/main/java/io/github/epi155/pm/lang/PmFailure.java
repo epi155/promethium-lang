@@ -34,7 +34,7 @@ class PmFailure implements Failure {
             return copy(((FaultException) t).fault, ste);
         } else {
             String text = t.toString();
-            return new PmFailure(JAVA_EXCEPTION_CODE, 500, text, ste);
+            return new PmFailure(JAVA_EXCEPTION_CODE, JAVA_EXCEPTION_STATUS, text, ste);
         }
     }
 
@@ -62,7 +62,7 @@ class PmFailure implements Failure {
             return ((FaultException) ex).fault;
         } else {
             String text = ex.toString();
-            return new PmFailure(JAVA_EXCEPTION_CODE, 500, text, ste);
+            return new PmFailure(JAVA_EXCEPTION_CODE, JAVA_EXCEPTION_STATUS, text, ste);
         }
     }
 
@@ -119,7 +119,7 @@ class PmFailure implements Failure {
         if (ce instanceof ErrorPicker) {
             return ((ErrorPicker) ce).statusCode();
         }
-        return 500;
+        return JAVA_EXCEPTION_STATUS;
     }
 
     protected static @NotNull Failure of(StackTraceElement ste, @NotNull MsgError ce, Object... objects) {
