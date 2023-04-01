@@ -15,7 +15,7 @@ public interface SomeBuilder<T> extends ErrorBuilder {
      * @param value payload
      * @return {@link SomeBuilder} instance
      */
-    @NotNull SomeBuilder<T> value(@NotNull T value);
+    @NotNull SomeBuilder<T> withValue(@NotNull T value);
 
     /**
      * Final builder
@@ -30,31 +30,36 @@ public interface SomeBuilder<T> extends ErrorBuilder {
      * @param any object with error(s) payload
      * @return {@link SomeBuilder} instance
      */
-    default @NotNull SomeBuilder<T> join(@NotNull ItemStatus any) {
+    default @NotNull SomeBuilder<T> withStatus(@NotNull ItemStatus any) {
         add(any);
-        return this;
-    }
-    default @NotNull SomeBuilder<T> withAlert(@NotNull MsgError ce, Object... objects) {
-        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
-        add(warn);
-        return this;
-    }
-    default @NotNull SomeBuilder<T> withFault(@NotNull MsgError ce, Object... objects) {
-        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
-        add(fail);
         return this;
     }
 
     /**
-     * Add error when runnable throw an {@link FailureException}
+     * Add a warning message in builder style
      *
-     * @param runnable action to be executed
-     * @return {@link SomeBuilder} instance
+     * @param ce        warning message
+     * @param argv      message arguments
+     * @return          builder itself
      */
-    default @NotNull SomeBuilder<T> join(@NotNull CheckedRunnable runnable) {
-        add(runnable);
+    default @NotNull SomeBuilder<T> withAlert(@NotNull Nuntium ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
+        add(warn);
+        return this;
+    }
+
+    /**
+     * Add an error message in builder style
+     *
+     * @param ce        error message
+     * @param argv      message arguments
+     * @return          builder itself
+     */
+    default @NotNull SomeBuilder<T> withFault(@NotNull Nuntium ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
+        add(fail);
         return this;
     }
 

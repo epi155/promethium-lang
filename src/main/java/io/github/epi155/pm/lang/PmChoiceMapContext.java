@@ -65,7 +65,7 @@ class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
                         val bld = Some.<R>builder();
                         bld.add(parent.signals());  // parent warnings
                         bld.add(result.signals());  // result warnings
-                        bld.value(result.value());  // result value
+                        bld.withValue(result.value());  // result value
                         return bld.build();
                     }
                 }

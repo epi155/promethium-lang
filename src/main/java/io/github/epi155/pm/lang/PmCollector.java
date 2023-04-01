@@ -21,7 +21,7 @@ class PmCollector implements Collector<ItemStatus, NoneBuilder, None> {
 
     @Override
     public BinaryOperator<NoneBuilder> combiner() {
-        return NoneBuilder::join;
+        return NoneBuilder::withStatus;
     }
 
     @Override

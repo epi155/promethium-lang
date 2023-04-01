@@ -11,13 +11,6 @@ import java.util.stream.Stream;
  */
 public interface ErrorBuilder extends ItemStatus {
     /**
-     * Add error when runnable throw an {@link FailureException}
-     *
-     * @param runnable action to be executed
-     */
-    void add(@NotNull CheckedRunnable runnable);
-
-    /**
      * Add error (if any has one)
      *
      * @param any object with potential error payload
@@ -62,7 +55,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @param ce      custom error
      * @param objects error parameters
      */
-    void captureException(@NotNull Throwable e, @NotNull MsgError ce, Object... objects);
+    void captureException(@NotNull Throwable e, @NotNull Nuntium ce, Object... objects);
 
     /**
      * Add error from exception
@@ -80,7 +73,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @param ce      custom error
      * @param objects error parameters
      */
-    void captureHereException(@NotNull Throwable e, @NotNull MsgError ce, Object... objects);
+    void captureHereException(@NotNull Throwable e, @NotNull Nuntium ce, Object... objects);
 
     /**
      * Add error from exception.
@@ -90,7 +83,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @param ce      custom error
      * @param objects error parameters
      */
-    void captureHereMessage(@NotNull Throwable e, @NotNull MsgError ce, Object... objects);
+    void captureHereMessage(@NotNull Throwable e, @NotNull Nuntium ce, Object... objects);
 
     /**
      * Add error from exception.
@@ -100,7 +93,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @param ce      custom error
      * @param objects error parameters
      */
-    void captureMessage(@NotNull Throwable e, @NotNull MsgError ce, Object... objects);
+    void captureMessage(@NotNull Throwable e, @NotNull Nuntium ce, Object... objects);
 
     /**
      * Add error from custom message
@@ -109,7 +102,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @param objects message parameters
      * @return {@link Failure} instance
      */
-    @NotNull Failure fault(@NotNull MsgError ce, Object... objects);
+    @NotNull Failure fault(@NotNull Nuntium ce, Object... objects);
 
     /**
      * Add warning from custom message
@@ -118,7 +111,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @param objects message parameters
      * @return {@link Warning} instance
      */
-    @NotNull Warning alert(@NotNull MsgError ce, Object... objects);
+    @NotNull Warning alert(@NotNull Nuntium ce, Object... objects);
     /**
      * Flat an {@link Hope} instance, adding error if present.
      * To be used with {@link Stream#flatMap(Function)}

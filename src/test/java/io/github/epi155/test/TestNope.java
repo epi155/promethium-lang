@@ -1,9 +1,8 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.Failure;
 import io.github.epi155.pm.lang.FailureException;
-import io.github.epi155.pm.lang.MsgError;
 import io.github.epi155.pm.lang.Nope;
+import io.github.epi155.pm.lang.Nuntium;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +23,7 @@ public class TestNope {
 
     @Test
     public void test2() {
-        Nope.failure(MsgError.of("E01", "Houston we have had a problem"))
+        Nope.failure(Nuntium.of("E01", "Houston we have had a problem"))
             .onSuccess(() -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -38,7 +37,7 @@ public class TestNope {
 
     @Test
     public void test4() {
-        val result = Nope.failure(MsgError.of("E01", "Houston we have had a problem"))
+        val result = Nope.failure(Nuntium.of("E01", "Houston we have had a problem"))
             .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
@@ -51,7 +50,7 @@ public class TestNope {
 
     @Test
     public void test6() {
-        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val nope = Nope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         Assertions.assertThrows(FailureException.class, nope::orThrow);
     }
 
@@ -63,7 +62,7 @@ public class TestNope {
 
     @Test
     public void test8() {
-        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val nope = Nope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         nope.peek(() -> log.info("to be continue"));
     }
 
@@ -87,7 +86,7 @@ public class TestNope {
 
     @Test
     public void test12() {
-        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val nope = Nope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         nope.ergo(Nope::nope);
     }
 
@@ -101,7 +100,7 @@ public class TestNope {
 
     @Test
     public void test14() {
-        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val nope = Nope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = nope.fault();
         });
@@ -110,12 +109,12 @@ public class TestNope {
     @Test
     public void test15() {
         val nope = Nope.nope();
-        Assertions.assertDoesNotThrow(() -> nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
+        Assertions.assertDoesNotThrow(() -> nope.orThrow(fault -> new FailureException(Nuntium.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
     public void test16() {
-        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
-        Assertions.assertThrows(FailureException.class, () -> nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
+        val nope = Nope.failure(Nuntium.of("E01", "Houston we have had a problem"));
+        Assertions.assertThrows(FailureException.class, () -> nope.orThrow(fault -> new FailureException(Nuntium.of("E02", "Error is {}"), fault.message())));
     }
 }

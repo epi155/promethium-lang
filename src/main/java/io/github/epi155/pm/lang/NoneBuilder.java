@@ -3,7 +3,6 @@ package io.github.epi155.pm.lang;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
@@ -23,33 +22,36 @@ public interface NoneBuilder extends ErrorBuilder {
      * @param any object with error(s) payload
      * @return {@link NoneBuilder} instance
      */
-    default @NotNull NoneBuilder join(@NotNull ItemStatus any) {
+    default @NotNull NoneBuilder withStatus(@NotNull ItemStatus any) {
         add(any);
         return this;
     }
 
-    default @NotNull NoneBuilder withAlert(@NotNull MsgError ce, Object... objects) {
+    /**
+     * Add a warning message in builder style
+     *
+     * @param ce        warning message
+     * @param argv      message arguments
+     * @return          builder itself
+     */
+    default @NotNull NoneBuilder withAlert(@NotNull Nuntium ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         add(warn);
-        return this;
-    }
-    default @NotNull NoneBuilder withFault(@NotNull MsgError ce, Object... objects) {
-        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
-        add(fail);
         return this;
     }
 
     /**
-     * null
-     * Add error when runnable throw an {@link FailureException}
+     * Add an error message in builder style
      *
-     * @param runnable action to be executed
-     * @return {@link NoneBuilder} instance
+     * @param ce        error message
+     * @param argv      message arguments
+     * @return          builder itself
      */
-    default @NotNull NoneBuilder join(@NotNull CheckedRunnable runnable) {
-        add(runnable);
+    default @NotNull NoneBuilder withFault(@NotNull Nuntium ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
+        add(fail);
         return this;
     }
 

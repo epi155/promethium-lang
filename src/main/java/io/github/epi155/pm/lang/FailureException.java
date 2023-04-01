@@ -31,7 +31,7 @@ public class FailureException extends Exception {
      * @param ce      custom error
      * @param objects error parameter
      */
-    public FailureException(Exception e, @NotNull MsgError ce, Object... objects) {
+    public FailureException(Exception e, @NotNull Nuntium ce, Object... objects) {
         super(ce.message(objects), e);
         this.code = ce.code();
         this.status = ce.statusCode();
@@ -56,7 +56,7 @@ public class FailureException extends Exception {
      * @param ce      custom error
      * @param objects error parameter
      */
-    public FailureException(@NotNull MsgError ce, Object... objects) {
+    public FailureException(@NotNull Nuntium ce, Object... objects) {
         super(ce.message(objects));
         this.code = ce.code();
         this.status = ce.statusCode();

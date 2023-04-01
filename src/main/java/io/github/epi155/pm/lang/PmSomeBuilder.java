@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 class PmSomeBuilder<T> extends PmAnyBuilder implements SomeBuilder<T> {
     private T value;
 
-    public @NotNull SomeBuilder<T> value(@NotNull T value) {
+    public @NotNull SomeBuilder<T> withValue(@NotNull T value) {
         this.value = value;
         return this;
     }

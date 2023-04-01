@@ -1,8 +1,6 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.Hope;
-import io.github.epi155.pm.lang.None;
-import io.github.epi155.pm.lang.Some;
+import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -204,16 +202,17 @@ public class TestLoop {
     public void testLoop22() {
         val list = Stream.of(Hope.of(1), Hope.<Integer>capture(new NullPointerException())).collect(Collectors.toList());
         val sum = new AtomicInteger();
-        None.builder().join(() -> {
-            throw new NullPointerException();
-        }).iterable(list).forEach(n -> Hope.of(sum.addAndGet(n)));
-        None.builder().join(() -> {
-            throw new NullPointerException();
-        }).iterable(list).forEachParallel(5, n -> Hope.of(sum.addAndGet(n)));
+        NoneBuilder n1 = None.builder().withStatus(Nope.capture(new NullPointerException()))
+            // iterable is called even if the builder is in error
+            .iterable(list).forEach(n -> Hope.of(sum.addAndGet(n)));
+        Assertions.assertTrue(n1.completeWithErrors());
+        Assertions.assertEquals(2, n1.signals().size());
+
+        None.builder().withStatus(Nope.capture(new NullPointerException()))
+            .iterable(list).forEachParallel(5, n -> Hope.of(sum.addAndGet(n)));
         val es = Executors.newFixedThreadPool(5);
-        None.builder().join(() -> {
-            throw new NullPointerException();
-        }).iterable(list).forEachParallel(es, n -> Hope.of(sum.addAndGet(n)));
+        None.builder().withStatus(Nope.capture(new NullPointerException()))
+            .iterable(list).forEachParallel(es, n -> Hope.of(sum.addAndGet(n)));
         es.shutdown();
     }
 

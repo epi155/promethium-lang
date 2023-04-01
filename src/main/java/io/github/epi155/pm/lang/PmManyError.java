@@ -58,7 +58,7 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
             val bld = Some.<R>builder();
             bld.add(signals());        // this warning
             bld.add(that.signals());   // that warning
-            bld.value(that.value());
+            bld.withValue(that.value());
             return bld.build();
         }
     }

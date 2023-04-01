@@ -9,7 +9,7 @@ import org.junit.jupiter.api.*;
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestFailure {
-    static final MsgError CUST_ERR = MsgError.of("AZ15", "Errore Gestito");
+    static final Nuntium CUST_ERR = Nuntium.of("AZ15", "Errore Gestito");
 
     static {
         log.info(System.getProperty("java.version"));
@@ -201,7 +201,7 @@ public class TestFailure {
     @Order(44)
     public void testFailureException() {
         log.info("4.4 Cattura eccezione Hope Here ...");
-        val error = MsgError.of("T034", "Custom Error");
+        val error = Nuntium.of("T034", "Custom Error");
         try {
             try {
                 crashMethod();
@@ -243,7 +243,7 @@ public class TestFailure {
     @Order(60)
     public void testCustomError0() {
         log.info("6.0 Custom Error ...");
-        val error = MsgError.of("T033", "Custom Error");
+        val error = Nuntium.of("T033", "Custom Error");
         val e = Hope.failure(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
@@ -259,7 +259,7 @@ public class TestFailure {
     @Order(61)
     public void testCustomError1() {
         log.info("6.1 Custom Error ...");
-        val error = MsgError.of("T033", "Custom Error");
+        val error = Nuntium.of("T033", "Custom Error");
         val e = Nope.failure(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
@@ -275,7 +275,7 @@ public class TestFailure {
     @Order(62)
     public void testCustomError2() {
         log.info("6.2 Custom Error ...");
-        val error = MsgError.of("T033", "Custom Error");
+        val error = Nuntium.of("T033", "Custom Error");
         val e = Some.failure(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
@@ -293,7 +293,7 @@ public class TestFailure {
     @Order(63)
     public void testCustomError3() {
         log.info("6.3 Custom Error ...");
-        val error = MsgError.of("T033", "Custom Error");
+        val error = Nuntium.of("T033", "Custom Error");
         val e = None.failure(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
@@ -397,7 +397,7 @@ public class TestFailure {
     @Order(931)
     void test931() {
         Assertions.assertDoesNotThrow(() -> {
-            val fault = None.builder().fault(MsgError.of("AZ95", 404, "Not Found"))
+            val fault = None.builder().fault(Nuntium.of("AZ95", 404, "Not Found"))
                     .setProperty("key1", 1).setProperty("key2", "red");
             log.info(fault.toString());
         });

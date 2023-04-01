@@ -1,7 +1,6 @@
 package io.github.epi155.pm.lang;
 
 import lombok.val;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -13,7 +12,7 @@ import java.util.function.Function;
  *     The interface has two static constructors with value or custom error message
  *     <pre>
  *      Hope.of(T value);                                // final value
- *      Hope.failure(MsgError ce, Object... argv);       // error message
+ *      Hope.failure(Nuntium ce, Object... argv);       // error message
  *     </pre>
  *     and with Exception
  *     <pre>
@@ -74,7 +73,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <S>  type value in case of success
      * @return <b>Hope</b> instance
      */
-    static <S> @NotNull Hope<S> failure(@NotNull MsgError ce, Object... argv) {
+    static <S> @NotNull Hope<S> failure(@NotNull Nuntium ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
@@ -122,21 +121,11 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     }
 
     /**
-     * Takes the value and catches any exception
-     *
-     * @param supplier value supplier
-     * @param <S>      value type
-     * @return instance of {@link Hope} with value or exception
+     * Static constructor with {@link SingleError} ({@link Hope} or {@link Nope} completeWithErrors)
+     * @param se    {@link SingleError} instance
+     * @return      {@link Hope} instance in error status
+     * @param <S>   {@link Hope} data type (dummy)
      */
-    @ApiStatus.Experimental
-    static <S> @NotNull Hope<S> seize(@NotNull CheckSupplier<S> supplier) {
-        try {
-            return Hope.of(supplier.get());
-        } catch (Exception e) {
-            return Hope.capture(e);
-        }
-    }
-
     static <S> Hope<S> failure(SingleError se) {
         return new PmHope<>(null, se.fault());
     }

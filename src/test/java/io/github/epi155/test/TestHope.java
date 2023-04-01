@@ -1,6 +1,9 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.*;
+import io.github.epi155.pm.lang.FailureException;
+import io.github.epi155.pm.lang.Hope;
+import io.github.epi155.pm.lang.Nuntium;
+import io.github.epi155.pm.lang.Some;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +27,7 @@ class TestHope {
 
     @Test
     void test2() {
-        Hope.failure(MsgError.of("E01", "Houston we have had a problem"))
+        Hope.failure(Nuntium.of("E01", "Houston we have had a problem"))
             .onSuccess(i -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -32,18 +35,20 @@ class TestHope {
     @Test
     void test3() {
         String result = Hope.of(1)
-            .mapTo(i -> "all fine", e -> String.format("oops %s", e.message()));
-        log.info("Result is {}", result);
-        Assertions.assertEquals("Result is all fine", result);
+            .mapTo(
+                i -> "all fine",
+                e -> String.format("oops %s", e.message()));
+        Assertions.assertEquals("all fine", result);
     }
 
     @Test
     void test4() {
-        val result = Hope.failure(MsgError.of("E01", "Houston we have had a problem"))
+        val result = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"))
             .mapTo(
                     i -> "all fine",
                     e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
+        Assertions.assertEquals("oops Houston we have had a problem", result);
     }
 
     @Test
@@ -55,7 +60,7 @@ class TestHope {
 
     @Test
     void test6() {
-        val hope = Hope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         Assertions.assertThrows(FailureException.class, hope::orThrow);
     }
 
@@ -67,7 +72,7 @@ class TestHope {
 
     @Test
     void test8() {
-        val hope = Hope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         hope.peek(i -> log.info("to be continue"));
         Assertions.assertTrue(hope.completeWithErrors());
         if (hope.completeWithErrors()) {
@@ -101,7 +106,7 @@ class TestHope {
 
     @Test
     void test12() {
-        val hope = Hope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         hope.ergo(Hope::of);
     }
 
@@ -115,7 +120,7 @@ class TestHope {
 
     @Test
     void test14() {
-        val hope = Hope.failure(MsgError.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = hope.fault();
         });
@@ -124,33 +129,13 @@ class TestHope {
     @Test
     void test15() {
         val hope = Hope.of(1);
-        Assertions.assertDoesNotThrow(() -> hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
+        Assertions.assertDoesNotThrow(() -> hope.orThrow(fault -> new FailureException(Nuntium.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
     void test16() {
-        val hope = Hope.failure(MsgError.of("E01", "Houston we have had a problem"));
-        Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
-    }
-
-    @Test
-    void test17() {
-        val hope = Hope.seize(() -> 1);
-        val n = hope.signals().size();
-        Assertions.assertEquals(0, n);
-        val o = hope.summary();
-        Assertions.assertFalse(o.isPresent());
-    }
-
-    @Test
-    void test18() {
-        val hope = Hope.seize(() -> {
-            throw new FaultException(MsgError.of("E01", "Houston we have had a problem"));
-        });
-        val n = hope.signals().size();
-        Assertions.assertEquals(1, n);
-        val o = hope.summary();
-        Assertions.assertTrue(o.isPresent());
+        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
+        Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(Nuntium.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test

@@ -13,21 +13,12 @@ public class FaultException extends RuntimeException {
     public final transient Failure fault;
 
     /**
-     * Constructor
-     *
-     * @param fault error payload of exception
-     */
-    public FaultException(Failure fault) {
-        this.fault = fault;
-    }
-
-    /**
      * Contructor with custom error
      *
      * @param ce    message pattern
      * @param argv  message arguments
      */
-    public FaultException(@NotNull MsgError ce, Object... argv) {
+    public FaultException(@NotNull Nuntium ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         this.fault = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
     }

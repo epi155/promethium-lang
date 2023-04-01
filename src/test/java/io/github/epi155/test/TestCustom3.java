@@ -1,8 +1,7 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.MsgError;
 import io.github.epi155.pm.lang.None;
-import io.github.epi155.pm.lang.Warning;
+import io.github.epi155.pm.lang.Nuntium;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,8 @@ import java.util.List;
 @Slf4j
 public class TestCustom3 {
 
-    private static final MsgError BAD_N = MsgError.of("E01", "Valore nullo o negativo: {}");
-    private static final MsgError FAC_N = MsgError.of("W01", "Valore {} scomponibile in fattori: {}");
+    private static final Nuntium BAD_N = Nuntium.of("E01", "Valore nullo o negativo: {}");
+    private static final Nuntium FAC_N = Nuntium.of("W01", "Valore {} scomponibile in fattori: {}");
 
     @Test
     void test1() {

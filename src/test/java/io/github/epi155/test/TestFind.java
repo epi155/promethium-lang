@@ -1,6 +1,9 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.*;
+import io.github.epi155.pm.lang.Hope;
+import io.github.epi155.pm.lang.Nuntium;
+import io.github.epi155.pm.lang.SearchResult;
+import io.github.epi155.pm.lang.Some;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +13,7 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 class TestFind {
-    private static final MsgError MY_FAULT = MsgError.of("CA01", "Oop error !!");
+    private static final Nuntium MY_FAULT = Nuntium.of("CA01", "Oop error !!");
 
     @Test
     void testFound1() {

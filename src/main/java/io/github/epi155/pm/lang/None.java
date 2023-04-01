@@ -14,6 +14,39 @@ import java.util.stream.Stream;
 
 /**
  * Utility class for carrying many errors
+ * <p>
+ *     The interface has two main static constructors
+ *     <pre>
+ *      None.none();                                    // no errors and no warnings
+ *      None.failure(Nuntium ce, Object... argv);       // single error message </pre>
+ *     If at most an error is returned (and no warnings), the use of {@link Nope} is preferable.
+ * <p>
+ *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
+ *     <pre>
+ *      val bld = None.builder();
+ *      bld.fault(Nuntium ce, Object... argv);      // add single error message
+ *      bld.alert(Nuntium ce, Object... argv);      // add single warning message
+ *      bld.capture(Throwable t);                   // add error from Exception
+ *      None none = bld.build(); </pre>
+ *     The outcome of the interface can be evaluated imperatively
+ *     <pre>
+ *      if (none.completeWithoutErrors()) {
+ *          Collection&lt;Warning&gt; warnings = none.alerts();     // warning collection
+ *          // ... action on warnings
+ *      } else {
+ *          Collection&lt;? extends Signal&gt; errors = none.signals();     // errors/warings collection
+ *          // ... action on errors (and warnings)
+ *      } </pre>
+ *     or functionally
+ *     <pre>
+ *      none
+ *          .onSuccess((Collection&lt;Warning&gt; w) -> { ... })            // ... action on warnings
+ *          .onFailure((Collection&lt;? extends Signal&gt; e) -> { ... });  // ... action on errors (and warnings);
+ *
+ *      R r = some.&lt;R&gt;mapTo(
+ *          w -> ...R,          // function from warning to R
+ *          e -> ...R);         // function from error/warning to R
+ *     </pre>
  */
 public interface None extends ManyErrors, OnlyError {
     /**
@@ -39,7 +72,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param objects   error parameters
      * @return          instance of {@link None} with error
      */
-    static @NotNull None failure(@NotNull MsgError ce, Object... objects) {
+    static @NotNull None failure(@NotNull Nuntium ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(fail));
@@ -51,7 +84,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param objects   warning parameters
      * @return          instance of {@link None} with warning
      */
-    static @NotNull None alert(@NotNull MsgError ce, Object... objects) {
+    static @NotNull None warning(@NotNull Nuntium ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(warn));

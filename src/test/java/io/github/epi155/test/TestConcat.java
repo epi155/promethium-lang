@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class TestConcat {
-    static final MsgError NEG = MsgError.of("NEG", "Negative at {}");
+    static final Nuntium NEG = Nuntium.of("NEG", "Negative at {}");
 
     @Test
     public void test01() {
@@ -126,7 +126,7 @@ public class TestConcat {
     public void test53() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val bld = None.builder();
-        list.forEach(n -> bld.join(fun1(n)
+        list.forEach(n -> bld.withStatus(fun1(n)
                 .ergo(it -> fun2(it)
                         .ergo(jt -> fun3(jt)
                                 .ergo(this::fun4)))));

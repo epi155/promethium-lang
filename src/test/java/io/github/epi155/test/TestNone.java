@@ -1,6 +1,9 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.*;
+import io.github.epi155.pm.lang.None;
+import io.github.epi155.pm.lang.Nope;
+import io.github.epi155.pm.lang.Signal;
+import io.github.epi155.pm.lang.Some;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +22,7 @@ public class TestNone {
 
     @Test
     public void test2() {
-        None.builder().join(Nope.capture(new NullPointerException())).build()
+        None.builder().withStatus(Nope.capture(new NullPointerException())).build()
             .onSuccess(() -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
@@ -39,7 +42,7 @@ public class TestNone {
 
     @Test
     public void test4() {
-        val result = None.builder().join(Nope.capture(new NullPointerException())).build()
+        val result = None.builder().withStatus(Nope.capture(new NullPointerException())).build()
             .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
@@ -67,7 +70,7 @@ public class TestNone {
     @Test
     public void test6() {
         None.builder()
-            .join(Nope.capture(new NullPointerException()))
+            .withStatus(Nope.capture(new NullPointerException()))
             .build()
             .peek(() -> log.info("I was here"))
             .ergo(Nope::nope)
@@ -76,17 +79,17 @@ public class TestNone {
             .anyway(() -> Nope.capture(new NullPointerException()))
             .anyway(Nope::nope);
         None.builder()
-            .join(Nope.capture(new NullPointerException()))
+            .withStatus(Nope.capture(new NullPointerException()))
             .build()
             .peek(() -> log.info("I was here"))
             .ergo(() -> Nope.capture(new NullPointerException()));
         None.builder()
-            .join(Nope.capture(new NullPointerException()))
+            .withStatus(Nope.capture(new NullPointerException()))
             .build()
             .ergo(Nope::nope)
             .peek(() -> log.info("I was here"));
         None.builder()
-            .join(Nope.capture(new NullPointerException()))
+            .withStatus(Nope.capture(new NullPointerException()))
             .build()
             .ergo(() -> Nope.capture(new NullPointerException()))
             .peek(() -> log.info("I was here"));
@@ -100,14 +103,14 @@ public class TestNone {
         Assertions.assertFalse(none.summary().isPresent());
 
         val n1 = None.builder()
-            .join(Nope.capture(new NullPointerException()))
+            .withStatus(Nope.capture(new NullPointerException()))
             .build();
         Assertions.assertEquals(1, n1.signals().size());
         Assertions.assertTrue(n1.summary().isPresent());
 
         val n2 = None.builder()
-            .join(Nope.capture(new NullPointerException()))
-            .join(Nope.capture(new IllegalArgumentException()))
+            .withStatus(Nope.capture(new NullPointerException()))
+            .withStatus(Nope.capture(new IllegalArgumentException()))
             .build();
         Assertions.assertEquals(2, n2.signals().size());
         Assertions.assertTrue(n2.summary().isPresent());

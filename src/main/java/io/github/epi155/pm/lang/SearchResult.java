@@ -38,7 +38,7 @@ public interface SearchResult<S> extends SearchResult2 {
      * @return      instance of {@link SearchResult}
      * @param <T>   value type of the object being searched for
      */
-    static <T> @NotNull SearchResult<T> failure(@NotNull MsgError ce, Object... argv) {
+    static <T> @NotNull SearchResult<T> failure(@NotNull Nuntium ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmSearchResult<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }

@@ -14,33 +14,30 @@ import java.util.function.Function;
 /**
  * Utility interface for carrying many errors (and warnings) xor a value (and warnings)
  * <p>
- *     The interface has two static constructors
+ *     The interface has two main static constructors
  *     <pre>
- *      Some.of(T value);                                // final value (and no warnings)
- *      Some.failure(MsgError ce, Object... argv);       // single error message
- *     </pre>
- *     If at most an error is returned, the use of {@link Hope} is preferable.
+ *      Some.of(T value);                               // final value (and no warnings)
+ *      Some.failure(Nuntium ce, Object... argv);       // single error message </pre>
+ *     If at most an error is returned (and no warnings), the use of {@link Hope} is preferable.
  * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
  *     <pre>
  *      val bld = Some.&lt;T&gt;builder();
- *      bld.failure(MsgError ce, Object... argv);    // add single error message
- *      bld.alert(MsgError ce, Object... argv);      // add single warning message
- *      bld.capture(Throwable t);                    // add error from Exception
- *      bld.value(T value);                          // set final value
- *      Some&lt;T&gt; some = bld.build();
- *     </pre>
+ *      bld.fault(Nuntium ce, Object... argv);      // add single error message
+ *      bld.alert(Nuntium ce, Object... argv);      // add single warning message
+ *      bld.capture(Throwable t);                   // add error from Exception
+ *      bld.value(T value);                         // set final value
+ *      Some&lt;T&gt; some = bld.build(); </pre>
  *     The outcome of the interface can be evaluated imperatively
  *     <pre>
  *      if (some.completeWithoutErrors()) {
- *          T value = some.value();                                 // final value
+ *          T value = some.value();                           // final value
  *          Collection&lt;Warning&gt; warnings = some.alerts();     // warning collection
  *          // ... action on value and warnings
  *      } else {
  *          Collection&lt;? extends Signal&gt; errors = some.signals();     // errors/warings collection
  *          // ... action on errors (and warnings)
- *      }
- *     </pre>
+ *      } </pre>
  *     or functionally
  *     <pre>
  *      some
@@ -73,14 +70,28 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U>     payload type
      * @return instance of {@link Some} (error)
      */
-    static <U> @NotNull Some<U> failure(@NotNull MsgError ce, Object... argv) {
+    static <U> @NotNull Some<U> failure(@NotNull Nuntium ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         return new PmSome<>(Collections.singletonList(fail));
     }
+
+    /**
+     * static constructor with {@link SingleError} ({@link Hope} or {@link Nope} completeWithErrors)
+     * @param se    {@link SingleError} instance
+     * @return      {@link Some} instance
+     * @param <U>   {@link Some} data type (dummy)
+     */
     static <U> @NotNull Some<U> failure(SingleError se) {
         return new PmSome<>(Collections.singletonList(se.fault()));
     }
+
+    /**
+     * static constructor with {@link ManyErrors} ({@link Some} or {@link None} completeWithErrors)
+     * @param me    {@link ManyErrors} instance
+     * @return      {@link Some} instance
+     * @param <U>   {@link Some} data type (dummy)
+     */
     static <U> @NotNull Some<U> failure(ManyErrors me) {
         val signals = me.signals();
         if (signals.isEmpty())
@@ -122,13 +133,14 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
         return new PmSome<>(value);
     }
 
+    /**
+     * Static constructor from {@link Hope}
+     * @param u     {@link Hope} instance
+     * @return      {@link Some} instance
+     * @param <U>   {@link Some}/{@link Hope} data type
+     */
     static <U> @NotNull Some<U> pull(@NotNull Hope<U> u) {
         return PmSome.of(u);
-//        if (u.completeWithoutErrors()) {
-//            return new PmSome<>(u.value());
-//        } else {
-//            return new PmSome<>(Collections.singletonList(u.fault()));
-//        }
     }
 
     /**
@@ -231,5 +243,10 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      */
     <R> R mapTo(Function<T, R> onSuccess, Function<Collection<? extends Signal>, R> onFailure);
 
+    /**
+     * All warnings
+     *
+     * @return  collection of warning message
+     */
     Collection<Warning> alerts();
 }

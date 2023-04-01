@@ -17,11 +17,11 @@ public class TestBld {
     @Test
     public void test1() {
         val bld = Some.<Integer>builder();
-        bld.join(() -> {
-        });
-        bld.join(Nope.nope());
-        bld.value(1);
-        val some = bld.build();
+        ;
+        val some = bld
+            .withStatus(Nope.nope())
+            .withValue(1)
+            .build();
 
         if (some.completeWithoutErrors()) {
             val value = some.value();
@@ -43,11 +43,11 @@ public class TestBld {
     @Test
     public void test2() {
         val bld = None.builder();
-        bld.join(() -> Some.of(1)
+        bld.withStatus(Some.of(1)
             .ergo(k -> Some.of(2 * k)
                 .mapOf(l -> 3 * l)
                 .peek(m -> log.info("it was {}", m))));
-        bld.join(Nope.nope());
+        bld.withStatus(Nope.nope());
         val none = bld.build();
 
         Assertions.assertTrue(none.completeSuccess());
@@ -63,7 +63,7 @@ public class TestBld {
     @Test
     public void test4() {
         val bld = Some.<Integer>builder();
-        val fault = bld.fault(MsgError.of("E01", "Houston we have had a problem"));
+        val fault = bld.fault(Nuntium.of("E01", "Houston we have had a problem"));
         fault.setProperty("MissionName", "Apollo");
         fault.setProperty("MissionRun", 13);
         val some = bld.build();
@@ -128,7 +128,7 @@ public class TestBld {
     public void test9() {
         val bld = None.builder();
         try {
-            throw new FaultException(MsgError.of("E01", "we havr had a problem"));
+            throw new FaultException(Nuntium.of("E01", "we havr had a problem"));
         } catch (Exception e) {
             bld.captureHere(e);
         }

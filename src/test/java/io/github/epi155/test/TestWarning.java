@@ -1,8 +1,8 @@
 package io.github.epi155.test;
 
 
-import io.github.epi155.pm.lang.MsgError;
 import io.github.epi155.pm.lang.None;
+import io.github.epi155.pm.lang.Nuntium;
 import io.github.epi155.pm.lang.Some;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -15,11 +15,11 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestWarning {
     private None good() { return None.none();}
-    private None fail() { return  None.failure(MsgError.of("E01", "Errore")); }
-    private None warn() { return  None.alert(MsgError.of("W01", "Allarme")); }
+    private None fail() { return  None.failure(Nuntium.of("E01", "Errore")); }
+    private None warn() { return  None.warning(Nuntium.of("W01", "Allarme")); }
     private None wArn() {
         val bld = None.builder();
-        bld.alert(MsgError.of("W02", "Attenzione"))
+        bld.alert(Nuntium.of("W02", "Attenzione"))
             .setProperty("altezza", 3.14F)
             .setProperty("larghezza", 1.41F)
             .setProperty("profondità", "N/A");
@@ -187,7 +187,7 @@ public class TestWarning {
     void test500() {
         val bx = Some.of(null);
         log.info("result is: {}", bx);
-        val cx = Some.of(None.builder().fault(MsgError.of("E92", "e92")));
+        val cx = Some.of(None.builder().fault(Nuntium.of("E92", "e92")));
         log.info("result is: {}", cx);
     }
 }
