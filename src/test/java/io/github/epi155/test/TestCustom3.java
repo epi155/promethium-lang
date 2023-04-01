@@ -69,11 +69,4 @@ public class TestCustom3 {
         return factors.toArray(new Integer[0]);
     }
 
-    @Test
-    void test2() {
-        val w1 = Warning.of(BAD_N, "k");
-        val w2 = Warning.builder().code("W02").status(300).message("Warning test").build();
-        log.warn(w1.toString());
-        log.warn(w2.toString());
-    }
 }

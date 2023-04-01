@@ -1,8 +1,7 @@
 package io.github.epi155.pm.lang;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 /**
  * Error builder extension for {@link Some}
@@ -35,22 +34,16 @@ public interface SomeBuilder<T> extends ErrorBuilder {
         add(any);
         return this;
     }
-    /**
-     * Add a collection of {@link Signal}
-     * @param signals   collection of {@link Signal}
-     * @return          builder itself
-     */
-    default @NotNull SomeBuilder<T> join(@NotNull Collection<? extends Signal> signals) {
-        add(signals);
+    default @NotNull SomeBuilder<T> withAlert(@NotNull MsgError ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        add(warn);
         return this;
     }
-    /**
-     * Add a single {@link Signal}
-     * @param signal    {@link Signal}
-     * @return          builder itself
-     */
-    default @NotNull SomeBuilder<T> join(@NotNull Signal signal) {
-        add(signal);
+    default @NotNull SomeBuilder<T> withFault(@NotNull MsgError ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        add(fail);
         return this;
     }
 

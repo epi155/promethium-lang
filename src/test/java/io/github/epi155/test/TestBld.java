@@ -128,7 +128,7 @@ public class TestBld {
     public void test9() {
         val bld = None.builder();
         try {
-            throw new FaultException(Failure.of(MsgError.of("E01", "we havr had a problem")));
+            throw new FaultException(MsgError.of("E01", "we havr had a problem"));
         } catch (Exception e) {
             bld.captureHere(e);
         }

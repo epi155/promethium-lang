@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import java.util.NoSuchElementException;
 
 @Slf4j
-public class TestFind {
+class TestFind {
     private static final MsgError MY_FAULT = MsgError.of("CA01", "Oop error !!");
 
     @Test
-    public void testFound1() {
+    void testFound1() {
         SearchResult<String> result = SearchResult.of("A");
         Assertions.assertDoesNotThrow(() -> result
             .onFound(s -> log.info("Found {}", s))
@@ -21,7 +21,7 @@ public class TestFind {
             .onFailure(e -> log.warn("Error {}", e.message())));
     }
     @Test
-    public void testNotFound1() {
+    void testNotFound1() {
         SearchResult<String> result = SearchResult.empty();
         Assertions.assertDoesNotThrow(() -> result
             .onFound(s -> log.info("Found {}", s))
@@ -29,7 +29,7 @@ public class TestFind {
             .onFailure(e -> log.warn("Error {}", e.message())));
     }
     @Test
-    public void testError1() {
+    void testError1() {
         SearchResult<String> result = SearchResult.capture(new NullPointerException());
         Assertions.assertDoesNotThrow(() -> result
             .onFound(s -> log.info("Found {}", s))
@@ -38,7 +38,7 @@ public class TestFind {
     }
 
     @Test
-    public void testFound2() {
+    void testFound2() {
         SearchResult<String> result = SearchResult.of("A");
         Some<Integer> value = result
             .<Integer>valueBuilder()
@@ -49,7 +49,7 @@ public class TestFind {
         Assertions.assertEquals(65, value.value());
     }
     @Test
-    public void testNotFound2() {
+    void testNotFound2() {
         SearchResult<String> result = SearchResult.empty();
         Some<Integer> value = result
             .<Integer>valueBuilder()
@@ -60,7 +60,7 @@ public class TestFind {
         Assertions.assertEquals(0, value.value());
     }
     @Test
-    public void testError2() {
+    void testError2() {
         SearchResult<String> result = SearchResult.capture(new NullPointerException());
         Some<Integer> value = result
             .<Integer>valueBuilder()
@@ -71,7 +71,7 @@ public class TestFind {
     }
 
     @Test
-    public void testFound3() {
+    void testFound3() {
         SearchResult<String> result = SearchResult.of("A");
         Some<Integer> value = result
             .<Integer>valueBuilder()
@@ -82,7 +82,7 @@ public class TestFind {
         Assertions.assertEquals(65, value.value());
     }
     @Test
-    public void testNotFound3() {
+    void testNotFound3() {
         SearchResult<String> result = SearchResult.empty();
         Some<Integer> value = result
             .<Integer>valueBuilder()
@@ -94,7 +94,7 @@ public class TestFind {
     }
 
     @Test
-    public void testError3() {
+    void testError3() {
         SearchResult<String> result = SearchResult.failure(MY_FAULT);
         Some<Integer> value = result
             .<Integer>valueBuilder()
@@ -104,28 +104,28 @@ public class TestFind {
         Assertions.assertFalse(value.completeSuccess());
     }
     @Test
-    public void testFound4() {
+    void testFound4() {
         SearchResult<String> result = SearchResult.of("A");
         Some<Integer> value = result
             .<Integer>valueBuilder()
             .onFoundSetError(MY_FAULT)
-            .onNotFound(Failure.of(MY_FAULT))
+            .onNotFoundSetError(MY_FAULT)
             .build();
         Assertions.assertFalse(value.completeSuccess());
     }
     @Test
-    public void testNotFound4() {
+    void testNotFound4() {
         SearchResult<String> result = SearchResult.empty();
         Some<Integer> value = result
             .<Integer>valueBuilder()
             .onFoundSetError(MY_FAULT)
-            .onNotFound(Failure.of(MY_FAULT))
+            .onNotFoundSetError(MY_FAULT)
             .build();
         Assertions.assertFalse(value.completeSuccess());
     }
 
     @Test
-    public void testFoundR1() {
+    void testFoundR1() {
         SearchResult<String> result = SearchResult.of("A");
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
@@ -138,7 +138,7 @@ public class TestFind {
         Assertions.assertEquals(1, value.value());
     }
     @Test
-    public void testNotFoundR1() {
+    void testNotFoundR1() {
         SearchResult<String> result = SearchResult.empty();
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
@@ -152,7 +152,7 @@ public class TestFind {
         Assertions.assertThrows(NoSuchElementException.class, value::fault);
     }
     @Test
-    public void testErrorR1() {
+    void testErrorR1() {
         SearchResult<String> result = SearchResult.capture(new NullPointerException());
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
@@ -166,7 +166,7 @@ public class TestFind {
         Assertions.assertDoesNotThrow(value::fault);
     }
     @Test
-    public void testFoundR2() {
+    void testFoundR2() {
         SearchResult<String> result = SearchResult.of("A");
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
@@ -179,7 +179,7 @@ public class TestFind {
         Assertions.assertThrows(NoSuchElementException.class, value::value);
     }
     @Test
-    public void testNotFoundR2() {
+    void testNotFoundR2() {
         SearchResult<String> result = SearchResult.empty();
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
@@ -192,12 +192,12 @@ public class TestFind {
         Assertions.assertThrows(NoSuchElementException.class, value::value);
     }
     @Test
-    public void testFoundR3() {
+    void testFoundR3() {
         SearchResult<String> result = SearchResult.of("A");
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
-            .onFound(Failure.of(MY_FAULT))
-            .onNotFound(Failure.of(MY_FAULT))
+            .onFoundSetError(MY_FAULT)
+            .onNotFoundSetError(MY_FAULT)
             .build();
         Assertions.assertTrue(value.isFailure());
         Assertions.assertFalse(value.isFound());
@@ -210,8 +210,8 @@ public class TestFind {
         SearchResult<String> result = SearchResult.empty();
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()
-            .onFound(Failure.of(MY_FAULT))
-            .onNotFound(Failure.of(MY_FAULT))
+            .onFoundSetError(MY_FAULT)
+            .onNotFoundSetError(MY_FAULT)
             .build();
         Assertions.assertTrue(value.isFailure());
         Assertions.assertFalse(value.isFound());

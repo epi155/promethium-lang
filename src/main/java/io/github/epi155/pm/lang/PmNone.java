@@ -52,15 +52,15 @@ class PmNone extends PmManyError implements None {
             if (that.completeSuccess()) {
                 return this;    // keep this warnings
             } else {
-                return None.builder()
-                    .join(signals())  // this warning
-                    .join(that.signals())  // errors & warning
-                    .build();
+                val bld = None.builder();
+                bld.add(signals());        // this warning
+                bld.add(that.signals());   // that error OR warning
+                return bld.build();
             }
         }
     }
     @Override
-    public @NotNull <R> Some<R> ergoSome(@NotNull Supplier<? extends AnyValue<R>> fcn) {
+    public @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn) {
         if (completeSuccess()) {
             return PmSome.of(fcn.get());
         } else if (completeWithErrors()) {
@@ -88,7 +88,6 @@ class PmNone extends PmManyError implements None {
             return onSuccess.apply(alerts());   // warnings?
         }
     }
-    @Deprecated
     @Override
     public <R> R mapTo(Supplier<R> onSuccess, Function<Collection<? extends Signal>, R> onFailure) {
         if (completeWithErrors()) {

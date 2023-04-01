@@ -10,6 +10,7 @@ import java.util.function.Supplier;
  * @param <R>   value type of the final value
  */
 public interface SearchValueBuilder<R> {
+
     /**
      * returns the final value
      * @return  instance of {@link Some} with the final value or the errors collected
@@ -85,9 +86,11 @@ public interface SearchValueBuilder<R> {
          * <p>
          *     the error is set only and only if the result of the search is not found
          * </p>
-         * @param fault     custom error
+         *
+         * @param ce    custom error message
+         * @param argv  error parameter
          * @return      instance of partial builder {@link SearchValueBuilder}
          */
-        @NotNull SearchValueBuilder<R> onNotFound(@NotNull Failure fault);
+        @NotNull SearchValueBuilder<R> onNotFoundSetError(@NotNull MsgError ce, Object... argv);
     }
 }

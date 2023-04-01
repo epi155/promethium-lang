@@ -31,7 +31,7 @@ abstract class PmItemStatus implements ItemStatus {
         return warnFound;
     }
     @Override
-    public Collection<? extends Signal> signals() {
+    public Collection<Signal> signals() {
         return Collections.unmodifiableCollection(getSignalsQueue());
     }
 }

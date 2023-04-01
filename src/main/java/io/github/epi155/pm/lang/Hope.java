@@ -1,5 +1,6 @@
 package io.github.epi155.pm.lang;
 
+import lombok.val;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,7 +8,39 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Utility class for carrying a single error xor a value
+ * Utility interface for carrying a single error xor a value
+ * <p>
+ *     The interface has two static constructors with value or custom error message
+ *     <pre>
+ *      Hope.of(T value);                                // final value
+ *      Hope.failure(MsgError ce, Object... argv);       // error message
+ *     </pre>
+ *     and with Exception
+ *     <pre>
+ *      Hope.capture(Throwable t);      // error from Exception (package level)
+ *      Hope.captureHere(Throwable t);  // error from Exception (method level)
+ *     </pre>
+ * <p>
+ *     The outcome of the interface can be evaluated imperatively
+ *     <pre>
+ *      if (hope.completeWithoutErrors()) {
+ *          val value = hope.value();
+ *          // ... action on value
+ *      } else {
+ *          val fault = hope.fault();
+ *          // ... action on error
+ *      }
+ *     </pre>
+ *     or functionally
+ *     <pre>
+ *      hope
+ *          .onSuccess(v -> { ... })     // ... action on value
+ *          .onFailure(e -> { ... });    // ... action on error
+ *
+ *      R r = hope.&lt;R&gt;mapTo(
+ *          v -> ...R,      // function from value to R
+ *          e -> ...R);     // function from error to R
+ *     </pre>
  *
  * @param <T> value type
  */
@@ -20,23 +53,17 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @return <b>Hope</b> instance
      */
     static <S> @NotNull Hope<S> of(@NotNull S value) {
-        if (value instanceof Signal) {
-            throw new IllegalArgumentException("the argument cannot be an instance of a "+value.getClass().getSimpleName());
+        if (value == null) {
+            StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be null"));
+            return new PmHope<>(null, fail);
+        } else if (value instanceof Signal) {
+            StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be an instanceof Signal"));
+            fail.setProperty("cause", value);
+            return new PmHope<>(null, fail);
         }
         return new PmHope<>(value, null);
-    }
-
-    /**
-     * Create an error <b> Hope </b>
-     *
-     * @param fault error
-     * @param <S>   type value in case of success
-     * @return <b>Hope</b> instance
-     * @deprecated use {@link Hope#failure(MsgError, Object...)}
-     */
-    @Deprecated
-    static <S> @NotNull Hope<S> of(@NotNull Failure fault) {
-        return new PmHope<>(null, fault);
     }
 
     /**
@@ -110,6 +137,10 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
         }
     }
 
+    static <S> Hope<S> failure(SingleError se) {
+        return new PmHope<>(null, se.fault());
+    }
+
     /**
      * Retrieve the value if there is no error or throw an exception
      *
@@ -121,6 +152,23 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     /**
      * Compose operator
      * <p>Hope &bull; Hope &rarr; Hope</p>
+     *
+     * <p>
+     *     The method allows to compose two hopes.
+     *     Using an imperative outcome evaluation we would have
+     * <pre>
+     *      Hope&lt;A&gt; ha = computeA();
+     *      Hope&lt;B&gt; hb;
+     *      if (ha.completeWithoutErrors()) {
+     *          hb = a2b(ha.value());           // Hope&lt;B&gt; a2b(A value);
+     *      } else {
+     *          hb = Hope.&lt;B&gt;failure(ha);
+     *      }
+     * </pre>
+     *      The method simplifies it to
+     * <pre>
+     *      Hope&lt;B&gt; hb = computeA().map(this::a2b);
+     * </pre>
      *
      * @param fcn transform value to result {@link Hope}
      * @param <R> result type

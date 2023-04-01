@@ -70,18 +70,6 @@ public interface None extends ManyErrors, OnlyError {
     /**
      * Static constructor
      *
-     * @param signal error
-     * @return instance of {@link None}
-     * @deprecated use {@link None#failure(MsgError, Object...)} or {@link None#alert(MsgError, Object...)}
-     */
-    @Deprecated
-    static @NotNull None of(@NotNull Signal signal) {
-        return new PmNone(Collections.singletonList(signal));
-    }
-
-    /**
-     * Static constructor
-     *
      * @param item instance of {@link AnyValue}
      * @return instance of {@link None}
      */
@@ -166,7 +154,7 @@ public interface None extends ManyErrors, OnlyError {
      * @return      {@link Some} instance
      * @param <R>   {@link Some} type
      */
-    @NotNull <R> Some<R> ergoSome(@NotNull Supplier<? extends AnyValue<R>> fcn);
+    @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn);
 
     /**
      * If there are no errors, the action is performed.
@@ -195,7 +183,6 @@ public interface None extends ManyErrors, OnlyError {
      * @return result
      * @param <R>       result type
      */
-    @Deprecated
     <R> R mapTo(Supplier<R> onSuccess, Function<Collection<? extends Signal>, R> onFailure);
 
     /**

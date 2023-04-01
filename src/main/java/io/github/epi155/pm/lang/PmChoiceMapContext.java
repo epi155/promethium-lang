@@ -1,5 +1,6 @@
 package io.github.epi155.pm.lang;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -56,16 +57,16 @@ class PmChoiceMapContext<T,R> implements ChoiceMapContext<T, R> {
                     if (result.completeSuccess()) {
                         return new PmSome<>(result.value(), parent.signals());
                     } else if (result.completeWithErrors()) {
-                        return Some.<R>builder()
-                            .join(parent.signals())  // parent warnings
-                            .join(result.signals()) // result errors (warnings)
-                            .build();
+                        val bld = Some.<R>builder();
+                        bld.add(parent.signals());  // parent warnings
+                        bld.add(result.signals()); // result errors (warnings)
+                        return bld.build();
                     } else /*result.completeWithWarnings()*/ {
-                        return Some.<R>builder()
-                            .join(parent.signals())  // parent warnings
-                            .join(result.signals())  // result warnings
-                            .value(result.value())  // result value
-                            .build();
+                        val bld = Some.<R>builder();
+                        bld.add(parent.signals());  // parent warnings
+                        bld.add(result.signals());  // result warnings
+                        bld.value(result.value());  // result value
+                        return bld.build();
                     }
                 }
             };

@@ -28,15 +28,15 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
     public @NotNull Optional<String> summary() {
         if (completeSuccess()) return Optional.empty();
         if (completeWithoutErrors()) {
-            val nmWrn = signals().size();
+            int nmWrn = signals().size();
             if (nmWrn > 1) return Optional.of(String.format("%d warnings found", nmWrn));
             Signal alert = signals().iterator().next();
             return Optional.of(alert.message());
         }
         val alerts = alerts();
-        val nmSig = signals().size();
-        val nmWrn = alerts.size();
-        val nmErr = nmSig - nmWrn;
+        int nmSig = signals().size();
+        int nmWrn = alerts.size();
+        int nmErr = nmSig - nmWrn;
         if (nmWrn == 0) {
             if (nmErr > 1) return Optional.of(String.format("%d errors found", nmErr));
             Signal error = signals().iterator().next();
@@ -50,16 +50,16 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
         if (that.completeSuccess()) {
             return new PmSome<>(that.value(), signals());     // this warning
         } else if (that.completeWithErrors()) {
-            return Some.<R>builder()
-                .join(signals())        // this warning
-                .join(that.signals())   // that error (warning)
-                .build();
+            val bld = Some.<R>builder();
+            bld.add(signals());        // this warning
+            bld.add(that.signals());   // that error (warning)
+            return bld.build();
         } else /*that.completeWithWarnings()*/{
-            return Some.<R>builder()
-                .join(signals())        // this warning
-                .join(that.signals())   // that warning
-                .value(that.value())
-                .build();
+            val bld = Some.<R>builder();
+            bld.add(signals());        // this warning
+            bld.add(that.signals());   // that warning
+            bld.value(that.value());
+            return bld.build();
         }
     }
 }

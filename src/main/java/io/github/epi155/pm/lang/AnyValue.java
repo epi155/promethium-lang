@@ -77,14 +77,4 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      */
     @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
 
-    /**
-     * If there are no errors and the value is present, apply the function to the value,
-     * if the function ends with errors, these errors are returned.
-     * In the presence of errors, the function is not called, and the initial errors are returned.
-     *
-     * @param fcn   function that transforms the value into {@link AnyValue}
-     * @return  {@link Some} instance
-     * @param <R> {@link Some} type
-     */
-    @NotNull <R> Some<R> ergoSome(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
 }

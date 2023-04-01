@@ -76,7 +76,7 @@ public class TestNone {
             .anyway(() -> Nope.capture(new NullPointerException()))
             .anyway(Nope::nope);
         None.builder()
-            .join(Nope.of(Failure.of(new NullPointerException())))
+            .join(Nope.capture(new NullPointerException()))
             .build()
             .peek(() -> log.info("I was here"))
             .ergo(() -> Nope.capture(new NullPointerException()));

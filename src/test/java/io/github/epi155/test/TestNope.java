@@ -24,7 +24,7 @@ public class TestNope {
 
     @Test
     public void test2() {
-        Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")))
+        Nope.failure(MsgError.of("E01", "Houston we have had a problem"))
             .onSuccess(() -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -38,7 +38,7 @@ public class TestNope {
 
     @Test
     public void test4() {
-        val result = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")))
+        val result = Nope.failure(MsgError.of("E01", "Houston we have had a problem"))
             .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
@@ -51,7 +51,7 @@ public class TestNope {
 
     @Test
     public void test6() {
-        val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
         Assertions.assertThrows(FailureException.class, nope::orThrow);
     }
 
@@ -63,7 +63,7 @@ public class TestNope {
 
     @Test
     public void test8() {
-        val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
         nope.peek(() -> log.info("to be continue"));
     }
 
@@ -87,7 +87,7 @@ public class TestNope {
 
     @Test
     public void test12() {
-        val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
         nope.ergo(Nope::nope);
     }
 
@@ -101,7 +101,7 @@ public class TestNope {
 
     @Test
     public void test14() {
-        val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = nope.fault();
         });
@@ -115,7 +115,7 @@ public class TestNope {
 
     @Test
     public void test16() {
-        val nope = Nope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+        val nope = Nope.failure(MsgError.of("E01", "Houston we have had a problem"));
         Assertions.assertThrows(FailureException.class, () -> nope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
     }
 }

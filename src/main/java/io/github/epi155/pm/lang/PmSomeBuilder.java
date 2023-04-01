@@ -19,5 +19,4 @@ class PmSomeBuilder<T> extends PmAnyBuilder implements SomeBuilder<T> {
             return new PmSome<>(value, signals());
         }
     }
-
 }

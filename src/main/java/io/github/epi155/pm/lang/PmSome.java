@@ -28,7 +28,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
         this.value = null;
     }
 
-    protected static <U> Some<U> of(AnyValue<U> v) {
+    protected static <U> @NotNull Some<U> of(@NotNull AnyValue<U> v) {
         if (v instanceof Some) {
             return (Some<U>) v;
         }
@@ -93,21 +93,8 @@ class PmSome<T> extends PmManyError implements Some<T> {
         } else if (completeWithErrors()) {
             return new PmSome<>(signals());  // this error & warning - fcn not executed
         } else /*completeWithWarnings()*/ {
-            val so = fcn.apply(value);
-            if (so.completeSuccess()) {
-                return new PmSome<>(so.value(), signals());
-            } else if (so.completeWithErrors()) {
-                return Some.<R>builder()
-                    .join(signals())    // this warning
-                    .join(so.signals())   // that error & warning
-                    .build();
-            } else /*so.completeWithWarnings()*/ {
-                return Some.<R>builder()
-                    .join(signals())        // this warning
-                    .join(so.signals())     // that warning
-                    .value(so.value())      // that value
-                    .build();
-            }
+            val that = fcn.apply(value);
+            return composeOnWarning(that);
         }
     }
 
@@ -138,24 +125,13 @@ class PmSome<T> extends PmManyError implements Some<T> {
             if (that.completeSuccess()) {
                 return new PmNone(signals());     // this warning
             } else {
-                return None.builder()
-                    .join(signals())        // this warning
-                    .join(that.signals())   // that error OR warning
-                    .build();
+                val bld = None.builder();
+                bld.add(signals());        // this warning
+                bld.add(that.signals());   // that error OR warning
+                return bld.build();
             }
         }
     }
-    public @NotNull <R> Some<R> ergoSome(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
-        if (completeSuccess()) {
-            return PmSome.of(fcn.apply(value));
-        } else if (completeWithErrors()) {
-            return new PmSome<>(signals());
-        } else /*completeWithWarnings()*/ {
-            val that = fcn.apply(value);
-            return composeOnWarning(that);
-        }
-    }
-
     @Override
     public @NotNull ChoiceValueContext<T> choice() {
         return new PmChoiceValueContext<>(this);
@@ -178,7 +154,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     public <R> R mapTo(BiFunction<T, Collection<Warning>, R> onSuccess, Function<Collection<? extends Signal>, R> onFailure) {
         return completeWithErrors() ? onFailure.apply(signals()) : onSuccess.apply(value, alerts());
     }
-    @Override @Deprecated
+    @Override
     public <R> R mapTo(Function<T, R> onSuccess, Function<Collection<? extends Signal>, R> onFailure) {
         return completeWithErrors() ? onFailure.apply(signals()) : onSuccess.apply(value);
     }

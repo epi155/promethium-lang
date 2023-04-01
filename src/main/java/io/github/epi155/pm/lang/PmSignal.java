@@ -15,7 +15,8 @@ import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor(access = lombok.AccessLevel.PACKAGE)
 class PmSignal implements Signal{
-    public static final int JAVA_EXCEPTION_STATUS = 500;
+    protected static final int JAVA_EXCEPTION_STATUS = 500;
+    protected static final String JAVA_EXCEPTION_CODE = "999J";
 
     @NotNull
     protected final String theCode;

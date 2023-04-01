@@ -45,7 +45,7 @@ public class FailureException extends Exception {
      */
     public FailureException(Exception e) {
         super(e);
-        this.code = Failure.JAVA_EXCEPTION_CODE;
+        this.code = PmSignal.JAVA_EXCEPTION_CODE;
         this.status = PmSignal.JAVA_EXCEPTION_STATUS;
         this.ste = PmSignal.guessLine(e, Thread.currentThread().getStackTrace()[PmAnyBuilder.J_LOCATE]);
     }

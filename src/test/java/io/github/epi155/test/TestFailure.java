@@ -395,10 +395,10 @@ public class TestFailure {
 
     @Test
     @Order(931)
-    public void test931() {
+    void test931() {
         Assertions.assertDoesNotThrow(() -> {
-            val fault = Failure.builder().code("AZ95").status(404).message("Not Found").build();
-            fault.setProperty("key1", 1).setProperty("key2", "red");
+            val fault = None.builder().fault(MsgError.of("AZ95", 404, "Not Found"))
+                    .setProperty("key1", 1).setProperty("key2", "red");
             log.info(fault.toString());
         });
     }

@@ -1,5 +1,6 @@
 package io.github.epi155.pm.lang;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -73,10 +74,10 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         } else if (result.completeSuccess()) {
             return new PmNone(parent.signals());    // parent warnings
         } else {
-            return None.builder()
-                .join(parent.signals()) // parent warnings
-                .join(result.signals()) // result errors/warnings
-                .build();
+            val bld = None.builder();
+            bld.add(parent.signals()); // parent warnings
+            bld.add(result.signals()); // result errors/warnings
+            return bld.build();
         }
     }
 

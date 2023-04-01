@@ -37,6 +37,15 @@ class PmNope extends PmSingleError implements Nope {
         }
     }
 
+    @Override
+    public @NotNull <R> Hope<R> map(@NotNull Supplier<Hope<R>> fcn) {
+        if (completeSuccess()) {
+            return fcn.get();
+        } else {
+            return new PmHope<>(null, fault());
+        }
+    }
+
     public @NotNull Nope peek(@NotNull Runnable action) {
         if (completeSuccess()) {
             action.run();

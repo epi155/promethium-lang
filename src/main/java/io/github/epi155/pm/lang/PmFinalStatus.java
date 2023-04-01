@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.List;
 
 abstract class PmFinalStatus implements ItemStatus {
-    private static final String SUCCESS = "Success";
-    private static final String WARNIGS = "Warnings";
-    private static final String ERRORS = "Errors";
+    private static final String L_SUCCESS = "Success";
+    private static final String L_WARNIGS = "Warnings";
+    private static final String L_ERRORS = "Errors";
     private final Collection<Signal> signals;
     private final Collection<Warning> alerts;
     private final Collection<Failure> errors;
@@ -79,7 +79,7 @@ abstract class PmFinalStatus implements ItemStatus {
 
 
     public String toString() {
-        String status = zSuccess ? SUCCESS : zErrors ? ERRORS : WARNIGS;
+        String status = zSuccess ? L_SUCCESS : zErrors ? L_ERRORS : L_WARNIGS;
         val sw = new StringWriter();
         val pw = new PrintWriter(sw);
         pw.printf("%n---%n");

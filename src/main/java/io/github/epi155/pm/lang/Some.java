@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -13,41 +14,42 @@ import java.util.function.Function;
 /**
  * Utility interface for carrying many errors (and warnings) xor a value (and warnings)
  * <p>
- *     The interface has three static constructors
+ *     The interface has two static constructors
  *     <pre>
- * Some.of(T value);                                // final value (and no warnings)
- * Some.failure(MsgError ce, Object... argv);       // single error message
- * Some.alert(T value, MsgError ce, Object... argv);    // final value and single warning
+ *      Some.of(T value);                                // final value (and no warnings)
+ *      Some.failure(MsgError ce, Object... argv);       // single error message
  *     </pre>
+ *     If at most an error is returned, the use of {@link Hope} is preferable.
+ * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
  *     <pre>
- * val bld = Some.&lt;T&gt;builder();
- * bld.failure(MsgError ce, Object... argv);    // add single error message
- * bld.alert(MsgError ce, Object... argv);      // add single warning message
- * bld.capture(Throwable t);                    // add error from Exception
- * bld.value(T value);                          // set final value
- * Some&lt;T&gt; some = bld.build();
+ *      val bld = Some.&lt;T&gt;builder();
+ *      bld.failure(MsgError ce, Object... argv);    // add single error message
+ *      bld.alert(MsgError ce, Object... argv);      // add single warning message
+ *      bld.capture(Throwable t);                    // add error from Exception
+ *      bld.value(T value);                          // set final value
+ *      Some&lt;T&gt; some = bld.build();
  *     </pre>
  *     The outcome of the interface can be evaluated imperatively
  *     <pre>
- * if (some.completeWithoutErrors()) {
- *      T value = some.value();                                 // final value
- *      Collection&lt;Warning&gt; warnings = some.alerts();     // warning collection
- *      // ... action on value and warnings
- * } else {
- *      Collection&lt;? extends Signal&gt; errors = some.signals();     // errors/warings collection
- *      // ... action on errors (and warnings)
- * }
+ *      if (some.completeWithoutErrors()) {
+ *          T value = some.value();                                 // final value
+ *          Collection&lt;Warning&gt; warnings = some.alerts();     // warning collection
+ *          // ... action on value and warnings
+ *      } else {
+ *          Collection&lt;? extends Signal&gt; errors = some.signals();     // errors/warings collection
+ *          // ... action on errors (and warnings)
+ *      }
  *     </pre>
  *     or functionally
  *     <pre>
- * some
- *  .onSuccess((T v, Collection&lt;Warning&gt; w) -> { ... })         // ... action on value and warnings
- *  .onFailure((Collection&lt;? extends Signal&gt; e) -> { ... });    // ... action on errors (and warnings);
+ *      some
+ *          .onSuccess((T v, Collection&lt;Warning&gt; w) -> { ... })         // ... action on value and warnings
+ *          .onFailure((Collection&lt;? extends Signal&gt; e) -> { ... });    // ... action on errors (and warnings);
  *
- * R r = some.&lt;R&gt;mapTo(
- *      (v, w) -> ...R,        // function from value and warning to R
- *      e -> ...R);            // function from error/warning to R
+ *      R r = some.&lt;R&gt;mapTo(
+ *          (v, w) -> ...R,        // function from value and warning to R
+ *          e -> ...R);            // function from error/warning to R
  *     </pre>
  *
  * @param <T> value type
@@ -76,25 +78,16 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         return new PmSome<>(Collections.singletonList(fail));
     }
-
-    /**
-     * Static constructor with warning message
-     * @param value     payload value
-     * @param ce        warning message
-     * @param argv      message parameter
-     * @return          instance of {@link Some} (warning)
-     * @param <U>       payload type
-     */
-    static <U> @NotNull Some<U> alert(@NotNull U value, @NotNull MsgError ce, Object... argv) {
-        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
-//        if (value != null) {
-            return new PmSome<>(value, Collections.singletonList(warn));
-//        } else {
-//            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the value argument cannot be null"));
-//            return Some.<U>builder().join(warn).join(fail).build();
-//        }
+    static <U> @NotNull Some<U> failure(SingleError se) {
+        return new PmSome<>(Collections.singletonList(se.fault()));
     }
+    static <U> @NotNull Some<U> failure(ManyErrors me) {
+        val signals = me.signals();
+        if (signals.isEmpty())
+            throw new NoSuchElementException();
+        return new PmSome<>(signals);
+    }
+
     /**
      * static factory with {@link Throwable}
      *
@@ -120,10 +113,22 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
             return new PmSome<>(Collections.singletonList(fail));
         } else if (value instanceof Signal) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be an instance of a "+value.getClass().getSimpleName()));
-            return Some.<U>builder().join((Signal)value).join(fail).build();
+            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be an instanceof Signal"));
+            val bld = Some.<U>builder();
+            bld.add((Signal)value);
+            bld.add(fail);
+            return bld.build();
         }
         return new PmSome<>(value);
+    }
+
+    static <U> @NotNull Some<U> ofHope(@NotNull Hope<U> u) {
+        return PmSome.of(u);
+//        if (u.completeWithoutErrors()) {
+//            return new PmSome<>(u.value());
+//        } else {
+//            return new PmSome<>(Collections.singletonList(u.fault()));
+//        }
     }
 
     /**
@@ -160,6 +165,23 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
     /**
      * Compose operator
      * <p>Some &bull; AnyValue<sup>+</sup> &rarr; Some</p>
+     *
+     * <p>
+     *     The method allows to compose two Somes (or a Some and an Hope).
+     *     Using an imperative outcome evaluation we would have
+     * <pre>
+     *      Some&lt;A&gt; sa = computeA();
+     *      Some&lt;B&gt; sb;
+     *      if (sa.completeWithoutErrors()) {
+     *          sb = a2sb(sa.value());      // Some&lt;B&gt; a2sb(A value)
+     *      } else {
+     *          sb = Some.failure(sa);
+     *      } </pre>
+     *      The method simplifies it to
+     * <pre>
+     *      Some&lt;B&gt; kb = computeA().map(this::a2sb); </pre>
+     * in addition, the method also propagates any warnings
+     *
      *
      * @param fcn transform value to result {@link Some}
      * @param <R> result type

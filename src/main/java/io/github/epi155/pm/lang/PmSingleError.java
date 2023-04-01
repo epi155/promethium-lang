@@ -31,11 +31,6 @@ abstract class PmSingleError implements SingleError {
     }
 
     @Override
-    public boolean completeWithWarnings() {
-        return false;
-    }
-
-    @Override
     public Collection<Signal> signals() {
         return completeSuccess() ? Collections.emptyList() : Collections.singletonList(fault);
     }

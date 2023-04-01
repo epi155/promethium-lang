@@ -30,7 +30,9 @@ public interface ItemStatus {
      * Indicates that there is at least one warning and no errors
      * @return  there is at least one warning and no errors
      */
-    boolean completeWithWarnings();
+    default boolean completeWithWarnings() {
+        return false;
+    }
 
     /**
      * Signal list (error or warning)

@@ -90,15 +90,6 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull <R> Some<R> ergoSome(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
-        if (completeSuccess()) {
-            return PmSome.of(fcn.apply(value));
-        } else /*completeWithErrors()*/ {   // completeWithWarnings is always false
-            return new PmSome<>(signals());
-        }
-    }
-
-    @Override
     public @NotNull Glitch onSuccess(@NotNull Consumer<? super T> action) {
         if (completeSuccess()) {
             action.accept(value);

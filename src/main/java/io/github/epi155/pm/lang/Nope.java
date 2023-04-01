@@ -22,18 +22,6 @@ public interface Nope extends SingleError, OnlyError {
     /**
      * Crea un <b>Nope</b> con errore
      *
-     * @param fault errore
-     * @return Nope con errore
-     * @deprecated use {@link Nope#failure(MsgError, Object...)}
-     */
-    @Deprecated
-    static @NotNull Nope of(@NotNull Failure fault) {
-        return new PmNope(fault);
-    }
-
-    /**
-     * Crea un <b>Nope</b> con errore
-     *
      * @param ce   riferimento formattazione errore
      * @param argv parametri per dettaglio errore
      * @return Nope con errore
@@ -112,6 +100,8 @@ public interface Nope extends SingleError, OnlyError {
      * the producer is not called and the result has the original error
      */
     @NotNull Nope ergo(@NotNull Supplier<? extends SingleError> fcn);
+
+    @NotNull <R> Hope<R> map(@NotNull Supplier<Hope<R>> fcn);
 
     /**
      * If there is no error, the action is performed.

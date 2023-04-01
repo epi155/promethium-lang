@@ -1,7 +1,6 @@
 package io.github.epi155.test;
 
 
-import io.github.epi155.pm.lang.Failure;
 import io.github.epi155.pm.lang.MsgError;
 import io.github.epi155.pm.lang.None;
 import io.github.epi155.pm.lang.Some;
@@ -186,11 +185,9 @@ public class TestWarning {
     }
     @Test
     void test500() {
-        val ax = Some.alert(null, MsgError.of("W01", "Allarme"));
-        log.info("result is: {}", ax);
         val bx = Some.of(null);
         log.info("result is: {}", bx);
-        val cx = Some.of(Failure.of(MsgError.of("E92", "e92")));
+        val cx = Some.of(None.builder().fault(MsgError.of("E92", "e92")));
         log.info("result is: {}", cx);
     }
 }

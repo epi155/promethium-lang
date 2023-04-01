@@ -124,9 +124,9 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchValueBuilder<R> onNotFound(@NotNull Failure fault) {
+        public @NotNull SearchValueBuilder<R> onNotFoundSetError(@NotNull MsgError ce, Object... argv) {
             if (value == null && PmSearchResult.this.fault == null)
-                this.outcome = Hope.of(fault);
+                this.outcome = Hope.failure(ce, argv);
             return this;
         }
 
@@ -156,9 +156,9 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchResultBuilder.NotFound<R> onFound(@NotNull Failure fault) {
+        public @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull MsgError ce, Object...argv) {
             if (value != null)
-                this.outcome = SearchResult.failure(fault);
+                this.outcome = SearchResult.failure(ce, argv);
             return this;
         }
 
@@ -170,16 +170,16 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchResultBuilder<R> onNotFound(@NotNull Failure fault) {
+        public @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull MsgError ce, Object... argv) {
             if (value == null && PmSearchResult.this.fault == null)
-                this.outcome = SearchResult.failure(fault);
+                this.outcome = SearchResult.failure(ce, argv);
             return this;
         }
 
         @Override
         public @NotNull SearchResult<R> build() {
             if (fault != null)
-                return SearchResult.failure(fault);
+                return new PmSearchResult<>(null, fault);
             return outcome;
         }
     }

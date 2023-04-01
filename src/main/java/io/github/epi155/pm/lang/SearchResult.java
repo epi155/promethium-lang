@@ -38,21 +38,9 @@ public interface SearchResult<S> extends SearchResult2 {
      * @return      instance of {@link SearchResult}
      * @param <T>   value type of the object being searched for
      */
-    @Contract("_, _ -> new")
     static <T> @NotNull SearchResult<T> failure(@NotNull MsgError ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmSearchResult<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
-    }
-
-    /**
-     * static constructor indicating that a custom error occurred
-     * @param fault     custom error
-     * @return      instance of {@link SearchResult}
-     * @param <T>   value type of the object being searched for
-     */
-    @Contract(value = "_ -> new", pure = true)
-    static <T> @NotNull SearchResult<T> failure(@NotNull Failure fault) {
-        return new PmSearchResult<>(null, fault);
     }
 
     /**

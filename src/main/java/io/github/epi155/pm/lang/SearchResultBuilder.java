@@ -36,11 +36,12 @@ public interface SearchResultBuilder<R> {
          * sets the result of the new search with the custom error
          * <p>
          *     the error is set only and only if the result of the search is found
-         * </p>
-         * @param fault     custom error
+         *
+         * @param ce    custom error message
+         * @param argv  error parameter
          * @return      instance of partial builder {@link NotFound}
          */
-        @NotNull SearchResultBuilder.NotFound<R> onFound(@NotNull Failure fault);
+        @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull MsgError ce, Object...argv);
     }
 
     /**
@@ -63,9 +64,11 @@ public interface SearchResultBuilder<R> {
          * <p>
          *     the error is set only and only if the result of the search is found
          * </p>
-         * @param fault     custom error
+         *
+         * @param ce    custom error message
+         * @param argv  error parameter
          * @return      instance of partial builder {@link SearchResultBuilder}
          */
-        @NotNull SearchResultBuilder<R> onNotFound(@NotNull Failure fault);
+        @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull MsgError ce, Object... argv);
     }
 }
