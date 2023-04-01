@@ -4,50 +4,97 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 class PmNone extends PmManyError implements None {
-
-    protected PmNone() {
+    private static class NoneHelper {
+        private static final None NONE_INSTANCE = new PmNone();
+    }
+    private PmNone() {
         super();
     }
 
-    protected PmNone(Collection<Failure> errors) {
+    protected PmNone(Collection<? extends Signal> errors) {
         super(errors);
     }
 
-    public @NotNull Glitches onSuccess(Runnable successAction) {
-        if (isSuccess())
+    protected static None none() {
+        return NoneHelper.NONE_INSTANCE;
+    }
+    public @NotNull Glitches onSuccess(@NotNull Runnable successAction) {
+        if (completeWithoutErrors())
             successAction.run();
         return this;
     }
 
-    public @NotNull None ergo(@NotNull Supplier<? extends AnyItem> fcn) {
-        if (isSuccess()) {
-            val any = fcn.get();
-            if (any.isSuccess()) {
-                return new PmNone();
+    @Override
+    public @NotNull Glitches onSuccess(@NotNull Consumer<Collection<Warning>> successAction) {
+        if (completeWithoutErrors()) {
+            successAction.accept(alerts());
+        }
+        return this;
+    }
+    @Override
+    public @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn) {
+        if (completeSuccess()) {    // no errors, no warnings
+            val that = fcn.get();
+            if (that.completeSuccess()) {
+                return none();
             } else {
-                return new PmNone(any.errors());
+                return new PmNone(that.signals());
             }
-        } else {
-            return this;
+        } else if (completeWithErrors()) {  // errors, warnings?
+            return this;    // fcn not executed
+        } else {    // no errors, some warnings
+            val that = fcn.get();
+            if (that.completeSuccess()) {
+                return this;    // keep this warnings
+            } else {
+                return None.builder()
+                    .join(signals())  // this warning
+                    .join(that.signals())  // errors & warning
+                    .build();
+            }
+        }
+    }
+    @Override
+    public @NotNull <R> Some<R> ergoSome(@NotNull Supplier<? extends AnyValue<R>> fcn) {
+        if (completeSuccess()) {
+            return PmSome.of(fcn.get());
+        } else if (completeWithErrors()) {
+            return new PmSome<>(signals());
+        } else /*completeWithWarnings()*/ {
+            val that = fcn.get();
+            return composeOnWarning(that);
         }
     }
 
     public @NotNull None peek(@NotNull Runnable action) {
-        if (isSuccess()) {
+        if (completeWithoutErrors()) {
             action.run();
-            return new PmNone();
+            return none();
         } else {
             return this;
         }
     }
 
     @Override
-    public <R> R mapTo(Supplier<R> onSuccess, Function<Collection<Failure>, R> onFailure) {
-        return isSuccess() ? onSuccess.get() : onFailure.apply(errors());
+    public <R> R mapTo(Function<Collection<Warning>, R> onSuccess, Function<Collection<? extends Signal>, R> onFailure) {
+        if (completeWithErrors()) {
+            return onFailure.apply(signals());  // error & warnings?
+        } else {
+            return onSuccess.apply(alerts());   // warnings?
+        }
     }
-
+    @Deprecated
+    @Override
+    public <R> R mapTo(Supplier<R> onSuccess, Function<Collection<? extends Signal>, R> onFailure) {
+        if (completeWithErrors()) {
+            return onFailure.apply(signals());  // error & warnings?
+        } else {
+            return onSuccess.get();   // warnings?
+        }
+    }
 }

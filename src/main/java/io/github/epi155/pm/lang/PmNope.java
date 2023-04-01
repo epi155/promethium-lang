@@ -18,16 +18,16 @@ class PmNope extends PmSingleError implements Nope {
 
     @Override
     public @NotNull Glitch onSuccess(Runnable action) {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             action.run();
         }
         return this;
     }
 
     public @NotNull Nope ergo(@NotNull Supplier<? extends SingleError> fcn) {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             val one = fcn.get();
-            if (one.isSuccess()) {
+            if (one.completeSuccess()) {
                 return new PmNope();
             } else {
                 return new PmNope(one.fault());
@@ -38,7 +38,7 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     public @NotNull Nope peek(@NotNull Runnable action) {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             action.run();
             return Nope.nope();
         } else {
@@ -48,12 +48,12 @@ class PmNope extends PmSingleError implements Nope {
 
     @Override
     public <R> R mapTo(Supplier<R> onSuccess, Function<Failure, R> onFailure) {
-        return isSuccess() ? onSuccess.get() : onFailure.apply(fault());
+        return completeSuccess() ? onSuccess.get() : onFailure.apply(fault());
     }
 
     @Override
     public void orThrow() throws FailureException {
-        if (!isSuccess()) {
+        if (completeWithErrors()) {
             throw new FailureException(fault());
         }
     }

@@ -7,16 +7,27 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface MsgError {
     /**
-     * Factory constructor
+     * Simple static constructor
      *
      * @param code    error code
      * @param pattern error format message
-     * @return instance of {@link PmMsgError}
+     * @return instance of {@link MsgError}
      */
     static @NotNull MsgError of(@NotNull String code, @NotNull String pattern) {
-        return new PmMsgError(code, pattern);
+        return new PmMsgError(code, 500, pattern);
     }
 
+    /**
+     * Complete static constructor
+     *
+     * @param code      error code
+     * @param status    status code
+     * @param pattern   error format message
+     * @return          instance of {@link MsgError}
+     */
+    static @NotNull MsgError of(@NotNull String code, int status, @NotNull String pattern) {
+        return new PmMsgError(code, status, pattern);
+    }
     /**
      * error code
      *
@@ -30,6 +41,12 @@ public interface MsgError {
      * @param objects error parameters
      * @return final error message
      */
-    String message(Object... objects);
+    String message(Object[] objects);
 
+    /**
+     * status code
+     *
+     * @return  status code
+     */
+    int statusCode();
 }

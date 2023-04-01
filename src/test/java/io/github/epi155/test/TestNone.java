@@ -1,9 +1,6 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.Failure;
-import io.github.epi155.pm.lang.None;
-import io.github.epi155.pm.lang.Nope;
-import io.github.epi155.pm.lang.Some;
+import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +27,7 @@ public class TestNone {
     @Test
     public void test3() {
         val result = None.builder().build()
-            .mapTo(() -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
+            .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
 
         Assertions.assertDoesNotThrow(() -> {
@@ -43,7 +40,7 @@ public class TestNone {
     @Test
     public void test4() {
         val result = None.builder().join(Nope.capture(new NullPointerException())).build()
-            .mapTo(() -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
+            .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 
@@ -99,20 +96,20 @@ public class TestNone {
     public void test7() {
         val some = Some.of(1);
         val none = None.of(some);
-        Assertions.assertEquals(0, none.count());
+        Assertions.assertEquals(0, none.signals().size());
         Assertions.assertFalse(none.summary().isPresent());
 
         val n1 = None.builder()
             .join(Nope.capture(new NullPointerException()))
             .build();
-        Assertions.assertEquals(1, n1.count());
+        Assertions.assertEquals(1, n1.signals().size());
         Assertions.assertTrue(n1.summary().isPresent());
 
         val n2 = None.builder()
             .join(Nope.capture(new NullPointerException()))
             .join(Nope.capture(new IllegalArgumentException()))
             .build();
-        Assertions.assertEquals(2, n2.count());
+        Assertions.assertEquals(2, n2.signals().size());
         Assertions.assertTrue(n2.summary().isPresent());
     }
 }

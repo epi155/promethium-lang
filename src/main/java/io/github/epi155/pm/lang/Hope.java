@@ -19,7 +19,10 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <S>   type of value
      * @return <b>Hope</b> instance
      */
-    static <S> @NotNull Hope<S> of(S value) {
+    static <S> @NotNull Hope<S> of(@NotNull S value) {
+        if (value instanceof Signal) {
+            throw new IllegalArgumentException("the argument cannot be an instance of a "+value.getClass().getSimpleName());
+        }
         return new PmHope<>(value, null);
     }
 
@@ -29,7 +32,9 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param fault error
      * @param <S>   type value in case of success
      * @return <b>Hope</b> instance
+     * @deprecated use {@link Hope#failure(MsgError, Object...)}
      */
+    @Deprecated
     static <S> @NotNull Hope<S> of(@NotNull Failure fault) {
         return new PmHope<>(null, fault);
     }

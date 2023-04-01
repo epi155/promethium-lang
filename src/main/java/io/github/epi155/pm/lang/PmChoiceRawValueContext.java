@@ -17,13 +17,14 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
 
     @Override
     public @NotNull None end() {
-        if (result == null || result.isSuccess()) {
-            return new PmNone();
+        if (result == null || result.completeSuccess()) {
+            return PmNone.none();
         } else {
-            return new PmNone(result.errors());
+            return new PmNone(result.signals());
         }
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate) {
         return new ChoiceValueWhenContext<T>() {
@@ -47,6 +48,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(boolean test) {
         return new ChoiceValueWhenContext<T>() {
@@ -70,6 +72,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueElseContext<T> otherwise() {
         return new ChoiceValueElseContext<T>() {
@@ -93,6 +96,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> ChoiceValueWhenAsContext<U, T> whenInstanceOf(@NotNull Class<U> cls) {
         return new ChoiceValueWhenAsContext<U, T>() {
@@ -116,6 +120,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull T t) {
         return new ChoiceValueWhenContext<T>() {

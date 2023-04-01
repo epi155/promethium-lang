@@ -24,7 +24,9 @@ public interface Nope extends SingleError, OnlyError {
      *
      * @param fault errore
      * @return Nope con errore
+     * @deprecated use {@link Nope#failure(MsgError, Object...)}
      */
+    @Deprecated
     static @NotNull Nope of(@NotNull Failure fault) {
         return new PmNope(fault);
     }

@@ -9,14 +9,7 @@ import java.util.function.Supplier;
 /**
  * Generic interface for classes with error data
  */
-public interface AnyError extends AnyItem {
-
-    /**
-     * amount of errors
-     *
-     * @return errors counted
-     */
-    int count();
+public interface AnyError extends ItemStatus {
 
     /**
      * summary of any errors
@@ -32,9 +25,9 @@ public interface AnyError extends AnyItem {
      * @param action fallible action to be performed
      * @return instance of {@link None} collecting the errors
      */
-    default @NotNull None anyway(@NotNull Supplier<? extends AnyItem> action) {
+    default @NotNull None anyway(@NotNull Supplier<? extends ItemStatus> action) {
         val status = action.get();
-        if (status.isSuccess()) {
+        if (status.completeSuccess()) {
             return None.of(this);
         } else {
             val bld = None.builder();

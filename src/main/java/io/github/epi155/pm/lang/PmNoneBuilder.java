@@ -12,20 +12,21 @@ import java.util.stream.Stream;
 class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
     @Override
     public @NotNull None build() {
-        return new PmNone(errors());
+        return new PmNone(signals());
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> LoopBuilderConsumer<U> iterable(@NotNull Iterable<? extends AnyValue<U>> iterable) {
         return new LoopBuilderConsumer<U>() {
             @Override
-            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 iterable.forEach(u -> consume(u, fcn));
                 return PmNoneBuilder.this;
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 if (maxThread < 1)
                     throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
@@ -36,7 +37,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 val p = new Phaser(1);
                 iterable.forEach(u -> consumeUsingExecutor(u, fcn, executor, p));
                 p.arriveAndAwaitAdvance();
@@ -45,24 +46,29 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
         };
     }
 
-    private <U> void consume(AnyValue<U> u, Function<? super U, ? extends AnyItem> fcn) {
-        if (u.isSuccess())
+    private <U> void consume(@NotNull AnyValue<U> u, Function<? super U, ? extends ItemStatus> fcn) {
+        if (u.completeWithErrors()) {
+            add(u.signals());      // add U error & warning
+        } else {
+            if (! u.completeSuccess()) {
+                add(u.signals());       // add U warning
+            }
             add(fcn.apply(u.value()));
-        else
-            add(u.errors());
+        }
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> LoopBuilderConsumer<U> iterableOf(@NotNull Iterable<? extends U> iterable) {
         return new LoopBuilderConsumer<U>() {
             @Override
-            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 iterable.forEach(u -> add(fcn.apply(u)));
                 return PmNoneBuilder.this;
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 if (maxThread < 1)
                     throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
@@ -73,7 +79,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 val p = new Phaser(1);
                 iterable.forEach(u -> consumeOfUsingExecutor(u, fcn, executor, p));
                 p.arriveAndAwaitAdvance();
@@ -82,7 +88,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
         };
     }
 
-    private <U> void consumeOfUsingExecutor(U u, Function<? super U, ? extends AnyItem> fcn, ExecutorService executor, Phaser p) {
+    private <U> void consumeOfUsingExecutor(U u, Function<? super U, ? extends ItemStatus> fcn, ExecutorService executor, Phaser p) {
         p.register();
         executor.submit(() -> {
             try {
@@ -93,7 +99,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
         });
     }
 
-    private <U> void consumeOfUsingThread(U u, Function<? super U, ? extends AnyItem> fcn, Semaphore s, Phaser p) {
+    private <U> void consumeOfUsingThread(U u, Function<? super U, ? extends ItemStatus> fcn, Semaphore s, Phaser p) {
         try {
             p.register();
             s.acquire();
@@ -110,17 +116,18 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
         }
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> LoopBuilderConsumer<U> stream(@NotNull Stream<? extends AnyValue<U>> stream) {
         return new LoopBuilderConsumer<U>() {
             @Override
-            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 stream.forEach(u -> consume(u, fcn));
                 return PmNoneBuilder.this;
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 if (maxThread < 1)
                     throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
@@ -131,7 +138,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 val p = new Phaser(1);
                 stream.forEach(u -> consumeUsingExecutor(u, fcn, executor, p));
                 p.arriveAndAwaitAdvance();
@@ -141,8 +148,13 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
         };
     }
 
-    private <U> void consumeUsingExecutor(AnyValue<U> u, Function<? super U, ? extends AnyItem> fcn, ExecutorService executor, Phaser p) {
-        if (u.isSuccess()) {
+    private <U> void consumeUsingExecutor(AnyValue<U> u, Function<? super U, ? extends ItemStatus> fcn, ExecutorService executor, Phaser p) {
+        if (u.completeWithErrors()) {
+            add(u.signals());      // add U error & warning
+        } else {
+            if (! u.completeSuccess()) {
+                add(u.signals());       // add U warning
+            }
             p.register();
             executor.submit(() -> {
                 try {
@@ -151,12 +163,16 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
                     p.arriveAndDeregister();
                 }
             });
-        } else
-            add(u.errors());
+        }
     }
 
-    private <U> void consumeUsingThread(AnyValue<U> u, Function<? super U, ? extends AnyItem> fcn, Semaphore s, Phaser p) {
-        if (u.isSuccess()) {
+    private <U> void consumeUsingThread(AnyValue<U> u, Function<? super U, ? extends ItemStatus> fcn, Semaphore s, Phaser p) {
+        if (u.completeWithErrors()) {
+            add(u.signals());      // add U error & warning
+        } else {
+            if (! u.completeSuccess()) {
+                add(u.signals());       // add U warning
+            }
             try {
                 p.register();
                 s.acquire();
@@ -171,21 +187,21 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-        } else
-            add(u.errors());
+        }
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> LoopBuilderConsumer<U> streamOf(@NotNull Stream<? extends U> stream) {
         return new LoopBuilderConsumer<U>() {
             @Override
-            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEach(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 stream.forEach(u -> add(fcn.apply(u)));
                 return PmNoneBuilder.this;
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 if (maxThread < 1)
                     throw new IllegalArgumentException();
                 val s = new Semaphore(maxThread);
@@ -196,7 +212,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             }
 
             @Override
-            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+            public @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 val p = new Phaser(1);
                 stream.forEach(u -> consumeOfUsingExecutor(u, fcn, executor, p));
                 p.arriveAndAwaitAdvance();

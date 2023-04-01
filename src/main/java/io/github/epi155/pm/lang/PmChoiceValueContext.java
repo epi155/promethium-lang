@@ -16,12 +16,13 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         this.result = anyValue;
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate) {
         return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted && predicate.test(parent.value())) {
+                if (parent.completeWithoutErrors() && !branchExecuted && predicate.test(parent.value())) {
                     action.accept(parent.value());
                     branchExecuted = true;
                 }
@@ -30,7 +31,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
             @Override
             public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted && predicate.test(parent.value())) {
+                if (parent.completeWithoutErrors() && !branchExecuted && predicate.test(parent.value())) {
                     result = fcn.apply(parent.value());
                     branchExecuted = true;
                 }
@@ -39,12 +40,13 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(boolean test) {
         return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted && test) {
+                if (parent.completeWithoutErrors() && !branchExecuted && test) {
                     action.accept(parent.value());
                     branchExecuted = true;
                 }
@@ -53,7 +55,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
             @Override
             public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted && test) {
+                if (parent.completeWithoutErrors() && !branchExecuted && test) {
                     result = fcn.apply(parent.value());
                     branchExecuted = true;
                 }
@@ -64,15 +66,27 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
     @Override
     public @NotNull None end() {
-        return result.isSuccess() ? new PmNone() : new PmNone(result.errors());
+        if (parent.completeSuccess()) {
+            return result.completeSuccess() ? PmNone.none() : new PmNone(result.signals());
+        } else if (parent.completeWithErrors()) {
+            return new PmNone(parent.signals());    // parent errors (warnings)
+        } else if (result.completeSuccess()) {
+            return new PmNone(parent.signals());    // parent warnings
+        } else {
+            return None.builder()
+                .join(parent.signals()) // parent warnings
+                .join(result.signals()) // result errors/warnings
+                .build();
+        }
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueElseContext<T> otherwise() {
         return new ChoiceValueElseContext<T>() {
             @Override
             public @NotNull ChoiceValueExitContext accept(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
                     action.accept(parent.value());
                     branchExecuted = true;
                 }
@@ -81,7 +95,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
             @Override
             public @NotNull ChoiceValueExitContext apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = fcn.apply(parent.value());
                     branchExecuted = true;
                 }
@@ -90,12 +104,13 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> ChoiceValueWhenAsContext<U, T> whenInstanceOf(@NotNull Class<U> cls) {
         return new ChoiceValueWhenAsContext<U, T>() {
             @Override
             public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super U> action) {
-                if (parent.isSuccess() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
                     action.accept(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -104,7 +119,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
             @Override
             public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super U, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
                     result = fcn.apply(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -113,12 +128,13 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
+    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull T t) {
         return new ChoiceValueWhenContext<T>() {
             @Override
             public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action) {
-                if (parent.isSuccess() && !branchExecuted && parent.value().equals(t)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().equals(t)) {
                     action.accept(parent.value());
                     branchExecuted = true;
                 }
@@ -127,7 +143,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
             @Override
             public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (parent.isSuccess() && !branchExecuted && parent.value().equals(t)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().equals(t)) {
                     result = fcn.apply(parent.value());
                     branchExecuted = true;
                 }

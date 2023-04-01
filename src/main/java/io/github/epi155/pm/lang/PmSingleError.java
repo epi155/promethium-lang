@@ -2,6 +2,8 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -14,8 +16,28 @@ abstract class PmSingleError implements SingleError {
     }
 
     @Override
-    public boolean isSuccess() {
+    public boolean completeSuccess() {
         return fault == null;
+    }
+
+    @Override
+    public boolean completeWithErrors() {
+        return !completeSuccess();
+    }
+
+    @Override
+    public boolean completeWithoutErrors() {
+        return completeSuccess();
+    }
+
+    @Override
+    public boolean completeWithWarnings() {
+        return false;
+    }
+
+    @Override
+    public Collection<Signal> signals() {
+        return completeSuccess() ? Collections.emptyList() : Collections.singletonList(fault);
     }
 
     @Override

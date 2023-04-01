@@ -5,10 +5,12 @@ package io.github.epi155.pm.lang;
  */
 class PmMsgError implements MsgError {
     private final String code;
+    private final int status;
     private final String pattern;
 
-    protected PmMsgError(String code, String pattern) {
+    protected PmMsgError(String code, int status, String pattern) {
         this.code = code;
+        this.status = status;
         this.pattern = pattern;
     }
 
@@ -16,9 +18,13 @@ class PmMsgError implements MsgError {
     public String code() {
         return code;
     }
+    @Override
+    public String message(Object[] objects) {
+        return PmFormatter.format(pattern, objects);
+    }
 
     @Override
-    public String message(Object... objects) {
-        return PmFormatter.format(pattern, objects);
+    public int statusCode() {
+        return status;
     }
 }

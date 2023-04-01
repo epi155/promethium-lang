@@ -17,7 +17,7 @@ public interface LoopBuilderConsumer<A> {
      * @param fcn fallible function to loop over
      * @return {@link NoneBuilder} instance
      */
-    @NotNull NoneBuilder forEach(@NotNull Function<? super A, ? extends AnyItem> fcn);
+    @NotNull NoneBuilder forEach(@NotNull Function<? super A, ? extends ItemStatus> fcn);
 
     /**
      * It loops in parallel on fallible function and collects errors
@@ -26,7 +26,7 @@ public interface LoopBuilderConsumer<A> {
      * @param fcn       fallible function to loop over
      * @return {@link NoneBuilder} instance
      */
-    @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super A, ? extends AnyItem> fcn);
+    @NotNull NoneBuilder forEachParallel(int maxThread, @NotNull Function<? super A, ? extends ItemStatus> fcn);
 
     /**
      * It loops in parallel on fallible function and collects errors
@@ -35,5 +35,5 @@ public interface LoopBuilderConsumer<A> {
      * @param fcn      fallible function to loop over
      * @return {@link NoneBuilder} instance
      */
-    @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super A, ? extends AnyItem> fcn);
+    @NotNull NoneBuilder forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super A, ? extends ItemStatus> fcn);
 }

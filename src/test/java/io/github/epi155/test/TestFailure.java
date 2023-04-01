@@ -26,8 +26,8 @@ public class TestFailure {
             bld.capture(e);
         }
         val esito = bld.build();
-        Assertions.assertFalse(esito.isSuccess());
-        val ce = esito.errors();
+        Assertions.assertFalse(esito.completeSuccess());
+        val ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
         val e = ce.iterator().next();
         Assertions.assertEquals("java.lang.NullPointerException", e.message());
@@ -48,8 +48,8 @@ public class TestFailure {
             bld.captureHere(e);
         }
         val esito = bld.build();
-        Assertions.assertFalse(esito.isSuccess());
-        val ce = esito.errors();
+        Assertions.assertFalse(esito.completeSuccess());
+        val ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
         val e = ce.iterator().next();
         Assertions.assertEquals("java.lang.NullPointerException", e.message());
@@ -70,8 +70,8 @@ public class TestFailure {
             bld.captureException(e, CUST_ERR);
         }
         val esito = bld.build();
-        Assertions.assertFalse(esito.isSuccess());
-        val ce = esito.errors();
+        Assertions.assertFalse(esito.completeSuccess());
+        val ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
         val e = ce.iterator().next();
         Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
@@ -93,8 +93,8 @@ public class TestFailure {
             bld.captureMessage(e, CUST_ERR);
         }
         val esito = bld.build();
-        Assertions.assertFalse(esito.isSuccess());
-        val ce = esito.errors();
+        Assertions.assertFalse(esito.completeSuccess());
+        val ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
         val e = ce.iterator().next();
         Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
@@ -116,8 +116,8 @@ public class TestFailure {
             bld.captureHereMessage(e, CUST_ERR);
         }
         val esito = bld.build();
-        Assertions.assertFalse(esito.isSuccess());
-        val ce = esito.errors();
+        Assertions.assertFalse(esito.completeSuccess());
+        val ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
         val e = ce.iterator().next();
         Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
@@ -139,8 +139,8 @@ public class TestFailure {
             bld.captureHereException(e, CUST_ERR);
         }
         val esito = bld.build();
-        Assertions.assertFalse(esito.isSuccess());
-        val ce = esito.errors();
+        Assertions.assertFalse(esito.completeSuccess());
+        val ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
         val e = ce.iterator().next();
         Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
@@ -164,7 +164,7 @@ public class TestFailure {
         } catch (Exception e) {
             hope = Hope.capture(e);
         }
-        Assertions.assertFalse(hope.isSuccess());
+        Assertions.assertFalse(hope.completeSuccess());
         val e = hope.fault();
         Assertions.assertTrue(e.message().contains("NullPointerException"));
         val reason = e.place();
@@ -186,7 +186,7 @@ public class TestFailure {
         } catch (Exception e) {
             hope = Hope.captureHere(e);
         }
-        Assertions.assertFalse(hope.isSuccess());
+        Assertions.assertFalse(hope.completeSuccess());
         val e = hope.fault();
         Assertions.assertTrue(e.message().contains("NullPointerException"));
         val reason = e.place();
@@ -310,8 +310,8 @@ public class TestFailure {
     @Test
     @Order(900)
     public void test900() {
-        val some = Some.of(Failure.of(CUST_ERR));
-        Assertions.assertFalse(some.isSuccess());
+        val some = Some.failure(CUST_ERR);
+        Assertions.assertFalse(some.completeSuccess());
     }
 
     @Test
@@ -321,22 +321,22 @@ public class TestFailure {
             crashMethod();
         } catch (Exception e) {
             val hope = Hope.captureHere(e);
-            Assertions.assertFalse(hope.isSuccess());
+            Assertions.assertFalse(hope.completeSuccess());
             val fault = hope.fault();
             val place = fault.place();
             Assertions.assertNotNull(place);
             Assertions.assertTrue(place.contains("test901"));
         }
 
-        val some = Some.of(Failure.of(CUST_ERR));
-        Assertions.assertFalse(some.isSuccess());
+        val some = Some.failure(CUST_ERR);
+        Assertions.assertFalse(some.completeSuccess());
     }
 
     @Test
     @Order(910)
     public void test910() {
-        val none = None.of(Failure.of(CUST_ERR));
-        Assertions.assertFalse(none.isSuccess());
+        val none = None.failure(CUST_ERR);
+        Assertions.assertFalse(none.completeSuccess());
     }
 
     @Test
@@ -346,7 +346,7 @@ public class TestFailure {
             crashMethod();
         } catch (Exception e) {
             val none = None.capture(e);
-            Assertions.assertFalse(none.isSuccess());
+            Assertions.assertFalse(none.completeSuccess());
         }
     }
 
@@ -354,14 +354,14 @@ public class TestFailure {
     @Order(922)
     public void test922() {
         val some = Nope.nope();
-        Assertions.assertTrue(some.isSuccess());
+        Assertions.assertTrue(some.completeSuccess());
     }
 
     @Test
     @Order(920)
     public void test920() {
-        val some = Nope.of(Failure.of(CUST_ERR));
-        Assertions.assertFalse(some.isSuccess());
+        val some = Nope.failure(CUST_ERR);
+        Assertions.assertFalse(some.completeSuccess());
     }
 
     @Test
@@ -371,7 +371,7 @@ public class TestFailure {
             crashMethod();
         } catch (Exception e) {
             val hope = Nope.captureHere(e);
-            Assertions.assertFalse(hope.isSuccess());
+            Assertions.assertFalse(hope.completeSuccess());
             val fault = hope.fault();
             val place = fault.place();
             Assertions.assertNotNull(place);
@@ -390,7 +390,7 @@ public class TestFailure {
         }
         val none = bld.build();
 
-        Assertions.assertFalse(none.isSuccess());
+        Assertions.assertFalse(none.completeSuccess());
     }
 
     @Test

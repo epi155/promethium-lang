@@ -25,7 +25,7 @@ public class TestNopeFailure {
         } catch (Exception e) {
             nope = Nope.capture(e);
         }
-        Assertions.assertFalse(nope.isSuccess());
+        Assertions.assertFalse(nope.completeSuccess());
         val fault = nope.fault();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
@@ -45,7 +45,7 @@ public class TestNopeFailure {
         } catch (Exception e) {
             nope = Nope.captureHere(e);
         }
-        Assertions.assertFalse(nope.isSuccess());
+        Assertions.assertFalse(nope.completeSuccess());
         val fault = nope.fault();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
@@ -64,7 +64,7 @@ public class TestNopeFailure {
         } catch (Exception e) {
             hope = Hope.capture(e);
         }
-        Assertions.assertFalse(hope.isSuccess());
+        Assertions.assertFalse(hope.completeSuccess());
         val fault = hope.fault();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
@@ -83,7 +83,7 @@ public class TestNopeFailure {
         } catch (Exception e) {
             hope = Hope.captureHere(e);
         }
-        Assertions.assertFalse(hope.isSuccess());
+        Assertions.assertFalse(hope.completeSuccess());
         val fault = hope.fault();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();

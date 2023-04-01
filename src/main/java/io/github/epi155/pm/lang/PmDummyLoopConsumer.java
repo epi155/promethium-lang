@@ -13,17 +13,17 @@ class PmDummyLoopConsumer<U, V> implements LoopConsumer<U> {
     }
 
     @Override
-    public @NotNull None forEach(@NotNull Function<? super U, ? extends AnyItem> fcn) {
+    public @NotNull None forEach(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
         return None.of(anyValue);
     }
 
     @Override
-    public @NotNull None forEachParallel(int maxThread, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+    public @NotNull None forEachParallel(int maxThread, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
         return None.of(anyValue);
     }
 
     @Override
-    public @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends AnyItem> fcn) {
+    public @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
         return None.of(anyValue);
     }
 }

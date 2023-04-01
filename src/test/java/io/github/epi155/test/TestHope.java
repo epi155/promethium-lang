@@ -6,7 +6,9 @@ import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 @Slf4j
 public class TestHope {
@@ -113,14 +115,14 @@ public class TestHope {
 
     @Test
     public void test16() {
-        val hope = Hope.of(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+        val hope = Hope.failure(MsgError.of("E01", "Houston we have had a problem"));
         Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(MsgError.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
     public void test17() {
         val hope = Hope.seize(() -> 1);
-        val n = hope.count();
+        val n = hope.signals().size();
         Assertions.assertEquals(0, n);
         val o = hope.summary();
         Assertions.assertFalse(o.isPresent());
@@ -129,9 +131,9 @@ public class TestHope {
     @Test
     public void test18() {
         val hope = Hope.seize(() -> {
-            throw new FaultException(Failure.of(MsgError.of("E01", "Houston we have had a problem")));
+            throw new FaultException(MsgError.of("E01", "Houston we have had a problem"));
         });
-        val n = hope.count();
+        val n = hope.signals().size();
         Assertions.assertEquals(1, n);
         val o = hope.summary();
         Assertions.assertTrue(o.isPresent());
@@ -146,25 +148,33 @@ public class TestHope {
     @Test
     public void test20() {
         val hope = Hope.of(1).mapOf(it -> it + 1);
-        Assertions.assertTrue(hope.isSuccess());
+        Assertions.assertTrue(hope.completeSuccess());
         Assertions.assertEquals(2, hope.value());
         val nope = hope.asNope();
-        Assertions.assertTrue(nope.isSuccess());
+        Assertions.assertTrue(nope.completeSuccess());
         val some = Hope.of(1).mapOut(it -> Some.of(it + 1));
-        Assertions.assertTrue(some.isSuccess());
+        Assertions.assertTrue(some.completeSuccess());
         Assertions.assertEquals(2, some.value());
 
         val some2 = Hope.of(1).mapOut(it -> Some.<Integer>capture(new NullPointerException()));
-        Assertions.assertFalse(some2.isSuccess());
+        Assertions.assertFalse(some2.completeSuccess());
     }
 
     @Test
     public void test21() {
         val hope = Hope.<Integer>capture(new NullPointerException()).mapOf(it -> it + 1);
-        Assertions.assertFalse(hope.isSuccess());
+        Assertions.assertFalse(hope.completeSuccess());
         val nope = hope.asNope();
-        Assertions.assertFalse(nope.isSuccess());
+        Assertions.assertFalse(nope.completeSuccess());
         val some = Hope.<Integer>capture(new NullPointerException()).mapOut(it -> Some.of(it + 1));
-        Assertions.assertFalse(some.isSuccess());
+        Assertions.assertFalse(some.completeSuccess());
+    }
+    @Test
+    public void test22() {
+        val z = Hope.of(1)
+            .ergoSome(u -> Hope.of("0123456789ABCDEF".charAt(u))
+                .ergoSome(v -> Hope.of(BigInteger.probablePrime(v, new Random()))));
+        Assertions.assertTrue(z.completeSuccess());
+        log.info("Result is {}", z.toString());
     }
 }

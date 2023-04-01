@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -102,9 +103,9 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchValueBuilder.NotFound<R> onFound(@NotNull Failure fault) {
+        public @NotNull SearchValueBuilder.NotFound<R> onFoundSetError(@NotNull MsgError ce, Object...argv) {
             if (value != null)
-                this.outcome = Hope.of(fault);
+                this.outcome = Hope.failure(ce, argv);
             return this;
         }
 
@@ -132,13 +133,15 @@ class PmSearchResult<T> implements SearchResult<T>{
         @Override
         public @NotNull Some<R> build() {
             if (fault != null)
-                return Some.of(fault);
+                return new PmSome<>(Collections.singletonList(fault));
             if (raw != null)
                 return Some.of(raw);
-            if (outcome.isSuccess())
+            if (outcome.completeSuccess())
                 return Some.of(outcome.value());
-            else
-                return new PmSome<>(outcome.errors());
+            else if (outcome.completeWithErrors())
+                return new PmSome<>(outcome.signals());
+            else /*outcome.completeWithWarnings()*/
+                return new PmSome<>(outcome.value(), outcome.signals());
         }
     }
 

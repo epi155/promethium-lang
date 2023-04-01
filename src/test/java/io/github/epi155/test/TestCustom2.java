@@ -1,9 +1,9 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.Failure;
 import io.github.epi155.pm.lang.Hope;
 import io.github.epi155.pm.lang.MsgError;
 import io.github.epi155.pm.lang.None;
+import io.github.epi155.pm.lang.Signal;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class TestCustom2 {
                 .onFailure(bld::add);
         }
         None none = bld.build();
-        report(none.errors());
+        report(none.signals());
     }
 
     void example3(CustomReader rd, CustomWriter wr) {
@@ -35,7 +35,7 @@ public class TestCustom2 {
             .forEach(input -> firstStep(input)
                 .ergo(temp -> secondStep(temp)
                     .peek(wr::write)));
-        report(none.errors());
+        report(none.signals());
     }
 
     void example4(CustomReader rd, CustomWriter wr) {
@@ -44,7 +44,7 @@ public class TestCustom2 {
             .forEach(input -> firstStep(input)
                 .map(this::secondStep)
                 .peek(wr::write));
-        report(none.errors());
+        report(none.signals());
     }
 
     void example5(CustomReader rd, CustomWriter wr) {
@@ -54,7 +54,7 @@ public class TestCustom2 {
                 .map(this::secondStep)
                 .peek(wr::write))
             .collect(None.collect());
-        report(none.errors());
+        report(none.signals());
     }
 
     void example6(CustomReader rd, CustomWriter wr) {
@@ -63,10 +63,10 @@ public class TestCustom2 {
             .forEach(input -> firstStep(input)
                 .map(this::secondStep)
                 .peek(wr::write));
-        report(none.errors());
+        report(none.signals());
     }
 
-    private void report(@NotNull Collection<Failure> errors) {
+    private void report(@NotNull Collection<? extends Signal> errors) {
     }
 
     private Hope<CustomOutput> secondStep(TempData tempData) {
@@ -105,7 +105,7 @@ public class TestCustom2 {
                     .map(it->Hope.of(0))
             .end()
             .onSuccess(it -> log.info("Found {}", it));
-        report(none.errors());
+        report(none.signals());
     }
 
     private @NotNull Hope<Optional<Integer>> searchFor(int i) {

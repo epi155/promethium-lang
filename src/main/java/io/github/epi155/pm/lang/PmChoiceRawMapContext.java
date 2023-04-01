@@ -42,10 +42,12 @@ class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
                 result = fcn.apply(origin);
             }
             return () -> {
-                if (result.isSuccess()) {
+                if (result.completeSuccess()) {
                     return new PmSome<>(result.value());
-                } else {
-                    return new PmSome<>(result.errors());
+                } else if (result.completeWithErrors()) {
+                    return new PmSome<>(result.signals());
+                } else /*result.completeWithWarnings()*/ {
+                    return new PmSome<>(result.value(), result.signals());
                 }
             };
         };

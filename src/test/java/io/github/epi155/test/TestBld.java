@@ -6,6 +6,7 @@ import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -22,10 +23,21 @@ public class TestBld {
         bld.value(1);
         val some = bld.build();
 
-        Assertions.assertTrue(some.isSuccess());
+        if (some.completeWithoutErrors()) {
+            val value = some.value();
+            val warnings = some.alerts();
+            // ... action on value and warnings
+        } else {
+            val errors = some.signals();
+            // ... action on errors
+        }
+        some.onSuccess((Integer v, Collection<Warning> w) -> {}).onFailure((Collection<? extends Signal> e) -> {});
+        Integer x = some.mapTo((v, w) -> 0, e -> 1);
+
+        Assertions.assertTrue(some.completeSuccess());
         Assertions.assertEquals(1, some.value());
         val none = some.asNone();
-        Assertions.assertTrue(none.isSuccess());
+        Assertions.assertTrue(none.completeSuccess());
     }
 
     @Test
@@ -38,13 +50,13 @@ public class TestBld {
         bld.join(Nope.nope());
         val none = bld.build();
 
-        Assertions.assertTrue(none.isSuccess());
+        Assertions.assertTrue(none.completeSuccess());
     }
 
     @Test
     public void test3() {
         val result = Some.of(2)
-            .mapTo(k -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
+            .mapTo(k -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 
@@ -56,11 +68,11 @@ public class TestBld {
         fault.setProperty("MissionRun", 13);
         val some = bld.build();
         val result = some
-            .mapTo(k -> "all fine", es -> es.stream().map(Failure::message).collect(Collectors.joining(", ")));
+            .mapTo(k -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
-        Assertions.assertFalse(some.isSuccess());
+        Assertions.assertFalse(some.completeSuccess());
         Assertions.assertThrows(NoSuchElementException.class, some::value);
-        some.errors().forEach(f -> {
+        some.signals().forEach(f -> {
             val name = f.getStrProperty("MissionName");
             val run = f.getProperty("MissionRun", Integer.class);
             val born = f.getStrProperty("MissionLaunch", "Cape Canaveral");
@@ -77,7 +89,7 @@ public class TestBld {
             log.info("dump {}", fault);
         });
         val none = some.asNone();
-        Assertions.assertFalse(none.isSuccess());
+        Assertions.assertFalse(none.completeSuccess());
     }
 
     @Test
@@ -98,7 +110,7 @@ public class TestBld {
     public void test7() {
         val bld = Some.<Integer>builder();
         val some = bld.build();
-        Assertions.assertTrue(some.isSuccess());
+        Assertions.assertTrue(some.completeSuccess());
         Assertions.assertThrows(NoSuchElementException.class, some::value);
     }
 

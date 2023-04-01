@@ -11,6 +11,13 @@ class PmSomeBuilder<T> extends PmAnyBuilder implements SomeBuilder<T> {
     }
 
     public @NotNull Some<T> build() {
-        return isSuccess() ? new PmSome<>(value) : new PmSome<>(super.errors());
+        if (completeSuccess()) {
+            return new PmSome<>(value);
+        } else if (completeWithErrors()) {
+            return new PmSome<>(signals());
+        } else /*completeWithWarnings()*/ {
+            return new PmSome<>(value, signals());
+        }
     }
+
 }

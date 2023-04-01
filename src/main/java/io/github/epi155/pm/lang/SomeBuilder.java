@@ -2,6 +2,8 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 /**
  * Error builder extension for {@link Some}
  *
@@ -29,8 +31,26 @@ public interface SomeBuilder<T> extends ErrorBuilder {
      * @param any object with error(s) payload
      * @return {@link SomeBuilder} instance
      */
-    default @NotNull SomeBuilder<T> join(@NotNull AnyItem any) {
+    default @NotNull SomeBuilder<T> join(@NotNull ItemStatus any) {
         add(any);
+        return this;
+    }
+    /**
+     * Add a collection of {@link Signal}
+     * @param signals   collection of {@link Signal}
+     * @return          builder itself
+     */
+    default @NotNull SomeBuilder<T> join(@NotNull Collection<? extends Signal> signals) {
+        add(signals);
+        return this;
+    }
+    /**
+     * Add a single {@link Signal}
+     * @param signal    {@link Signal}
+     * @return          builder itself
+     */
+    default @NotNull SomeBuilder<T> join(@NotNull Signal signal) {
+        add(signal);
         return this;
     }
 

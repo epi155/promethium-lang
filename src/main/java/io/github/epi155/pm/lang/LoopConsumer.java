@@ -18,7 +18,7 @@ public interface LoopConsumer<E> {
      * @param fcn fallible function to loop over
      * @return {@link None} instance
      */
-    @NotNull None forEach(@NotNull Function<? super E, ? extends AnyItem> fcn);
+    @NotNull None forEach(@NotNull Function<? super E, ? extends ItemStatus> fcn);
 
     /**
      * It loops in parallel on fallible function and collects errors
@@ -27,7 +27,7 @@ public interface LoopConsumer<E> {
      * @param fcn       fallible function to loop over
      * @return {@link None} instance
      */
-    @NotNull None forEachParallel(int maxThread, @NotNull Function<? super E, ? extends AnyItem> fcn);
+    @NotNull None forEachParallel(int maxThread, @NotNull Function<? super E, ? extends ItemStatus> fcn);
 
     /**
      * It loops in parallel on fallible function and collects errors
@@ -36,5 +36,5 @@ public interface LoopConsumer<E> {
      * @param fcn      fallible function to loop over
      * @return {@link None} instance
      */
-    @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super E, ? extends AnyItem> fcn);
+    @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super E, ? extends ItemStatus> fcn);
 }

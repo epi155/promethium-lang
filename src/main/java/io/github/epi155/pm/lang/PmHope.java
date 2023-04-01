@@ -3,6 +3,7 @@ package io.github.epi155.pm.lang;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,7 +28,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     public @NotNull T value() {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             return value;
         } else {
             throw new NoSuchElementException();
@@ -36,7 +37,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     public T orThrow() throws FailureException {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             return value;
         } else {
             throw new FailureException(fault());
@@ -45,57 +46,61 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     public @NotNull <R> Hope<R> map(@NotNull Function<? super T, Hope<R>> fcn) {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             return fcn.apply(value);
         } else {
-            return Hope.of(fault());
+            return new PmHope<>(null, fault());
         }
     }
 
     @Override
     public @NotNull <R> Some<R> mapOut(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
-        if (isSuccess()) {
-            val so = fcn.apply(value);
-            if (so.isSuccess()) {
-                return new PmSome<>(so.value());
-            } else {
-                return new PmSome<>(so.errors());
-            }
+        if (completeSuccess()) {
+            return PmSome.of(fcn.apply(value));
         } else {
-            return Some.of(fault());
+            return new PmSome<>(Collections.singletonList(fault()));
         }
     }
 
     @Override
     public @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
-        return isSuccess() ? Hope.of(fcn.apply(value)) : Hope.of(fault());
+        return completeSuccess() ? Hope.of(fcn.apply(value)) : new PmHope<>(null, fault());
     }
 
     @Override
     public @NotNull Hope<T> peek(@NotNull Consumer<? super T> action) {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             action.accept(value);
         }
         return this;
     }
 
     @Override
-    public @NotNull None ergo(@NotNull Function<? super T, ? extends AnyItem> fcn) {
-        if (isSuccess()) {
+    public @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
+        if (completeSuccess()) {
             val many = fcn.apply(value);
-            if (many.isSuccess()) {
-                return new PmNone();
+            if (many.completeSuccess()) {
+                return PmNone.none();
             } else {
-                return new PmNone(many.errors());
+                return new PmNone(many.signals());
             }
         } else {
-            return None.of(fault());
+            return new PmNone(Collections.singletonList(fault()));
+        }
+    }
+
+    @Override
+    public @NotNull <R> Some<R> ergoSome(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
+        if (completeSuccess()) {
+            return PmSome.of(fcn.apply(value));
+        } else /*completeWithErrors()*/ {   // completeWithWarnings is always false
+            return new PmSome<>(signals());
         }
     }
 
     @Override
     public @NotNull Glitch onSuccess(@NotNull Consumer<? super T> action) {
-        if (isSuccess()) {
+        if (completeSuccess()) {
             action.accept(value);
         }
         return this.new GlitchImpl();
@@ -104,12 +109,12 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     @Override
     @NotNull
     public Nope asNope() {
-        return isSuccess() ? new PmNope() : new PmNope(fault());
+        return completeSuccess() ? new PmNope() : new PmNope(fault());
     }
 
     @Override
     public <R> R mapTo(Function<T, R> onSuccess, Function<Failure, R> onFailure) {
-        return isSuccess() ? onSuccess.apply(value) : onFailure.apply(fault());
+        return completeSuccess() ? onSuccess.apply(value) : onFailure.apply(fault());
     }
 
     @Override
@@ -121,6 +126,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     public @NotNull <R> ChoiceMapContext<T, R> choiceMap() {
         return new PmChoiceMapContext<>(this);
     }
+
 
     class GlitchImpl implements Glitch {
 

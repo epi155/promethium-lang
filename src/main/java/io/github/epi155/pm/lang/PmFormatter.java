@@ -11,7 +11,6 @@ final class PmFormatter {
     private static final char ESCAPE_CHAR = '\\';
 
     private PmFormatter() {}
-
     /**
      * Assumes that argArray only contains arguments with no throwable as last element.
      *

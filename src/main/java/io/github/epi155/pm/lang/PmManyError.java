@@ -1,51 +1,65 @@
 package io.github.epi155.pm.lang;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-abstract class PmManyError implements ManyErrors, Glitches {
-    private final Collection<Failure> errors;
+abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches {
 
     protected PmManyError() {
-        this.errors = Collections.emptyList();
+        super();
     }
 
-    protected PmManyError(Collection<Failure> errors) {
-        this.errors = Collections.unmodifiableCollection(errors);
-    }
-
-    @Override
-    public boolean isSuccess() {
-        return errors.isEmpty();
+    protected PmManyError(Collection<? extends Signal> signals) {
+        super(signals);
     }
 
     @Override
-    public int count() {
-        return errors.size();
+    public void onFailure(@NotNull Consumer<Collection<? extends Signal>> signalAction) {
+        if (completeWithErrors())
+            signalAction.accept(signals());
     }
 
-    @Override
-    public @NotNull Collection<Failure> errors() {
-        return errors;
-    }
-
-    @Override
-    public void onFailure(@NotNull Consumer<Collection<Failure>> errorAction) {
-        if (!isSuccess())
-            errorAction.accept(errors());
-    }
 
     @Override
     public @NotNull Optional<String> summary() {
-        if (errors.isEmpty()) return Optional.empty();
-        int size = errors.size();
-        if (size > 1) return Optional.of(String.format("%d errors found", size));
-        Failure error = errors.iterator().next();
-        return Optional.of(error.message());
+        if (completeSuccess()) return Optional.empty();
+        if (completeWithoutErrors()) {
+            val nmWrn = signals().size();
+            if (nmWrn > 1) return Optional.of(String.format("%d warnings found", nmWrn));
+            Signal alert = signals().iterator().next();
+            return Optional.of(alert.message());
+        }
+        val alerts = alerts();
+        val nmSig = signals().size();
+        val nmWrn = alerts.size();
+        val nmErr = nmSig - nmWrn;
+        if (nmWrn == 0) {
+            if (nmErr > 1) return Optional.of(String.format("%d errors found", nmErr));
+            Signal error = signals().iterator().next();
+            return Optional.of(error.message());
+        } else {
+            return Optional.of(String.format("%d error(s), %d warning(s) found", nmErr, nmWrn));
+        }
     }
 
+    protected  <R> Some<R> composeOnWarning(@NotNull AnyValue<R> that) {
+        if (that.completeSuccess()) {
+            return new PmSome<>(that.value(), signals());     // this warning
+        } else if (that.completeWithErrors()) {
+            return Some.<R>builder()
+                .join(signals())        // this warning
+                .join(that.signals())   // that error (warning)
+                .build();
+        } else /*that.completeWithWarnings()*/{
+            return Some.<R>builder()
+                .join(signals())        // this warning
+                .join(that.signals())   // that warning
+                .value(that.value())
+                .build();
+        }
+    }
 }

@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
@@ -21,8 +22,28 @@ public interface NoneBuilder extends ErrorBuilder {
      * @param any object with error(s) payload
      * @return {@link NoneBuilder} instance
      */
-    default @NotNull NoneBuilder join(@NotNull AnyItem any) {
+    default @NotNull NoneBuilder join(@NotNull ItemStatus any) {
         add(any);
+        return this;
+    }
+
+    /**
+     * Add a collection of {@link Signal}
+     * @param signals   collection of {@link Signal}
+     * @return          builder itself
+     */
+    default @NotNull NoneBuilder join(@NotNull Collection<? extends Signal> signals) {
+        add(signals);
+        return this;
+    }
+
+    /**
+     * Add a single {@link Signal}
+     * @param signal    {@link Signal}
+     * @return          builder itself
+     */
+    default @NotNull NoneBuilder join(@NotNull Signal signal) {
+        add(signal);
         return this;
     }
 

@@ -30,7 +30,7 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * @return {@link LoopConsumer} instance
      */
     default <U> LoopConsumer<U> iterable(@NotNull Function<? super T, Iterable<? extends AnyValue<U>>> src) {
-        return isSuccess() ? None.iterable(src.apply(value())) : new PmDummyLoopConsumer<>(this);
+        return completeWithoutErrors() ? None.iterable(src.apply(value())) : new PmDummyLoopConsumer<>(this);
     }
 
     /**
@@ -41,7 +41,7 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * @return {@link LoopConsumer} instance
      */
     default <U> LoopConsumer<U> iterableOf(@NotNull Function<? super T, Iterable<? extends U>> src) {
-        return isSuccess() ? None.iterableOf(src.apply(value())) : new PmDummyLoopConsumer<>(this);
+        return completeWithoutErrors() ? None.iterableOf(src.apply(value())) : new PmDummyLoopConsumer<>(this);
     }
 
     /**
@@ -52,7 +52,7 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * @return {@link LoopConsumer} instance
      */
     default <U> LoopConsumer<U> streamOf(@NotNull Function<? super T, Stream<? extends U>> src) {
-        return isSuccess() ? None.streamOf(src.apply(value())) : new PmDummyLoopConsumer<>(this);
+        return completeWithoutErrors() ? None.streamOf(src.apply(value())) : new PmDummyLoopConsumer<>(this);
     }
 
     /**
@@ -63,7 +63,7 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * @return {@link LoopConsumer} instance
      */
     default <U> LoopConsumer<U> stream(@NotNull Function<? super T, Stream<? extends AnyValue<U>>> src) {
-        return isSuccess() ? None.stream(src.apply(value())) : new PmDummyLoopConsumer<>(this);
+        return completeWithoutErrors() ? None.stream(src.apply(value())) : new PmDummyLoopConsumer<>(this);
     }
 
     /**
@@ -71,9 +71,20 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * if the function ends with errors, these errors are returned.
      * In the presence of errors, the function is not called, and the initial errors are returned.
      *
-     * @param fcn transform value to {@link AnyItem}
+     * @param fcn transform value to {@link ItemStatus}
      * @return {@link None} instance, if this has an error,
      * the transformation is not called and the result has the original error
      */
-    @NotNull None ergo(@NotNull Function<? super T, ? extends AnyItem> fcn);
+    @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
+
+    /**
+     * If there are no errors and the value is present, apply the function to the value,
+     * if the function ends with errors, these errors are returned.
+     * In the presence of errors, the function is not called, and the initial errors are returned.
+     *
+     * @param fcn   function that transforms the value into {@link AnyValue}
+     * @return  {@link Some} instance
+     * @param <R> {@link Some} type
+     */
+    @NotNull <R> Some<R> ergoSome(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
 }

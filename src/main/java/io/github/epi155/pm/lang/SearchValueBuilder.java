@@ -41,15 +41,18 @@ public interface SearchValueBuilder<R> {
          * @return      instance of partial builder {@link NotFound}
          */
         @NotNull SearchValueBuilder.NotFound<R> onFoundOf(@NotNull Function<? super S, ? extends R> func);
+
         /**
          * set custom error for final value
          * <p>
          *     the error is set only and only if the result of the search is found
          * </p>
-         * @param fault     custom error
+         *
+         * @param ce    custom error message
+         * @param argv  error parameter
          * @return      instance of partial builder {@link NotFound}
          */
-        @NotNull SearchValueBuilder.NotFound<R> onFound(@NotNull Failure fault);
+        @NotNull SearchValueBuilder.NotFound<R> onFoundSetError(@NotNull MsgError ce, Object...argv);
     }
 
     /**

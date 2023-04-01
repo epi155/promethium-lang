@@ -45,7 +45,7 @@ public class TestFind {
             .onFound(s -> Hope.of((int) s.charAt(0)))
             .onNotFound(() -> Hope.of(0))
             .build();
-        Assertions.assertTrue(value.isSuccess());
+        Assertions.assertTrue(value.completeSuccess());
         Assertions.assertEquals(65, value.value());
     }
     @Test
@@ -56,7 +56,7 @@ public class TestFind {
             .onFound(s -> Hope.of((int) s.charAt(0)))
             .onNotFound(() -> Hope.of(0))
             .build();
-        Assertions.assertTrue(value.isSuccess());
+        Assertions.assertTrue(value.completeSuccess());
         Assertions.assertEquals(0, value.value());
     }
     @Test
@@ -67,7 +67,7 @@ public class TestFind {
             .onFound(s -> Hope.of((int) s.charAt(0)))
             .onNotFound(() -> Hope.of(0))
             .build();
-        Assertions.assertFalse(value.isSuccess());
+        Assertions.assertFalse(value.completeSuccess());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestFind {
             .onFoundOf(s -> (int) s.charAt(0))
             .onNotFoundOf(() -> 0)
             .build();
-        Assertions.assertTrue(value.isSuccess());
+        Assertions.assertTrue(value.completeSuccess());
         Assertions.assertEquals(65, value.value());
     }
     @Test
@@ -89,7 +89,7 @@ public class TestFind {
             .onFoundOf(s -> (int) s.charAt(0))
             .onNotFoundOf(() -> 0)
             .build();
-        Assertions.assertTrue(value.isSuccess());
+        Assertions.assertTrue(value.completeSuccess());
         Assertions.assertEquals(0, value.value());
     }
 
@@ -101,27 +101,27 @@ public class TestFind {
             .onFound(s -> Hope.of((int) s.charAt(0)))
             .onNotFound(() -> Hope.of(0))
             .build();
-        Assertions.assertFalse(value.isSuccess());
+        Assertions.assertFalse(value.completeSuccess());
     }
     @Test
     public void testFound4() {
         SearchResult<String> result = SearchResult.of("A");
         Some<Integer> value = result
             .<Integer>valueBuilder()
-            .onFound(Failure.of(MY_FAULT))
+            .onFoundSetError(MY_FAULT)
             .onNotFound(Failure.of(MY_FAULT))
             .build();
-        Assertions.assertFalse(value.isSuccess());
+        Assertions.assertFalse(value.completeSuccess());
     }
     @Test
     public void testNotFound4() {
         SearchResult<String> result = SearchResult.empty();
         Some<Integer> value = result
             .<Integer>valueBuilder()
-            .onFound(Failure.of(MY_FAULT))
+            .onFoundSetError(MY_FAULT)
             .onNotFound(Failure.of(MY_FAULT))
             .build();
-        Assertions.assertFalse(value.isSuccess());
+        Assertions.assertFalse(value.completeSuccess());
     }
 
     @Test

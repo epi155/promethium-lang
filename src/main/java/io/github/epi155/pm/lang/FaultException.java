@@ -1,5 +1,7 @@
 package io.github.epi155.pm.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Unchecked exception Failure style
  */
@@ -17,6 +19,17 @@ public class FaultException extends RuntimeException {
      */
     public FaultException(Failure fault) {
         this.fault = fault;
+    }
+
+    /**
+     * Contructor with custom error
+     *
+     * @param ce    message pattern
+     * @param argv  message arguments
+     */
+    public FaultException(@NotNull MsgError ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        this.fault = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
     }
 
 }

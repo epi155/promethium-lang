@@ -26,16 +26,35 @@ public interface None extends ManyErrors, OnlyError {
     }
 
     /**
-     * Static constructor
+     * Static constructor without errors
+     * @return  instance of {@link None} without errors
+     */
+    static @NotNull None none() {
+        return PmNone.none();
+    }
+    /**
+     * Static constructor with error
      *
-     * @param ce      custom error
-     * @param objects error parameters
-     * @return instance of {@link None}
+     * @param ce        custom error
+     * @param objects   error parameters
+     * @return          instance of {@link None} with error
      */
     static @NotNull None failure(@NotNull MsgError ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(fail));
+    }
+
+    /**
+     * Static constructor with warning
+     * @param ce        custom warning
+     * @param objects   warning parameters
+     * @return          instance of {@link None} with warning
+     */
+    static @NotNull None alert(@NotNull MsgError ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        return new PmNone(Collections.singletonList(warn));
     }
 
     /**
@@ -51,11 +70,13 @@ public interface None extends ManyErrors, OnlyError {
     /**
      * Static constructor
      *
-     * @param fault error
+     * @param signal error
      * @return instance of {@link None}
+     * @deprecated use {@link None#failure(MsgError, Object...)} or {@link None#alert(MsgError, Object...)}
      */
-    static @NotNull None of(@NotNull Failure fault) {
-        return new PmNone(Collections.singletonList(fault));
+    @Deprecated
+    static @NotNull None of(@NotNull Signal signal) {
+        return new PmNone(Collections.singletonList(signal));
     }
 
     /**
@@ -64,9 +85,13 @@ public interface None extends ManyErrors, OnlyError {
      * @param item instance of {@link AnyValue}
      * @return instance of {@link None}
      */
-    static @NotNull None of(@NotNull AnyItem item) {
+    static @NotNull None of(@NotNull ItemStatus item) {
         if (item instanceof None) return (None) item;
-        return item.isSuccess() ? new PmNone() : new PmNone(item.errors());
+        if (item.completeSuccess()) {
+            return PmNone.none();
+        } else {
+            return new PmNone(item.signals());
+        }
     }
 
     /**
@@ -94,7 +119,7 @@ public interface None extends ManyErrors, OnlyError {
      *
      * @return collector.
      */
-    static @NotNull Collector<AnyItem, NoneBuilder, None> collect() {
+    static @NotNull Collector<ItemStatus, NoneBuilder, None> collect() {
         return new PmCollector();
     }
 
@@ -108,17 +133,40 @@ public interface None extends ManyErrors, OnlyError {
      * @return Glitches to set the action on failure
      * @see Glitches#onFailure(Consumer)
      */
-    @NotNull Glitches onSuccess(Runnable successAction);
+    @NotNull Glitches onSuccess(@NotNull Runnable successAction);
+
+    /**
+     * Set the action on success
+     * <p>
+     * In the event of an error, the action is not performed.
+     * </p>
+     *
+     * @param successAction     action to be taken if successful
+     * @return Glitches to set the action on failure
+     * @see Glitches#onFailure(Consumer)
+     */
+    @NotNull Glitches onSuccess(@NotNull Consumer<Collection<Warning>> successAction);
 
     /**
      * If there are no errors, the supplier is called,
      * if this ends with errors, these errors are returned.
      * In the presence of errors, the supplier is not called, and the initial errors are returned
      *
-     * @param fcn producer {@link AnyError}
+     * @param fcn producer {@link ItemStatus}
      * @return {@link None} instance,
      */
-    @NotNull None ergo(@NotNull Supplier<? extends AnyItem> fcn);
+    @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn);
+
+    /**
+     * If there are no errors, the supplier is called,
+     * if this ends with errors, these errors are returned.
+     * In the presence of errors, the supplier is not called, and the initial errors are returned
+     *
+     * @param fcn   producer {@link AnyValue}
+     * @return      {@link Some} instance
+     * @param <R>   {@link Some} type
+     */
+    @NotNull <R> Some<R> ergoSome(@NotNull Supplier<? extends AnyValue<R>> fcn);
 
     /**
      * If there are no errors, the action is performed.
@@ -137,7 +185,18 @@ public interface None extends ManyErrors, OnlyError {
      * @param <R>       result type
      * @return result
      */
-    <R> R mapTo(Supplier<R> onSuccess, Function<Collection<Failure>, R> onFailure);
+    <R> R mapTo(Function<Collection<Warning>, R> onSuccess, Function<Collection<? extends Signal>, R> onFailure);
+
+    /**
+     * constructs a result using two alternative methods depending on whether the operation completed successfully or failed
+     *
+     * @param onSuccess success builder
+     * @param onFailure failure builder
+     * @return result
+     * @param <R>       result type
+     */
+    @Deprecated
+    <R> R mapTo(Supplier<R> onSuccess, Function<Collection<? extends Signal>, R> onFailure);
 
     /**
      * It generates a {@link LoopConsumer} instance to loop on

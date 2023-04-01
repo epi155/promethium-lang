@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * Error builder interface
  */
-public interface ErrorBuilder extends AnyItem {
+public interface ErrorBuilder extends ItemStatus {
     /**
      * Add error when runnable throw an {@link FailureException}
      *
@@ -22,21 +22,21 @@ public interface ErrorBuilder extends AnyItem {
      *
      * @param any object with potential error payload
      */
-    void add(@NotNull AnyItem any);
+    void add(@NotNull ItemStatus any);
 
     /**
      * Add failure error
      *
-     * @param failure error detail
+     * @param signal error detail
      */
-    void add(@NotNull Failure failure);
+    void add(@NotNull Signal signal);
 
     /**
      * Add many errors
      *
      * @param collection collection of error detail
      */
-    void add(@NotNull Collection<Failure> collection);
+    void add(@NotNull Collection<? extends Signal> collection);
 
     /**
      * Add error from exception.
@@ -103,14 +103,22 @@ public interface ErrorBuilder extends AnyItem {
     void captureMessage(@NotNull Throwable e, @NotNull MsgError ce, Object... objects);
 
     /**
-     * Add error from custom error message
+     * Add error from custom message
      *
      * @param ce      custom error
-     * @param objects error parameters
+     * @param objects message parameters
      * @return {@link Failure} instance
      */
     @NotNull Failure fault(@NotNull MsgError ce, Object... objects);
 
+    /**
+     * Add warning from custom message
+     *
+     * @param ce      custom error
+     * @param objects message parameters
+     * @return {@link Warning} instance
+     */
+    @NotNull Warning alert(@NotNull MsgError ce, Object... objects);
     /**
      * Flat an {@link Hope} instance, adding error if present.
      * To be used with {@link Stream#flatMap(Function)}
@@ -130,4 +138,5 @@ public interface ErrorBuilder extends AnyItem {
      * @return empty stream on errors, singleton stream when no errors
      */
     <T> @NotNull Stream<T> flat(@NotNull Some<T> some);
+
 }

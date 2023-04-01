@@ -34,8 +34,8 @@ public class FailureException extends Exception {
     public FailureException(Exception e, @NotNull MsgError ce, Object... objects) {
         super(ce.message(objects), e);
         this.code = ce.code();
-        this.status = PmFailure.statusOf(ce);
-        this.ste = PmFailure.guessLine(e, Thread.currentThread().getStackTrace()[PmAnyBuilder.J_LOCATE]);
+        this.status = ce.statusCode();
+        this.ste = PmSignal.guessLine(e, Thread.currentThread().getStackTrace()[PmAnyBuilder.J_LOCATE]);
     }
 
     /**
@@ -46,8 +46,8 @@ public class FailureException extends Exception {
     public FailureException(Exception e) {
         super(e);
         this.code = Failure.JAVA_EXCEPTION_CODE;
-        this.status = PmFailure.JAVA_EXCEPTION_STATUS;
-        this.ste = PmFailure.guessLine(e, Thread.currentThread().getStackTrace()[PmAnyBuilder.J_LOCATE]);
+        this.status = PmSignal.JAVA_EXCEPTION_STATUS;
+        this.ste = PmSignal.guessLine(e, Thread.currentThread().getStackTrace()[PmAnyBuilder.J_LOCATE]);
     }
 
     /**
@@ -59,7 +59,7 @@ public class FailureException extends Exception {
     public FailureException(@NotNull MsgError ce, Object... objects) {
         super(ce.message(objects));
         this.code = ce.code();
-        this.status = PmFailure.statusOf(ce);
+        this.status = ce.statusCode();
         this.ste = Thread.currentThread().getStackTrace()[PmAnyBuilder.J_LOCATE];
     }
 
