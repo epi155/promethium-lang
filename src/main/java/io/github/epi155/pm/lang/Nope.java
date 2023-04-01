@@ -101,6 +101,30 @@ public interface Nope extends SingleError, OnlyError {
      */
     @NotNull Nope ergo(@NotNull Supplier<? extends SingleError> fcn);
 
+    /**
+     * If there are no errors, the supplier is called,
+     * if this ends with errors, these errors are returned.
+     * In the presence of errors, the supplier is not called, and the initial errors are returned
+     *
+     * <p>
+     *     The method allows to compose the Nope with a Hope.
+     *     Using an imperative outcome evaluation we would have
+     * <pre>
+     *      Nope na = compute();
+     *      Hope&lt;B&gt; sb;
+     *      if (na.completeWithoutErrors()) {
+     *          sb = n2sb();    // Hope&lt;B&gt; n2sb()
+     *      } else {
+     *          sb = Hope.failure(na);
+     *      } </pre>
+     *      The method simplifies it to
+     * <pre>
+     *      Hope&lt;B&gt; kb = compute().&lt;B&gt;map(this::n2sb); </pre>
+     *
+     * @param fcn   producer {@link Hope}
+     * @return      {@link Hope} instance
+     * @param <R>   {@link Hope} type
+     */
     @NotNull <R> Hope<R> map(@NotNull Supplier<Hope<R>> fcn);
 
     /**

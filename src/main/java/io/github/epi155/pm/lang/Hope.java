@@ -163,12 +163,10 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      *          hb = a2b(ha.value());           // Hope&lt;B&gt; a2b(A value);
      *      } else {
      *          hb = Hope.&lt;B&gt;failure(ha);
-     *      }
-     * </pre>
+     *      } </pre>
      *      The method simplifies it to
      * <pre>
-     *      Hope&lt;B&gt; hb = computeA().map(this::a2b);
-     * </pre>
+     *      Hope&lt;B&gt; hb = computeA().map(this::a2b); </pre>
      *
      * @param fcn transform value to result {@link Hope}
      * @param <R> result type

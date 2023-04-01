@@ -122,7 +122,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
         return new PmSome<>(value);
     }
 
-    static <U> @NotNull Some<U> ofHope(@NotNull Hope<U> u) {
+    static <U> @NotNull Some<U> pull(@NotNull Hope<U> u) {
         return PmSome.of(u);
 //        if (u.completeWithoutErrors()) {
 //            return new PmSome<>(u.value());

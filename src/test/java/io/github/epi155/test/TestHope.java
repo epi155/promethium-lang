@@ -18,7 +18,7 @@ class TestHope {
     @Test
     void test1() {
         Hope.of(1)
-            .onSuccess(i -> log.info("All fine"))
+            .onSuccess(i -> Assertions.assertEquals(1, i))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
 
@@ -31,9 +31,10 @@ class TestHope {
 
     @Test
     void test3() {
-        val result = Hope.of(1)
+        String result = Hope.of(1)
             .mapTo(i -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
+        Assertions.assertEquals("Result is all fine", result);
     }
 
     @Test
@@ -220,7 +221,7 @@ class TestHope {
         }
         Some<B> kb = Some.of(a).<B>map(this::a2sb);
         @NotNull Hope<A> ha = Hope.of(a);
-        Some<A> ss = Some.ofHope(ha);
+        Some<A> ss = Some.pull(ha);
     }
 
     private <B, A> Some<B> a2sb(A value) {
