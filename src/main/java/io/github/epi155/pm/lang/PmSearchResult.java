@@ -103,7 +103,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchValueBuilder.NotFound<R> onFoundSetError(@NotNull Nuntium ce, Object...argv) {
+        public @NotNull SearchValueBuilder.NotFound<R> onFoundSetError(@NotNull CustMsg ce, Object...argv) {
             if (value != null)
                 this.outcome = Hope.failure(ce, argv);
             return this;
@@ -124,7 +124,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchValueBuilder<R> onNotFoundSetError(@NotNull Nuntium ce, Object... argv) {
+        public @NotNull SearchValueBuilder<R> onNotFoundSetError(@NotNull CustMsg ce, Object... argv) {
             if (value == null && PmSearchResult.this.fault == null)
                 this.outcome = Hope.failure(ce, argv);
             return this;
@@ -156,7 +156,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull Nuntium ce, Object...argv) {
+        public @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull CustMsg ce, Object...argv) {
             if (value != null)
                 this.outcome = SearchResult.failure(ce, argv);
             return this;
@@ -170,7 +170,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
-        public @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull Nuntium ce, Object... argv) {
+        public @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull CustMsg ce, Object... argv) {
             if (value == null && PmSearchResult.this.fault == null)
                 this.outcome = SearchResult.failure(ce, argv);
             return this;

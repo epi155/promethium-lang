@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class TestConcat {
-    static final Nuntium NEG = Nuntium.of("NEG", "Negative at {}");
+    static final CustMsg NEG = CustMsg.of("NEG", "Negative at {}");
 
     @Test
     public void test01() {

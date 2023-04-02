@@ -40,33 +40,33 @@ class PmFailure extends PmSignal implements Failure {
         }
     }
 
-    protected static @NotNull Failure ofMessage(@NotNull Throwable t, String packagePrefix, @NotNull Nuntium ce, Object[] objects) {
+    protected static @NotNull Failure ofMessage(@NotNull Throwable t, String packagePrefix, @NotNull CustMsg ce, Object[] objects) {
         String code = ce.code();
         String text = ce.message(objects) + " >> " + t.getMessage();
         StackTraceElement ste = scan(t, packagePrefix);
         return new PmFailure(code, ce.statusCode(), text, ste);
     }
 
-    protected static @NotNull Failure ofException(@NotNull Throwable t, String packagePrefix, @NotNull Nuntium ce, Object[] objects) {
+    protected static @NotNull Failure ofException(@NotNull Throwable t, String packagePrefix, @NotNull CustMsg ce, Object[] objects) {
         String code = ce.code();
         String text = ce.message(objects) + " >> " + t;
         StackTraceElement ste = scan(t, packagePrefix);
         return new PmFailure(code, ce.statusCode(), text, ste);
     }
 
-    protected static @NotNull Failure ofMessage(StackTraceElement ste, @NotNull Throwable t, @NotNull Nuntium ce, Object[] objects) {
+    protected static @NotNull Failure ofMessage(StackTraceElement ste, @NotNull Throwable t, @NotNull CustMsg ce, Object[] objects) {
         String code = ce.code();
         String text = ce.message(objects) + " >> " + t.getMessage();
         return new PmFailure(code, ce.statusCode(), text, ste);
     }
 
-    protected static @NotNull Failure ofException(StackTraceElement ste, @NotNull Throwable t, @NotNull Nuntium ce, Object[] objects) {
+    protected static @NotNull Failure ofException(StackTraceElement ste, @NotNull Throwable t, @NotNull CustMsg ce, Object[] objects) {
         String code = ce.code();
         String text = ce.message(objects) + " >> " + t;
         return new PmFailure(code, ce.statusCode(), text, ste);
     }
 
-    protected static @NotNull Failure of(StackTraceElement ste, @NotNull Nuntium ce, Object... objects) {
+    protected static @NotNull Failure of(StackTraceElement ste, @NotNull CustMsg ce, Object... objects) {
         String code = ce.code();
         String text = ce.message(objects);
         return new PmFailure(code, ce.statusCode(), text, ste);

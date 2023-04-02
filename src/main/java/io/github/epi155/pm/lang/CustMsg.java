@@ -5,16 +5,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Custom message error or warning
  */
-public interface Nuntium {
+public interface CustMsg {
     /**
      * Simple static constructor
      *
      * @param code    error(warning) code
      * @param pattern error(waring) format message
-     * @return instance of {@link Nuntium}
+     * @return instance of {@link CustMsg}
      */
-    static @NotNull Nuntium of(@NotNull String code, @NotNull String pattern) {
-        return new PmNuntium(code, 500, pattern);
+    static @NotNull CustMsg of(@NotNull String code, @NotNull String pattern) {
+        return new PmCustMsg(code, 500, pattern);
     }
 
     /**
@@ -23,10 +23,10 @@ public interface Nuntium {
      * @param code      message code
      * @param status    message status code
      * @param pattern   message format
-     * @return          instance of {@link Nuntium}
+     * @return          instance of {@link CustMsg}
      */
-    static @NotNull Nuntium of(@NotNull String code, int status, @NotNull String pattern) {
-        return new PmNuntium(code, status, pattern);
+    static @NotNull CustMsg of(@NotNull String code, int status, @NotNull String pattern) {
+        return new PmCustMsg(code, status, pattern);
     }
     /**
      * message code

@@ -1,12 +1,8 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.FailureException;
-import io.github.epi155.pm.lang.Hope;
-import io.github.epi155.pm.lang.Nuntium;
-import io.github.epi155.pm.lang.Some;
+import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +23,7 @@ class TestHope {
 
     @Test
     void test2() {
-        Hope.failure(Nuntium.of("E01", "Houston we have had a problem"))
+        Hope.failure(CustMsg.of("E01", "Houston we have had a problem"))
             .onSuccess(i -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -43,7 +39,7 @@ class TestHope {
 
     @Test
     void test4() {
-        val result = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"))
+        val result = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"))
             .mapTo(
                     i -> "all fine",
                     e -> String.format("oops %s", e.message()));
@@ -60,7 +56,7 @@ class TestHope {
 
     @Test
     void test6() {
-        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertThrows(FailureException.class, hope::orThrow);
     }
 
@@ -72,7 +68,7 @@ class TestHope {
 
     @Test
     void test8() {
-        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
         hope.peek(i -> log.info("to be continue"));
         Assertions.assertTrue(hope.completeWithErrors());
         if (hope.completeWithErrors()) {
@@ -106,7 +102,7 @@ class TestHope {
 
     @Test
     void test12() {
-        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
         hope.ergo(Hope::of);
     }
 
@@ -120,7 +116,7 @@ class TestHope {
 
     @Test
     void test14() {
-        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
+        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = hope.fault();
         });
@@ -129,13 +125,13 @@ class TestHope {
     @Test
     void test15() {
         val hope = Hope.of(1);
-        Assertions.assertDoesNotThrow(() -> hope.orThrow(fault -> new FailureException(Nuntium.of("E02", "Error is {}"), fault.message())));
+        Assertions.assertDoesNotThrow(() -> hope.orThrow(fault -> new FailureException(CustMsg.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
     void test16() {
-        val hope = Hope.failure(Nuntium.of("E01", "Houston we have had a problem"));
-        Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(Nuntium.of("E02", "Error is {}"), fault.message())));
+        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
+        Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(CustMsg.of("E02", "Error is {}"), fault.message())));
     }
 
     @Test
@@ -176,38 +172,54 @@ class TestHope {
         Assertions.assertTrue(z.completeSuccess());
         log.info("Result is {}", z.toString());
     }
-    <A,B> void test500(A a) {
-        Hope<A> ha = computeA();
-        Hope<B> hb;
-        if (ha.completeWithoutErrors()) {
-            hb = a2b(ha.value());
-        } else {
-            hb = Hope.<B>failure(ha);
-        }
+    private class A {}
+    private class B {}
+    private class C {}
+    private class D {}
 
-        Hope<B> ka = computeA().map(this::a2b);
+    void test501(A a) {
+        val bld = Some.<C>builder();
+        formalValidation(a)
+            .onSuccess(() -> decode(a)
+                .onSuccess(b -> meritValidation(b)
+                    .onSuccess(() -> translate(b)
+                        .onSuccess(bld::withValue)
+                        .onFailure(bld::add))
+                    .onFailure(bld::add))
+                .onFailure(bld::add))
+            .onFailure(bld::add);
+        Some<C> sc = bld.build();
+    }
+    void test502(A a) {
+        val bld = Some.<C>builder();
+        bld.add(
+            formalValidation(a)
+                .ergo(() -> decode(a)
+                    .ergo(b -> meritValidation(b)
+                        .ergo(() -> translate(b)
+                            .peek(bld::withValue))))
+        );
+        Some<C> au = bld.build();
+
+        Some<C> ax = formalValidation(a)
+            .<B>map(() -> decode(a))
+            .<C>map(b -> meritValidation(b)
+                .<C>map(() -> translate(b)));
+
+        Some<C> av = formalValidation(a)
+            .<C>map(() -> decode(a)
+                .<C>map(b -> meritValidation(b)
+                    .<C>map(() -> translate(b))));
+
     }
 
-    private <A> Hope<A> computeA() {
-        return null;
-    }
+    private Some<C> translate(B bData) { return Some.of(new C()); }
 
-    private <B, A> Hope<B> a2b(A value) {
-        return null;
-    }
-    
-    <A,B> void test501(A a) {
-        Some<A> sa = Some.of(a);
-        Some<B> sb;
-        if (sa.completeWithoutErrors()) {
-            sb = a2sb(sa.value());
-        } else {
-            sb = Some.failure(sa);
-        }
-        Some<B> kb = Some.of(a).<B>map(this::a2sb);
-        @NotNull Hope<A> ha = Hope.of(a);
-        Some<A> ss = Some.pull(ha);
-    }
+    private None meritValidation(B bData) { return None.none();}
+
+    private Some<B> decode(A rawdata) { return Some.of(new B());     }
+
+    private None formalValidation(A rawdata) { return None.none();     }
 
     private <B, A> Some<B> a2sb(A value) {
         return null;

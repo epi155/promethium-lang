@@ -17,14 +17,14 @@ import java.util.function.Function;
  *     The interface has two main static constructors
  *     <pre>
  *      Some.of(T value);                               // final value (and no warnings)
- *      Some.failure(Nuntium ce, Object... argv);       // single error message </pre>
+ *      Some.failure(CustMsg ce, Object... argv);       // single error message </pre>
  *     If at most an error is returned (and no warnings), the use of {@link Hope} is preferable.
  * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
  *     <pre>
  *      val bld = Some.&lt;T&gt;builder();
- *      bld.fault(Nuntium ce, Object... argv);      // add single error message
- *      bld.alert(Nuntium ce, Object... argv);      // add single warning message
+ *      bld.fault(CustMsg ce, Object... argv);      // add single error message
+ *      bld.alert(CustMsg ce, Object... argv);      // add single warning message
  *      bld.capture(Throwable t);                   // add error from Exception
  *      bld.value(T value);                         // set final value
  *      Some&lt;T&gt; some = bld.build(); </pre>
@@ -46,8 +46,17 @@ import java.util.function.Function;
  *
  *      R r = some.&lt;R&gt;mapTo(
  *          (v, w) -> ...R,        // function from value and warning to R
- *          e -> ...R);            // function from error/warning to R
- *     </pre>
+ *          e -> ...R);            // function from error/warning to R </pre>
+ *     If we know, from the start, that no warnings will be raised, or knowingly want to ignore the warnings,
+ *     we can use the simpler form
+ *     <pre>
+ *      some
+ *          .onSuccess(v -> { ... })        // ... action on value (ignoring warnings)
+ *          .onFailure(e -> { ... });       // ... action on errors (and warnings);
+ *
+ *      R r = some.&lt;R&gt;mapTo(
+ *          v -> ...R,          // function from value (ignoring warnings) to R
+ *          e -> ...R);         // function from error/warning to R </pre>
  *
  * @param <T> value type
  */
@@ -70,7 +79,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U>     payload type
      * @return instance of {@link Some} (error)
      */
-    static <U> @NotNull Some<U> failure(@NotNull Nuntium ce, Object... argv) {
+    static <U> @NotNull Some<U> failure(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         return new PmSome<>(Collections.singletonList(fail));

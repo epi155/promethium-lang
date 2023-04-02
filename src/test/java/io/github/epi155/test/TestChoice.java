@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 public class TestChoice {
-    private static final Nuntium MY_FAULT = Nuntium.of("CA01", "Oop error {} !!");
+    private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error {} !!");
     @Test
     public void testC1() {
         val randm = new Random();

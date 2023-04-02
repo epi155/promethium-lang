@@ -15,14 +15,14 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
 
 
     @Override
-    public @NotNull Failure fault(@NotNull Nuntium ce, Object... objects) {
+    public @NotNull Failure fault(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[J_LOCATE], ce, objects);
         add(fail);
         return fail;
     }
     @Override
-    public @NotNull Warning alert(@NotNull Nuntium ce, Object... objects) {
+    public @NotNull Warning alert(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[J_LOCATE], ce, objects);
         add(warn);
@@ -60,7 +60,7 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
     }
 
     @Override
-    public void captureMessage(@NotNull Throwable t, @NotNull Nuntium ce, Object... argv) {
+    public void captureMessage(@NotNull Throwable t, @NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[J_LOCATE];
         String packagePrefix = caller.getClassName().replaceFirst("(^\\w+[.]\\w+)[.].*", "$1");
@@ -68,7 +68,7 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
     }
 
     @Override
-    public void captureException(@NotNull Throwable t, @NotNull Nuntium ce, Object... argv) {
+    public void captureException(@NotNull Throwable t, @NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[J_LOCATE];
         String packagePrefix = caller.getClassName().replaceFirst("(^\\w+[.]\\w+)[.].*", "$1");
@@ -89,13 +89,13 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
     }
 
     @Override
-    public void captureHereMessage(@NotNull Throwable e, @NotNull Nuntium ce, Object... objects) {
+    public void captureHereMessage(@NotNull Throwable e, @NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         captureHere(stPtr, e, (StackTraceElement error) -> PmFailure.ofMessage(error, e, ce, objects));
     }
 
     @Override
-    public void captureHereException(@NotNull Throwable e, @NotNull Nuntium ce, Object... objects) {
+    public void captureHereException(@NotNull Throwable e, @NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         captureHere(stPtr, e, (StackTraceElement error) -> PmFailure.ofException(error, e, ce, objects));
     }

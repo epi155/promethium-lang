@@ -34,7 +34,7 @@ public interface NoneBuilder extends ErrorBuilder {
      * @param argv      message arguments
      * @return          builder itself
      */
-    default @NotNull NoneBuilder withAlert(@NotNull Nuntium ce, Object... argv) {
+    default @NotNull NoneBuilder withAlert(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         add(warn);
@@ -48,7 +48,7 @@ public interface NoneBuilder extends ErrorBuilder {
      * @param argv      message arguments
      * @return          builder itself
      */
-    default @NotNull NoneBuilder withFault(@NotNull Nuntium ce, Object... argv) {
+    default @NotNull NoneBuilder withFault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         add(fail);

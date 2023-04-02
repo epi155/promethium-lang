@@ -18,7 +18,7 @@ public class FaultException extends RuntimeException {
      * @param ce    message pattern
      * @param argv  message arguments
      */
-    public FaultException(@NotNull Nuntium ce, Object... argv) {
+    public FaultException(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         this.fault = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
     }

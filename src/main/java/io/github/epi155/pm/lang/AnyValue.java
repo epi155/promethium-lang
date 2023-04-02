@@ -76,5 +76,4 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * the transformation is not called and the result has the original error
      */
     @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
-
 }

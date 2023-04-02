@@ -41,7 +41,7 @@ public interface SearchResultBuilder<R> {
          * @param argv  error parameter
          * @return      instance of partial builder {@link NotFound}
          */
-        @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull Nuntium ce, Object...argv);
+        @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull CustMsg ce, Object...argv);
     }
 
     /**
@@ -69,6 +69,6 @@ public interface SearchResultBuilder<R> {
          * @param argv  error parameter
          * @return      instance of partial builder {@link SearchResultBuilder}
          */
-        @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull Nuntium ce, Object... argv);
+        @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull CustMsg ce, Object... argv);
     }
 }

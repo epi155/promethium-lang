@@ -63,7 +63,7 @@ public class TestBld {
     @Test
     public void test4() {
         val bld = Some.<Integer>builder();
-        val fault = bld.fault(Nuntium.of("E01", "Houston we have had a problem"));
+        val fault = bld.fault(CustMsg.of("E01", "Houston we have had a problem"));
         fault.setProperty("MissionName", "Apollo");
         fault.setProperty("MissionRun", 13);
         val some = bld.build();
@@ -128,7 +128,7 @@ public class TestBld {
     public void test9() {
         val bld = None.builder();
         try {
-            throw new FaultException(Nuntium.of("E01", "we havr had a problem"));
+            throw new FaultException(CustMsg.of("E01", "we havr had a problem"));
         } catch (Exception e) {
             bld.captureHere(e);
         }

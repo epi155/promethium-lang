@@ -26,7 +26,7 @@ public interface Nope extends SingleError, OnlyError {
      * @param argv parametri per dettaglio errore
      * @return Nope con errore
      */
-    static @NotNull Nope failure(@NotNull Nuntium ce, Object... argv) {
+    static @NotNull Nope failure(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmNope(PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }

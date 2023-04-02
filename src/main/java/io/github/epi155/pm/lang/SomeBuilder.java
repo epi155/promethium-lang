@@ -42,7 +42,7 @@ public interface SomeBuilder<T> extends ErrorBuilder {
      * @param argv      message arguments
      * @return          builder itself
      */
-    default @NotNull SomeBuilder<T> withAlert(@NotNull Nuntium ce, Object... argv) {
+    default @NotNull SomeBuilder<T> withAlert(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         add(warn);
@@ -56,7 +56,7 @@ public interface SomeBuilder<T> extends ErrorBuilder {
      * @param argv      message arguments
      * @return          builder itself
      */
-    default @NotNull SomeBuilder<T> withFault(@NotNull Nuntium ce, Object... argv) {
+    default @NotNull SomeBuilder<T> withFault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         add(fail);

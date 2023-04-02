@@ -18,14 +18,14 @@ import java.util.stream.Stream;
  *     The interface has two main static constructors
  *     <pre>
  *      None.none();                                    // no errors and no warnings
- *      None.failure(Nuntium ce, Object... argv);       // single error message </pre>
+ *      None.failure(CustMsg ce, Object... argv);       // single error message </pre>
  *     If at most an error is returned (and no warnings), the use of {@link Nope} is preferable.
  * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
  *     <pre>
  *      val bld = None.builder();
- *      bld.fault(Nuntium ce, Object... argv);      // add single error message
- *      bld.alert(Nuntium ce, Object... argv);      // add single warning message
+ *      bld.fault(CustMsg ce, Object... argv);      // add single error message
+ *      bld.alert(CustMsg ce, Object... argv);      // add single warning message
  *      bld.capture(Throwable t);                   // add error from Exception
  *      None none = bld.build(); </pre>
  *     The outcome of the interface can be evaluated imperatively
@@ -43,10 +43,20 @@ import java.util.stream.Stream;
  *          .onSuccess((Collection&lt;Warning&gt; w) -> { ... })            // ... action on warnings
  *          .onFailure((Collection&lt;? extends Signal&gt; e) -> { ... });  // ... action on errors (and warnings);
  *
- *      R r = some.&lt;R&gt;mapTo(
+ *      R r = none.&lt;R&gt;mapTo(
  *          w -> ...R,          // function from warning to R
- *          e -> ...R);         // function from error/warning to R
- *     </pre>
+ *          e -> ...R);         // function from error/warning to R </pre>
+ *     If we know, from the start, that no warnings will be raised, or knowingly want to ignore the warnings,
+ *     we can use the simpler form
+ *     <pre>
+ *      none
+ *          .onSuccess(() -> { ... })   // ... action on success (ignoring warnings)
+ *          .onFailure(e -> { ... });   // ... action on errors (and warnings);
+ *
+ *      R r = none.&lt;R&gt;mapTo(
+ *          () -> ...R,         // supplier (ignoring warning) to R
+ *          e -> ...R);         // function from error/warning to R </pre>
+ *
  */
 public interface None extends ManyErrors, OnlyError {
     /**
@@ -72,7 +82,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param objects   error parameters
      * @return          instance of {@link None} with error
      */
-    static @NotNull None failure(@NotNull Nuntium ce, Object... objects) {
+    static @NotNull None failure(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(fail));
@@ -84,7 +94,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param objects   warning parameters
      * @return          instance of {@link None} with warning
      */
-    static @NotNull None warning(@NotNull Nuntium ce, Object... objects) {
+    static @NotNull None warning(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(warn));
@@ -177,7 +187,6 @@ public interface None extends ManyErrors, OnlyError {
      * @return {@link None} instance,
      */
     @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn);
-
     /**
      * If there are no errors, the supplier is called,
      * if this ends with errors, these errors are returned.

@@ -12,7 +12,7 @@ import java.util.function.Function;
  *     The interface has two static constructors with value or custom error message
  *     <pre>
  *      Hope.of(T value);                                // final value
- *      Hope.failure(Nuntium ce, Object... argv);       // error message
+ *      Hope.failure(CustMsg ce, Object... argv);       // error message
  *     </pre>
  *     and with Exception
  *     <pre>
@@ -73,7 +73,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <S>  type value in case of success
      * @return <b>Hope</b> instance
      */
-    static <S> @NotNull Hope<S> failure(@NotNull Nuntium ce, Object... argv) {
+    static <S> @NotNull Hope<S> failure(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
