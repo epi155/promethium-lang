@@ -9,16 +9,14 @@ import java.util.function.Function;
 /**
  * Utility interface for carrying a single error xor a value
  * <p>
- *     The interface has two static constructors with value or custom error message
+ *     The interface has static constructors with value or custom error message
  *     <pre>
  *      Hope.of(T value);                                // final value
- *      Hope.failure(CustMsg ce, Object... argv);       // error message
- *     </pre>
+ *      Hope.failure(CustMsg ce, Object... argv);       // error message </pre>
  *     and with Exception
  *     <pre>
  *      Hope.capture(Throwable t);      // error from Exception (package level)
- *      Hope.captureHere(Throwable t);  // error from Exception (method level)
- *     </pre>
+ *      Hope.captureHere(Throwable t);  // error from Exception (method level) </pre>
  * <p>
  *     The outcome of the interface can be evaluated imperatively
  *     <pre>
@@ -28,8 +26,7 @@ import java.util.function.Function;
  *      } else {
  *          val fault = hope.fault();
  *          // ... action on error
- *      }
- *     </pre>
+ *      } </pre>
  *     or functionally
  *     <pre>
  *      hope
@@ -38,8 +35,7 @@ import java.util.function.Function;
  *
  *      R r = hope.&lt;R&gt;mapTo(
  *          v -> ...R,      // function from value to R
- *          e -> ...R);     // function from error to R
- *     </pre>
+ *          e -> ...R);     // function from error to R </pre>
  *
  * @param <T> value type
  */

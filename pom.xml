@@ -319,6 +319,8 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <javadocExecutable>/usr/bin/javadoc</javadocExecutable>
+<!--                    <destDir>${project.build.directory}/apidocs</destDir>-->
+                    <destDir>${basedir}/apidocs</destDir>
                 </configuration>
                 <executions>
                     <execution>

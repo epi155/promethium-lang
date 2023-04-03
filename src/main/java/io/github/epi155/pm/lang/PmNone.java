@@ -19,6 +19,9 @@ class PmNone extends PmManyError implements None {
     protected PmNone(Collection<? extends Signal> errors) {
         super(errors);
     }
+    protected PmNone(PmFinalStatus status) {
+        super(status);
+    }
 
     protected static None none() {
         return NoneHelper.NONE_INSTANCE;
@@ -64,7 +67,7 @@ class PmNone extends PmManyError implements None {
         if (completeSuccess()) {
             return PmSome.of(fcn.get());
         } else if (completeWithErrors()) {
-            return new PmSome<>(signals());
+            return new PmSome<>(this);
         } else /*completeWithWarnings()*/ {
             val that = fcn.get();
             return composeOnWarning(that);

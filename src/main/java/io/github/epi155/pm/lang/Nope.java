@@ -8,6 +8,34 @@ import java.util.function.Supplier;
 
 /**
  * Utility class for carrying a single error
+ * <p>
+ *     The interface has static constructors with custom error message or without
+ *     <pre>
+ *      Nope.nope();                                    // no error
+ *      Nope.failure(CustMsg ce, Object... argv);       // error message </pre>
+ *     and with Exception
+ *     <pre>
+ *      Nope.capture(Throwable t);      // error from Exception (package level)
+ *      Nope.captureHere(Throwable t);  // error from Exception (method level) </pre>
+ * <p>
+ *     The outcome of the interface can be evaluated imperatively
+ *     <pre>
+ *      if (nope.completeWithoutErrors()) {
+ *          // ... action on success
+ *      } else {
+ *          val fault = nope.fault();
+ *          // ... action on error
+ *      } </pre>
+ *     or functionally
+ *     <pre>
+ *      nope
+ *          .onSuccess(() -> { ... })    // ... action on success
+ *          .onFailure(e -> { ... });    // ... action on error
+ *
+ *      R r = nope.&lt;R&gt;mapTo(
+ *          () -> ...R,     // supplier to R
+ *          e -> ...R);     // function from error to R
+ *     </pre>
  */
 public interface Nope extends SingleError, OnlyError {
     /**

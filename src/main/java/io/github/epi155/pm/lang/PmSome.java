@@ -27,6 +27,10 @@ class PmSome<T> extends PmManyError implements Some<T> {
         super(signals);
         this.value = null;
     }
+    protected PmSome(@NotNull PmFinalStatus status) {
+        super(status);
+        this.value = null;
+    }
 
     protected static <U> @NotNull Some<U> of(@NotNull AnyValue<U> v) {
         if (v instanceof Some) {
@@ -82,7 +86,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
         if (completeSuccess()) {
             return PmNone.none();
         } else {
-            return new PmNone(signals());
+            return new PmNone(this);
         }
     }
 
@@ -91,7 +95,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
         if (completeSuccess()) {
             return of(fcn.apply(value));
         } else if (completeWithErrors()) {
-            return new PmSome<>(signals());  // this error & warning - fcn not executed
+            return new PmSome<>(this);  // this error & warning - fcn not executed
         } else /*completeWithWarnings()*/ {
             val that = fcn.apply(value);
             return composeOnWarning(that);
@@ -119,7 +123,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
                 return new PmNone(that.signals());    // that error OR warning
             }
         } else if (completeWithErrors()) {
-            return new PmNone(signals());
+            return new PmNone(this);
         } else /*completeWithWarnings()*/ {
             val that = fcn.apply(value);
             if (that.completeSuccess()) {

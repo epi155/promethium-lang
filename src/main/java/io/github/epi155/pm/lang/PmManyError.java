@@ -17,6 +17,10 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
         super(signals);
     }
 
+    public PmManyError(PmFinalStatus status) {
+        super(status);
+    }
+
     @Override
     public void onFailure(@NotNull Consumer<Collection<? extends Signal>> signalAction) {
         if (completeWithErrors())

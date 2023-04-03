@@ -10,6 +10,11 @@ class PmSomeBuilder<T> extends PmAnyBuilder implements SomeBuilder<T> {
         return this;
     }
 
+    @Override
+    public void value(@NotNull T value) {
+        this.value = value;
+    }
+
     public @NotNull Some<T> build() {
         if (completeSuccess()) {
             return new PmSome<>(value);

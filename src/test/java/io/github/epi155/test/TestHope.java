@@ -197,7 +197,7 @@ class TestHope {
                 .ergo(() -> decode(a)
                     .ergo(b -> meritValidation(b)
                         .ergo(() -> translate(b)
-                            .peek(bld::withValue))))
+                            .peek(bld::value))))
         );
         Some<C> au = bld.build();
 
@@ -206,10 +206,10 @@ class TestHope {
             .<C>map(b -> meritValidation(b)
                 .<C>map(() -> translate(b)));
 
-        Some<C> av = formalValidation(a)
-            .<C>map(() -> decode(a)
-                .<C>map(b -> meritValidation(b)
-                    .<C>map(() -> translate(b))));
+        None nn = formalValidation(a)
+            .ergo(() -> decode(a)
+                .ergo(b -> meritValidation(b)
+                    .ergo(() -> translate(b))));
 
     }
 

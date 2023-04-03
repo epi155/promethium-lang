@@ -47,6 +47,15 @@ abstract class PmFinalStatus implements ItemStatus {
         this.zErrors = false;
     }
 
+    public PmFinalStatus(PmFinalStatus status) {
+        this.signals = status.signals;
+        this.alerts = status.alerts;
+        this.errors = status.errors;
+        this.zSuccess = status.zSuccess;
+        this.zAlerts = status.zAlerts;
+        this.zErrors = status.zErrors;
+    }
+
     protected Collection<Signal> getSignalsQueue() {
         return signals;
     }

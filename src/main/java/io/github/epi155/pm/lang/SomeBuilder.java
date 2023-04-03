@@ -10,12 +10,19 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface SomeBuilder<T> extends ErrorBuilder {
     /**
-     * value setter
+     * value setter (builder style)
      *
      * @param value payload
      * @return {@link SomeBuilder} instance
      */
     @NotNull SomeBuilder<T> withValue(@NotNull T value);
+
+    /**
+     * value setter
+     *
+     * @param value payload
+     */
+    void value(@NotNull T value);
 
     /**
      * Final builder
