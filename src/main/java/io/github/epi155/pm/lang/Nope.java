@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  *      Nope.capture(Throwable t);      // error from Exception (package level)
  *      Nope.captureHere(Throwable t);  // error from Exception (method level) </pre>
  * <p>
- *     The outcome of the interface can be evaluated imperatively
+ *     The outcome can be evaluated imperatively
  *     <pre>
  *      if (nope.completeWithoutErrors()) {
  *          // ... action on success

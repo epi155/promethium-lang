@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"promethium.lang","l":"io.github.epi155.pm.lang"}];updateSearchResults();

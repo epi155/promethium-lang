@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  *      bld.alert(CustMsg ce, Object... argv);      // add single warning message
  *      bld.capture(Throwable t);                   // add error from Exception
  *      None none = bld.build(); </pre>
- *     The outcome of the interface can be evaluated imperatively
+ *     The outcome can be evaluated imperatively
  *     <pre>
  *      if (none.completeWithoutErrors()) {
  *          Collection&lt;Warning&gt; warnings = none.alerts();     // warning collection

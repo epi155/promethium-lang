@@ -16,45 +16,45 @@ import java.util.function.Function;
  * <p>
  *     The interface has two main static constructors
  *     <pre>
- *      Some.of(T value);                               // final value (and no warnings)
- *      Some.failure(CustMsg ce, Object... argv);       // single error message </pre>
+ *      {@link Some#of(Object) Some.of(T value)};                               // final value (and no warnings)
+ *      {@link Some#failure(CustMsg, Object...) Some.failure(CustMsg ce, Object... argv)};       // single error message </pre>
  *     If at most an error is returned (and no warnings), the use of {@link Hope} is preferable.
  * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
  *     <pre>
- *      val bld = Some.&lt;T&gt;builder();
- *      bld.fault(CustMsg ce, Object... argv);      // add single error message
- *      bld.alert(CustMsg ce, Object... argv);      // add single warning message
- *      bld.capture(Throwable t);                   // add error from Exception
- *      bld.value(T value);                         // set final value
- *      Some&lt;T&gt; some = bld.build(); </pre>
- *     The outcome of the interface can be evaluated imperatively
+ *      val bld = Some.&lt;T&gt;{@link Some#builder() builder()};
+ *      bld.{@link ErrorBuilder#fault(CustMsg, Object...) fault(CustMsg ce, Object... argv)};      // add single error message
+ *      bld.{@link ErrorBuilder#alert(CustMsg, Object...) alert(CustMsg ce, Object... argv)};      // add single warning message
+ *      bld.{@link ErrorBuilder#capture(Throwable) capture(Throwable t)};                   // add error from Exception
+ *      bld.{@link SomeBuilder#value(Object) value(T value)};                         // set final value
+ *      Some&lt;T&gt; some = bld.{@link SomeBuilder#build() build()}; </pre>
+ *     The outcome can be evaluated imperatively
  *     <pre>
- *      if (some.completeWithoutErrors()) {
- *          T value = some.value();                           // final value
- *          Collection&lt;Warning&gt; warnings = some.alerts();     // warning collection
+ *      if (some.{@link ItemStatus#completeWithoutErrors() completeWithoutErrors()}) {
+ *          T value = some.{@link Some#value() value()};                           // final value
+ *          Collection&lt;Warning&gt; warnings = some.{@link Some#alerts() alerts()};     // warning collection
  *          // ... action on value and warnings
  *      } else {
- *          Collection&lt;? extends Signal&gt; errors = some.signals();     // errors/warings collection
+ *          Collection&lt;? extends Signal&gt; errors = some.{@link ItemStatus#signals() signals()};     // errors/warings collection
  *          // ... action on errors (and warnings)
  *      } </pre>
  *     or functionally
  *     <pre>
  *      some
- *          .onSuccess((T v, Collection&lt;Warning&gt; w) -> { ... })         // ... action on value and warnings
- *          .onFailure((Collection&lt;? extends Signal&gt; e) -> { ... });    // ... action on errors (and warnings);
+ *          .{@link Some#onSuccess(BiConsumer) onSuccess((T v, Collection&lt;Warning&gt; w) -> { ... })}         // ... action on value and warnings
+ *          .{@link Some#onFailure(Consumer) onFailure((Collection&lt;? extends Signal&gt; e) -> { ... })};    // ... action on errors (and warnings);
  *
- *      R r = some.&lt;R&gt;mapTo(
+ *      R r = some.&lt;R&gt;{@link Some#mapTo(BiFunction, Function) mapTo}(
  *          (v, w) -> ...R,        // function from value and warning to R
  *          e -> ...R);            // function from error/warning to R </pre>
  *     If we know, from the start, that no warnings will be raised, or knowingly want to ignore the warnings,
  *     we can use the simpler form
  *     <pre>
  *      some
- *          .onSuccess(v -> { ... })        // ... action on value (ignoring warnings)
- *          .onFailure(e -> { ... });       // ... action on errors (and warnings);
+ *          .{@link Some#onSuccess(Consumer) onSuccess(v -> { ... })}        // ... action on value (ignoring warnings)
+ *          .{@link Some#onFailure(Consumer) onFailure(e -> { ... })};       // ... action on errors (and warnings);
  *
- *      R r = some.&lt;R&gt;mapTo(
+ *      R r = some.&lt;R&gt;{@link Some#mapTo(Function, Function) mapTo}(
  *          v -> ...R,          // function from value (ignoring warnings) to R
  *          e -> ...R);         // function from error/warning to R </pre>
  *

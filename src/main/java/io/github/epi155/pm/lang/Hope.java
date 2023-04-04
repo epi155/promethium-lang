@@ -18,7 +18,7 @@ import java.util.function.Function;
  *      Hope.capture(Throwable t);      // error from Exception (package level)
  *      Hope.captureHere(Throwable t);  // error from Exception (method level) </pre>
  * <p>
- *     The outcome of the interface can be evaluated imperatively
+ *     The outcome can be evaluated imperatively
  *     <pre>
  *      if (hope.completeWithoutErrors()) {
  *          val value = hope.value();

@@ -103,6 +103,7 @@ public interface ErrorBuilder extends ItemStatus {
      * @return {@link Failure} instance
      */
     @NotNull Failure fault(@NotNull CustMsg ce, Object... objects);
+    @NotNull Failure faultUp(@NotNull CustMsg ce, Object... objects);
 
     /**
      * Add warning from custom message

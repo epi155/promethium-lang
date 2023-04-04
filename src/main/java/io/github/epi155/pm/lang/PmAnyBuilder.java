@@ -22,6 +22,13 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
         return fail;
     }
     @Override
+    public @NotNull Failure faultUp(@NotNull CustMsg ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        val fail = PmFailure.of(stPtr[J_CALLER], ce, objects);
+        add(fail);
+        return fail;
+    }
+    @Override
     public @NotNull Warning alert(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[J_LOCATE], ce, objects);
