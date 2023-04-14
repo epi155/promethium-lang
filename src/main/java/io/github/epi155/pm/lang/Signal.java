@@ -92,11 +92,5 @@ public interface Signal {
      */
     @Nullable String place();
 
-    /**
-     * Return the stack trace element, if any
-     *
-     * @return stack trace element where failure has happened
-     */
-    @Nullable StackTraceElement stackTraceElement();
 
 }

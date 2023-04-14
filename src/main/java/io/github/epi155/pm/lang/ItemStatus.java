@@ -7,14 +7,16 @@ import java.util.Collection;
  */
 public interface ItemStatus {
     /**
-     * Indicates that there is no error and no warning
-     * @return  no error and no warning
+     * Indicates that the completion status is success, that is, no errors and no warnings
+     *
+     * @return no error and no warning
      */
     boolean completeSuccess();
 
     /**
      * Indicates that there is at least one error
-     * @return  there is at least one error
+     *
+     * @return success
      */
     boolean completeWithErrors();
 
@@ -27,10 +29,11 @@ public interface ItemStatus {
     }
 
     /**
-     * Indicates that there is at least one warning and no errors
-     * @return  there is at least one warning and no errors
+     * Indicates that the completion status is warning, i.e. no errors and at least one warning
+     *
+     * @return waring
      */
-    default boolean completeWithWarnings() {
+    default boolean completeWarning() {
         return false;
     }
 

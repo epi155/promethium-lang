@@ -13,8 +13,14 @@ import java.util.function.Function;
 public interface ChoiceMapWhenAsContext<U, T, R> {
     /**
      * fallible function to apply to the chosen value
-     * @param fcn   fallible function
-     * @return      instance of {@link ChoiceMapContext}
+     *
+     * @param fcn fallible function
+     * @return instance of {@link ChoiceMapContext}
      */
-    @NotNull ChoiceMapContext<T,R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn);
+    @NotNull ChoiceMapContext<T, R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn);
+
+    @NotNull ChoiceMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn);
+
+    @NotNull ChoiceMapContext<T, R> fault(CustMsg ce, Object... argv);
+
 }

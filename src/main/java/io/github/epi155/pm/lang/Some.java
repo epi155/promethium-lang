@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -17,7 +16,7 @@ import java.util.function.Function;
  *     The interface has two main static constructors
  *     <pre>
  *      {@link Some#of(Object) Some.of(T value)};                               // final value (and no warnings)
- *      {@link Some#failure(CustMsg, Object...) Some.failure(CustMsg ce, Object... argv)};       // single error message </pre>
+ *      {@link Some#fault(CustMsg, Object...) Some.fault(CustMsg ce, Object... argv)};         // single error message </pre>
  *     If at most an error is returned (and no warnings), the use of {@link Hope} is preferable.
  * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
@@ -26,8 +25,10 @@ import java.util.function.Function;
  *      bld.{@link ErrorBuilder#fault(CustMsg, Object...) fault(CustMsg ce, Object... argv)};      // add single error message
  *      bld.{@link ErrorBuilder#alert(CustMsg, Object...) alert(CustMsg ce, Object... argv)};      // add single warning message
  *      bld.{@link ErrorBuilder#capture(Throwable) capture(Throwable t)};                   // add error from Exception
- *      bld.{@link SomeBuilder#value(Object) value(T value)};                         // set final value
- *      Some&lt;T&gt; some = bld.{@link SomeBuilder#build() build()}; </pre>
+ *      bld.{@link SomeBuilder#value(Object)  value(T value)};                         // set final value
+ *      Some&lt;T&gt; some = bld.{@link SomeBuilder#build() build()};
+ *      Some&lt;T&gt; some = bld.{@link SomeBuilder#buildWithValue(Object) buildWithValue(T value)};
+ *      </pre>
  *     The outcome can be evaluated imperatively
  *     <pre>
  *      if (some.{@link ItemStatus#completeWithoutErrors() completeWithoutErrors()}) {
@@ -74,38 +75,15 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
     /**
      * static factory with error message
      *
-     * @param ce      error message
+     * @param ce   error message
      * @param argv message parameters
-     * @param <U>     payload type
+     * @param <U>  payload type
      * @return instance of {@link Some} (error)
      */
-    static <U> @NotNull Some<U> failure(@NotNull CustMsg ce, Object... argv) {
+    static <U> @NotNull Some<U> fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         return new PmSome<>(Collections.singletonList(fail));
-    }
-
-    /**
-     * static constructor with {@link SingleError} ({@link Hope} or {@link Nope} completeWithErrors)
-     * @param se    {@link SingleError} instance
-     * @return      {@link Some} instance
-     * @param <U>   {@link Some} data type (dummy)
-     */
-    static <U> @NotNull Some<U> failure(SingleError se) {
-        return new PmSome<>(Collections.singletonList(se.fault()));
-    }
-
-    /**
-     * static constructor with {@link ManyErrors} ({@link Some} or {@link None} completeWithErrors)
-     * @param me    {@link ManyErrors} instance
-     * @return      {@link Some} instance
-     * @param <U>   {@link Some} data type (dummy)
-     */
-    static <U> @NotNull Some<U> failure(ManyErrors me) {
-        val signals = me.signals();
-        if (signals.isEmpty())
-            throw new NoSuchElementException();
-        return new PmSome<>(signals);
     }
 
     /**
@@ -116,7 +94,9 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @return instance of {@link Some} (error)
      */
     static <U> @NotNull Some<U> capture(@NotNull Throwable t) {
-        return new PmSome<>(Collections.singletonList(PmFailure.of(t)));
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
+        return new PmSome<>(Collections.singletonList(PmTrouble.of(t, caller)));
     }
 
     /**
@@ -129,11 +109,11 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
     static <U> @NotNull Some<U> of(@NotNull U value) {
         if (value == null) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be null"));
+            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG);
             return new PmSome<>(Collections.singletonList(fail));
         } else if (value instanceof Signal) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be an instanceof Signal"));
+            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
             val bld = Some.<U>builder();
             bld.add((Signal)value);
             bld.add(fail);
@@ -202,7 +182,6 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * <pre>
      *      Some&lt;B&gt; kb = computeA().map(this::a2sb); </pre>
      * in addition, the method also propagates any warnings
-     *
      *
      * @param fcn transform value to result {@link Some}
      * @param <R> result type

@@ -11,8 +11,8 @@ public class TestCustom1 {
     static final CustMsg CUST_ERR = CustMsg.of("AZ15", "Errore non Gestito: {}");
     //@Test
     void hello() {
-        Nope nope = Nope.failure(CUST_ERR, "ops", new NullPointerException("Azz"));
-        val s = nope.fault().message();
+        Nope nope = Nope.fault(CUST_ERR, "ops", new NullPointerException("Azz"));
+        val s = nope.failure().message();
         System.out.println(s);
     }
     void example1(CustomReader rd, CustomWriter wr) {

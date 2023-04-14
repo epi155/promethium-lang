@@ -63,7 +63,7 @@ class PmSearchResult<T> implements SearchResult<T>{
     }
 
     @Override
-    public @NotNull Failure fault() {
+    public @NotNull Failure failure() {
         if (fault != null) {
             return fault;
         } else {
@@ -105,19 +105,19 @@ class PmSearchResult<T> implements SearchResult<T>{
         @Override
         public @NotNull SearchValueBuilder.NotFound<R> onFoundSetError(@NotNull CustMsg ce, Object...argv) {
             if (value != null)
-                this.outcome = Hope.failure(ce, argv);
+                this.outcome = Hope.fault(ce, argv);
             return this;
         }
 
         @Override
-        public @NotNull SearchValueBuilder<R> onNotFound(@NotNull Supplier<AnyValue<R>> ctor) {
+        public @NotNull SearchValueBuilder<R> onNotFound(@NotNull Supplier<? extends AnyValue<R>> ctor) {
             if (value == null && fault == null)
                 this.outcome = ctor.get();
             return this;
         }
 
         @Override
-        public @NotNull SearchValueBuilder<R> onNotFoundOf(@NotNull Supplier<R> ctor) {
+        public @NotNull SearchValueBuilder<R> onNotFoundOf(@NotNull Supplier<? extends R> ctor) {
             if (value == null && fault == null)
                 this.raw = ctor.get();
             return this;
@@ -126,7 +126,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         @Override
         public @NotNull SearchValueBuilder<R> onNotFoundSetError(@NotNull CustMsg ce, Object... argv) {
             if (value == null && PmSearchResult.this.fault == null)
-                this.outcome = Hope.failure(ce, argv);
+                this.outcome = Hope.fault(ce, argv);
             return this;
         }
 
@@ -158,7 +158,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         @Override
         public @NotNull SearchResultBuilder.NotFound<R> onFoundSetError(@NotNull CustMsg ce, Object...argv) {
             if (value != null)
-                this.outcome = SearchResult.failure(ce, argv);
+                this.outcome = SearchResult.fault(ce, argv);
             return this;
         }
 
@@ -172,7 +172,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         @Override
         public @NotNull SearchResultBuilder<R> onNotFoundSetError(@NotNull CustMsg ce, Object... argv) {
             if (value == null && PmSearchResult.this.fault == null)
-                this.outcome = SearchResult.failure(ce, argv);
+                this.outcome = SearchResult.fault(ce, argv);
             return this;
         }
 

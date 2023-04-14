@@ -5,6 +5,7 @@ import io.github.epi155.pm.lang.Hope;
 import io.github.epi155.pm.lang.SearchResult;
 import io.github.epi155.pm.lang.Some;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,10 +19,29 @@ class TestFind {
     @Test
     void testFound1() {
         SearchResult<String> result = SearchResult.of("A");
-        Assertions.assertDoesNotThrow(() -> result
-            .onFound(s -> log.info("Found {}", s))
-            .onNotFound(() -> log.info("Not found"))
-            .onFailure(e -> log.warn("Error {}", e.message())));
+        Assertions.assertDoesNotThrow(() ->
+                result
+                        .onFound(s -> log.info("Found {}", s))
+                        .onNotFound(() -> log.info("Not found"))
+                        .onFailure(e -> log.warn("Error {}", e.message())));
+        if (result.isFound()) {
+            val value = result.value();
+            // action on found value
+        } else if (result.isNotFound()) {
+            // action on not found
+        } else if (result.isFailure()) {
+            val fault = result.failure();
+            // action on failure
+        }
+        val a = result.<String>valueBuilder()
+                .onFoundOf(t -> t)
+                .onNotFound(() -> Hope.of("E"))
+                .build();
+
+        SearchResult<Integer> result2 = result.<Integer>resultBuilder()
+                .onFound(s -> SearchResult.of(1))
+                .onNotFound(() -> SearchResult.of(2))
+                .build();
     }
     @Test
     void testNotFound1() {
@@ -98,12 +118,12 @@ class TestFind {
 
     @Test
     void testError3() {
-        SearchResult<String> result = SearchResult.failure(MY_FAULT);
+        SearchResult<String> result = SearchResult.fault(MY_FAULT);
         Some<Integer> value = result
-            .<Integer>valueBuilder()
-            .onFound(s -> Hope.of((int) s.charAt(0)))
-            .onNotFound(() -> Hope.of(0))
-            .build();
+                .<Integer>valueBuilder()
+                .onFound(s -> Hope.of((int) s.charAt(0)))
+                .onNotFound(() -> Hope.of(0))
+                .build();
         Assertions.assertFalse(value.completeSuccess());
     }
     @Test
@@ -152,7 +172,7 @@ class TestFind {
         Assertions.assertTrue(value.isFound());
         Assertions.assertFalse(value.isNotFound());
         Assertions.assertEquals(0, value.value());
-        Assertions.assertThrows(NoSuchElementException.class, value::fault);
+        Assertions.assertThrows(NoSuchElementException.class, value::failure);
     }
     @Test
     void testErrorR1() {
@@ -166,7 +186,7 @@ class TestFind {
         Assertions.assertFalse(value.isFound());
         Assertions.assertFalse(value.isNotFound());
         Assertions.assertThrows(NoSuchElementException.class, value::value);
-        Assertions.assertDoesNotThrow(value::fault);
+        Assertions.assertDoesNotThrow(value::failure);
     }
     @Test
     void testFoundR2() {
@@ -206,7 +226,7 @@ class TestFind {
         Assertions.assertFalse(value.isFound());
         Assertions.assertFalse(value.isNotFound());
         Assertions.assertThrows(NoSuchElementException.class, value::value);
-        Assertions.assertDoesNotThrow(value::fault);
+        Assertions.assertDoesNotThrow(value::failure);
     }
     @Test
     public void testNotFoundR3() {
@@ -220,6 +240,6 @@ class TestFind {
         Assertions.assertFalse(value.isFound());
         Assertions.assertFalse(value.isNotFound());
         Assertions.assertThrows(NoSuchElementException.class, value::value);
-        Assertions.assertDoesNotThrow(value::fault);
+        Assertions.assertDoesNotThrow(value::failure);
     }
 }

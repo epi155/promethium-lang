@@ -56,13 +56,13 @@ class PmSome<T> extends PmManyError implements Some<T> {
     @Override
     public @NotNull Glitches onSuccess(@NotNull Consumer<? super T> successAction) {
         if (completeWithoutErrors()) {
-            if (value == null) {
-                val k = Some.<T>builder();
-                k.captureCaller(new NoSuchElementException());
-                return k.build();
-            } else {
-                successAction.accept(value);
-            }
+//            if (value == null) {
+//                StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+//                StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
+//                return new PmSome<>(Collections.singletonList(PmTrouble.of(new NoSuchElementException(), caller)));
+//            } else {
+            successAction.accept(value);
+//            }
         }
         return this;
     }
@@ -70,13 +70,13 @@ class PmSome<T> extends PmManyError implements Some<T> {
     @Override
     public @NotNull Glitches onSuccess(@NotNull BiConsumer<? super T, Collection<Warning>> successAction) {
         if (completeWithoutErrors()) {
-            if (value == null) {
-                val k = Some.<T>builder();
-                k.captureCaller(new NoSuchElementException());
-                return k.build();
-            } else {
-                successAction.accept(value, alerts());
-            }
+//            if (value == null) {
+//                StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+//                StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
+//                return new PmSome<>(Collections.singletonList(PmTrouble.of(new NoSuchElementException(), caller)));
+//            } else {
+            successAction.accept(value, alerts());
+//            }
         }
         return this;
     }
@@ -165,7 +165,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     @Override
     protected void extraToString(PrintWriter pw) {
         if (value != null) {
-            pw.printf("finalValue: %s!%s%n", value.getClass().getName(), value);
+            pw.printf(", finalValue: %s!%s", value.getClass().getName(), value);
         }
     }
 

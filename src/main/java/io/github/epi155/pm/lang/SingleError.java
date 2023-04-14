@@ -16,10 +16,10 @@ public interface SingleError extends AnyError, Glitch {
      * @return error
      * @see Glitch#onFailure(Consumer)
      */
-    @NotNull Failure fault();
+    @NotNull Failure failure();
 
     default @NotNull Optional<String> summary() {
-        return completeSuccess() ? Optional.empty() : Optional.of(fault().message());
+        return completeSuccess() ? Optional.empty() : Optional.of(failure().message());
     }
 
 }

@@ -42,7 +42,7 @@ public class TestCustom2 {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
-                .map(this::secondStep)
+                    .into(this::secondStep)
                 .peek(wr::write));
         report(none.signals());
     }
@@ -51,7 +51,7 @@ public class TestCustom2 {
         Stream<CustomInput> stream = rd.stream();
         None none = stream
             .map(input -> firstStep(input)
-                .map(this::secondStep)
+                    .into(this::secondStep)
                 .peek(wr::write))
             .collect(None.collect());
         report(none.signals());
@@ -61,7 +61,7 @@ public class TestCustom2 {
         Stream<CustomInput> stream = rd.stream();
         None none = None.streamOf(stream)
             .forEach(input -> firstStep(input)
-                .map(this::secondStep)
+                    .into(this::secondStep)
                 .peek(wr::write));
         report(none.signals());
     }
@@ -81,21 +81,21 @@ public class TestCustom2 {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
-                .choice()
-                .when(it -> it.equals("r"))
-                .accept(it -> {
-                })
-                .when(System.nanoTime() > 1_000_000_000)
-                .accept(it -> log.info("hrrlo2"))
-                .otherwise()
-                .apply(temp -> secondStep(temp)
-                    .peek(wr::write))
+                    .choice()
+                    .when(it -> it.equals("r"))
+                    .peek(it -> {
+                    })
+                    .when(System.nanoTime() > 1_000_000_000)
+                    .peek(it -> log.info("hrrlo2"))
+                    .otherwise()
+                    .ergo(temp -> secondStep(temp)
+                            .peek(wr::write))
                 .end()
             );
         searchFor(1)
-            .choice()
-            .when(Optional::isPresent).accept(it -> log.info("match at {}", it.get()))
-            .otherwise().accept(it -> log.info("None match"))
+                .choice()
+                .when(Optional::isPresent).peek(it -> log.info("match at {}", it.get()))
+                .otherwise().peek(it -> log.info("None match"))
             .end().onFailure(es -> es.forEach(e -> log.warn("Error: {}", e.message())));
         searchFor(1)
             .<Integer>choiceMap()
@@ -112,7 +112,7 @@ public class TestCustom2 {
         int k = new Random(1).nextInt(5);
         if (i<k) return Hope.of(Optional.of(k));
         if (i>k) return Hope.of(Optional.empty());
-        return Hope.failure(CustMsg.of("NF100P", "Collision at {}"), i);
+        return Hope.fault(CustMsg.of("NF100P", "Collision at {}"), i);
     }
 
     private interface CustomReader {

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  *     The interface has two main static constructors
  *     <pre>
  *      None.none();                                    // no errors and no warnings
- *      None.failure(CustMsg ce, Object... argv);       // single error message </pre>
+ *      None.fault(CustMsg ce, Object... argv);         // single error message </pre>
  *     If at most an error is returned (and no warnings), the use of {@link Nope} is preferable.
  * <p>
  *     Usually the interface is used through a builder which allows to accumulate many errors (warnings)
@@ -75,14 +75,15 @@ public interface None extends ManyErrors, OnlyError {
     static @NotNull None none() {
         return PmNone.none();
     }
+
     /**
      * Static constructor with error
      *
-     * @param ce        custom error
-     * @param objects   error parameters
-     * @return          instance of {@link None} with error
+     * @param ce      custom error
+     * @param objects error parameters
+     * @return instance of {@link None} with error
      */
-    static @NotNull None failure(@NotNull CustMsg ce, Object... objects) {
+    static @NotNull None fault(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(fail));
@@ -90,11 +91,12 @@ public interface None extends ManyErrors, OnlyError {
 
     /**
      * Static constructor with warning
-     * @param ce        custom warning
-     * @param objects   warning parameters
-     * @return          instance of {@link None} with warning
+     *
+     * @param ce      custom warning
+     * @param objects warning parameters
+     * @return instance of {@link None} with warning
      */
-    static @NotNull None warning(@NotNull CustMsg ce, Object... objects) {
+    static @NotNull None alert(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(warn));
@@ -107,7 +109,9 @@ public interface None extends ManyErrors, OnlyError {
      * @return instance of {@link None}
      */
     static @NotNull None capture(@NotNull Throwable t) {
-        return new PmNone(Collections.singletonList(PmFailure.of(t)));
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
+        return new PmNone(Collections.singletonList(PmTrouble.of(t, caller)));
     }
 
     /**
@@ -123,6 +127,10 @@ public interface None extends ManyErrors, OnlyError {
         } else {
             return new PmNone(item.signals());
         }
+    }
+
+    static <U> @NotNull None pull(@NotNull Nope u) {
+        return new PmNone(u.signals());
     }
 
     /**
@@ -208,12 +216,13 @@ public interface None extends ManyErrors, OnlyError {
      *      Some&lt;B&gt; kb = compute().map(this::x2sb); </pre>
      * in addition, the method also propagates any warnings
      *
-     *
      * @param fcn   producer {@link AnyValue}
      * @return      {@link Some} instance
      * @param <R>   {@link Some} type
      */
     @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn);
+
+    @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn);
 
     /**
      * If there are no errors, the action is performed.

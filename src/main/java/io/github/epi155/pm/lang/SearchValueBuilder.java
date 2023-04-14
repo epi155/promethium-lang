@@ -64,22 +64,24 @@ public interface SearchValueBuilder<R> {
         /**
          * Get the value from a fallible function
          * <p>
-         *     the function is called only and only if the result of the search is not found
+         * the function is called only and only if the result of the search is not found
          * </p>
-         * @param ctor  fallible function
-         * @return      instance of partial builder {@link SearchValueBuilder}
+         *
+         * @param ctor fallible function
+         * @return instance of partial builder {@link SearchValueBuilder}
          */
-        @NotNull SearchValueBuilder<R> onNotFound(@NotNull Supplier<AnyValue<R>> ctor);
+        @NotNull SearchValueBuilder<R> onNotFound(@NotNull Supplier<? extends AnyValue<R>> ctor);
 
         /**
          * Gets the value from a non-fallible function
          * <p>
-         *     the function is called only and only if the result of the search is not found
+         * the function is called only and only if the result of the search is not found
          * </p>
-         * @param ctor  non-fallible function
-         * @return      instance of partial builder {@link SearchValueBuilder}
+         *
+         * @param ctor non-fallible function
+         * @return instance of partial builder {@link SearchValueBuilder}
          */
-        @NotNull SearchValueBuilder<R> onNotFoundOf(@NotNull Supplier<R> ctor);
+        @NotNull SearchValueBuilder<R> onNotFoundOf(@NotNull Supplier<? extends R> ctor);
 
         /**
          * set custom error for final value

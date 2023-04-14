@@ -7,7 +7,36 @@ import java.util.function.Consumer;
 
 /**
  * Interface to manage the result of a search
- * @param <S>   value type of the object being searched for
+ * <p>
+ * This class can be thought of as a specialized version of {@link Some Some&lt;S>},
+ * o represent the result of a search. Static constructors are
+ * <ul>
+ * <li>{@link SearchResult#of(Object) SearchResult.of(T value)} which sets the found value
+ * <li>{@link SearchResult#empty() SearchResult.empty()} indicating that the searched value was not found
+ * <li>{@link SearchResult#fault(CustMsg, Object...) SearchResult.failure(CustMsg ce, Object... argv)}
+ *   which indicates that an error described by a custom message has occurred
+ * <li>{@link SearchResult#capture(Throwable) SearchResult.capture(Throwable t)} indicating an error caused by an exception
+ * </ul>
+ * The outcome of the search can be managed imperatively
+ * <pre>
+ * if (result.isFound()) {
+ *     T value = result.value();
+ *     // ... action on found
+ * } else if (result.isNotFound()) {
+ *     // ... action on found
+ * } else { // result.isFailure()
+ *     Failure fault = result.fault();
+ *     // ... action on fault
+ * }</pre>
+ * or functionally
+ * <pre>
+ * result
+ *     .onFound(v -> { ... })       // action on found
+ *     .onNotFound(() -> { .. })    // action on not found
+ *     .onFailure(e -> { ... });    // action on error
+ * </pre>
+ *
+ * @param <S> value type of the object being searched for
  */
 public interface SearchResult<S> extends SearchResult2 {
     /**
@@ -33,12 +62,13 @@ public interface SearchResult<S> extends SearchResult2 {
 
     /**
      * static constructor indicating that a custom error occurred
-     * @param ce    custom error message template
-     * @param argv  custom errore message parameters
-     * @return      instance of {@link SearchResult}
-     * @param <T>   value type of the object being searched for
+     *
+     * @param ce   custom error message template
+     * @param argv custom errore message parameters
+     * @param <T>  value type of the object being searched for
+     * @return instance of {@link SearchResult}
      */
-    static <T> @NotNull SearchResult<T> failure(@NotNull CustMsg ce, Object... argv) {
+    static <T> @NotNull SearchResult<T> fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmSearchResult<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
@@ -50,7 +80,9 @@ public interface SearchResult<S> extends SearchResult2 {
      * @param <T>   value type of the object being searched for
      */
     static <T> @NotNull SearchResult<T> capture(@NotNull Throwable t) {
-        return new PmSearchResult<>(null, PmFailure.of(t));
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
+        return new PmSearchResult<>(null, PmTrouble.of(t, caller));
     }
 
     /**
@@ -139,7 +171,8 @@ public interface SearchResult<S> extends SearchResult2 {
      * <p>
      * if no error has occurred, {@link java.util.NoSuchElementException} is thrown
      * </p>
-     * @return  instance of {@link Failure} with the error
+     *
+     * @return instance of {@link Failure} with the error
      */
-    @NotNull Failure  fault();
+    @NotNull Failure failure();
 }

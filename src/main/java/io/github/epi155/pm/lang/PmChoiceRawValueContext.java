@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
     private final T origin;
     private boolean branchExecuted = false;
-    private AnyError result;
+    private ItemStatus result;
 
     PmChoiceRawValueContext(@NotNull T value) {
         this.origin = value;
@@ -24,50 +24,22 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         }
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate) {
-        return new ChoiceValueWhenContext<T>() {
+        return new ChoiceValueWhenContextBase() {
             @Override
-            public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action) {
-                if (!branchExecuted && predicate.test(origin)) {
-                    action.accept(origin);
-                    branchExecuted = true;
-                }
-                return PmChoiceRawValueContext.this;
-            }
-
-            @Override
-            public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (!branchExecuted && predicate.test(origin)) {
-                    result = fcn.apply(origin);
-                    branchExecuted = true;
-                }
-                return PmChoiceRawValueContext.this;
+            protected boolean test() {
+                return predicate.test(origin);
             }
         };
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(boolean test) {
-        return new ChoiceValueWhenContext<T>() {
+        return new ChoiceValueWhenContextBase() {
             @Override
-            public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action) {
-                if (!branchExecuted && test) {
-                    action.accept(origin);
-                    branchExecuted = true;
-                }
-                return PmChoiceRawValueContext.this;
-            }
-
-            @Override
-            public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (!branchExecuted && test) {
-                    result = fcn.apply(origin);
-                    branchExecuted = true;
-                }
-                return PmChoiceRawValueContext.this;
+            protected boolean test() {
+                return test;
             }
         };
     }
@@ -77,7 +49,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
     public @NotNull ChoiceValueElseContext<T> otherwise() {
         return new ChoiceValueElseContext<T>() {
             @Override
-            public @NotNull ChoiceValueExitContext accept(@NotNull Consumer<? super T> action) {
+            public @NotNull ChoiceValueExitContext peek(@NotNull Consumer<? super T> action) {
                 if (!branchExecuted) {
                     action.accept(origin);
                     branchExecuted = true;
@@ -86,9 +58,18 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
             }
 
             @Override
-            public @NotNull ChoiceValueExitContext apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
+            public @NotNull ChoiceValueExitContext ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
                 if (!branchExecuted) {
                     result = fcn.apply(origin);
+                    branchExecuted = true;
+                }
+                return PmChoiceRawValueContext.this;
+            }
+
+            @Override
+            public @NotNull ChoiceValueExitContext fault(CustMsg ce, Object... argv) {
+                if (!branchExecuted) {
+                    result = Nope.fault(ce, argv);
                     branchExecuted = true;
                 }
                 return PmChoiceRawValueContext.this;
@@ -96,12 +77,11 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull <U> ChoiceValueWhenAsContext<U, T> whenInstanceOf(@NotNull Class<U> cls) {
         return new ChoiceValueWhenAsContext<U, T>() {
             @Override
-            public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super U> action) {
+            public @NotNull ChoiceValueContext<T> peek(@NotNull Consumer<? super U> action) {
                 if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
                     action.accept(cls.cast(origin));
                     branchExecuted = true;
@@ -110,9 +90,18 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
             }
 
             @Override
-            public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super U, ? extends AnyError> fcn) {
+            public @NotNull ChoiceValueContext<T> ergo(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
                     result = fcn.apply(cls.cast(origin));
+                    branchExecuted = true;
+                }
+                return PmChoiceRawValueContext.this;
+            }
+
+            @Override
+            public @NotNull ChoiceValueContext<T> fault(CustMsg ce, Object... argv) {
+                if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
+                    result = Nope.fault(ce, argv);
                     branchExecuted = true;
                 }
                 return PmChoiceRawValueContext.this;
@@ -120,27 +109,44 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull T t) {
-        return new ChoiceValueWhenContext<T>() {
+        return new ChoiceValueWhenContextBase() {
             @Override
-            public @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super T> action) {
-                if (!branchExecuted && origin.equals(t)) {
-                    action.accept(origin);
-                    branchExecuted = true;
-                }
-                return PmChoiceRawValueContext.this;
-            }
-
-            @Override
-            public @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super T, ? extends AnyError> fcn) {
-                if (!branchExecuted && origin.equals(t)) {
-                    result = fcn.apply(origin);
-                    branchExecuted = true;
-                }
-                return PmChoiceRawValueContext.this;
+            protected boolean test() {
+                return origin.equals(t);
             }
         };
+    }
+
+    abstract class ChoiceValueWhenContextBase implements ChoiceValueWhenContext<T> {
+        protected abstract boolean test();
+
+        @Override
+        public @NotNull ChoiceValueContext<T> peek(@NotNull Consumer<? super T> action) {
+            if (!branchExecuted && test()) {
+                action.accept(origin);
+                branchExecuted = true;
+            }
+            return PmChoiceRawValueContext.this;
+        }
+
+        @Override
+        public @NotNull ChoiceValueContext<T> ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
+            if (!branchExecuted && test()) {
+                result = fcn.apply(origin);
+                branchExecuted = true;
+            }
+            return PmChoiceRawValueContext.this;
+        }
+
+        @Override
+        public @NotNull ChoiceValueContext<T> fault(CustMsg ce, Object... argv) {
+            if (!branchExecuted && test()) {
+                result = Nope.fault(ce, argv);
+                branchExecuted = true;
+            }
+            return PmChoiceRawValueContext.this;
+        }
     }
 }

@@ -17,11 +17,9 @@ public class TestBld {
     @Test
     public void test1() {
         val bld = Some.<Integer>builder();
-        ;
         val some = bld
-            .withStatus(Nope.nope())
-            .withValue(1)
-            .build();
+                .withStatus(Nope.nope())
+                .buildWithValue(1);
 
         if (some.completeWithoutErrors()) {
             val value = some.value();
@@ -106,31 +104,5 @@ public class TestBld {
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
-    @Test
-    public void test7() {
-        val bld = Some.<Integer>builder();
-        val some = bld.build();
-        Assertions.assertTrue(some.completeSuccess());
-        Assertions.assertThrows(NoSuchElementException.class, some::value);
-    }
 
-    @Test
-    public void test8() {
-        val bld = None.builder();
-        try {
-            throw new FailureException(new NullPointerException());
-        } catch (Exception e) {
-            bld.captureHere(e);
-        }
-    }
-
-    @Test
-    public void test9() {
-        val bld = None.builder();
-        try {
-            throw new FaultException(CustMsg.of("E01", "we havr had a problem"));
-        } catch (Exception e) {
-            bld.captureHere(e);
-        }
-    }
 }

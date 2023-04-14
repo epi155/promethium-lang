@@ -33,125 +33,11 @@ public class TestFailure {
         Assertions.assertEquals("java.lang.NullPointerException", e.message());
         val reason = e.place();
         Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
+        Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
+        log.error("* Errore: {}", esito);
     }
 
-    @Test @Order(20)
-    public void testCaptureHere() {
-        log.info("2.0 Cattura eccezione (class) ...");
-        val bld = None.builder();
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            bld.captureHere(e);
-        }
-        val esito = bld.build();
-        Assertions.assertFalse(esito.completeSuccess());
-        val ce = esito.signals();
-        Assertions.assertEquals(1, ce.size());
-        val e = ce.iterator().next();
-        Assertions.assertEquals("java.lang.NullPointerException", e.message());
-        val reason = e.place();
-        Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-        Assertions.assertTrue(reason.contains("testCaptureHere"));
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
-    }
-
-    @Test @Order(30)
-    public void testCaptureCustomE() {
-        log.info("3.0 Cattura eccezione (package/custom) ...");
-        val bld = None.builder();
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            bld.captureException(e, CUST_ERR);
-        }
-        val esito = bld.build();
-        Assertions.assertFalse(esito.completeSuccess());
-        val ce = esito.signals();
-        Assertions.assertEquals(1, ce.size());
-        val e = ce.iterator().next();
-        Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
-        Assertions.assertTrue(e.message().contains("java.lang.NullPointerException"));
-        val reason = e.place();
-        Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-        Assertions.assertTrue(reason.contains("crashMethod"));
-        Assertions.assertEquals(CUST_ERR.code(), e.code());
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
-    }
-    @Test @Order(31)
-    public void testCaptureCustomM() {
-        log.info("3.1 Cattura eccezione/message (package/custom) ...");
-        val bld = None.builder();
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            bld.captureMessage(e, CUST_ERR);
-        }
-        val esito = bld.build();
-        Assertions.assertFalse(esito.completeSuccess());
-        val ce = esito.signals();
-        Assertions.assertEquals(1, ce.size());
-        val e = ce.iterator().next();
-        Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
-        Assertions.assertTrue(e.message().contains("null"));
-        val reason = e.place();
-        Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-        Assertions.assertTrue(reason.contains("crashMethod"));
-        Assertions.assertEquals(CUST_ERR.code(), e.code());
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
-    }
-    @Test @Order(41)
-    public void testCaptureCustomHM() {
-        log.info("4.1 Cattura eccezione/message (class/custom) ...");
-        val bld = None.builder();
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            bld.captureHereMessage(e, CUST_ERR);
-        }
-        val esito = bld.build();
-        Assertions.assertFalse(esito.completeSuccess());
-        val ce = esito.signals();
-        Assertions.assertEquals(1, ce.size());
-        val e = ce.iterator().next();
-        Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
-        Assertions.assertTrue(e.message().contains("null"));
-        val reason = e.place();
-        Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-        Assertions.assertTrue(reason.contains("testCaptureCustomHM"));
-        Assertions.assertEquals(CUST_ERR.code(), e.code());
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
-    }
-    @Test @Order(40)
-    public void testCaptureCustomHE() {
-        log.info("4.0 Cattura eccezione (class/custom) ...");
-        val bld = None.builder();
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            bld.captureHereException(e, CUST_ERR);
-        }
-        val esito = bld.build();
-        Assertions.assertFalse(esito.completeSuccess());
-        val ce = esito.signals();
-        Assertions.assertEquals(1, ce.size());
-        val e = ce.iterator().next();
-        Assertions.assertTrue(e.message().startsWith("Errore Gestito"));
-        Assertions.assertTrue(e.message().contains("java.lang.NullPointerException"));
-        val reason = e.place();
-        Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-        Assertions.assertTrue(reason.contains("testCaptureCustomHE"));
-        Assertions.assertEquals(CUST_ERR.code(), e.code());
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
-    }
 
     @Test
     @Order(42)
@@ -165,61 +51,16 @@ public class TestFailure {
             hope = Hope.capture(e);
         }
         Assertions.assertFalse(hope.completeSuccess());
-        val e = hope.fault();
+        val e = hope.failure();
         Assertions.assertTrue(e.message().contains("NullPointerException"));
         val reason = e.place();
         Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
+        Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
         Assertions.assertEquals("999J", e.code());
         log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
     }
 
-    @Test
-    @Order(43)
-    public void testCaptureHopeHere() {
-        log.info("4.3 Cattura eccezione Hope Here ...");
-        Hope<String> hope;
-        try {
-            crashMethod();
-            hope = Hope.of("Hola");
-        } catch (Exception e) {
-            hope = Hope.captureHere(e);
-        }
-        Assertions.assertFalse(hope.completeSuccess());
-        val e = hope.fault();
-        Assertions.assertTrue(e.message().contains("NullPointerException"));
-        val reason = e.place();
-        Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-        Assertions.assertTrue(reason.contains("testCaptureHopeHere"));
-        Assertions.assertEquals("999J", e.code());
-        log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
-    }
-
-    @Test
-    @Order(44)
-    public void testFailureException() {
-        log.info("4.4 Cattura eccezione Hope Here ...");
-        val error = CustMsg.of("T034", "Custom Error");
-        try {
-            try {
-                crashMethod();
-            } catch (NullPointerException e) {
-                throw new FailureException(e, error);
-            }
-        } catch (FailureException ex) {
-            val ho = Nope.capture(ex);
-            val fault = ho.fault();
-            Assertions.assertTrue(fault.message().contains("Custom Error"));
-            val reason = fault.place();
-            Assertions.assertNotNull(reason);
-            Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-            Assertions.assertTrue(reason.contains("crashMethod"));
-            Assertions.assertEquals(error.code(), fault.code());
-            log.error("* Errore: [{}] - ({},{})", fault.message(), fault.code(), fault.place());
-        }
-    }
 
     @Test
     @Order(50)
@@ -230,11 +71,11 @@ public class TestFailure {
                 .onFailure(le -> {
                     Assertions.assertEquals(1, le.size());
                     val e = le.iterator().next();
-                    Assertions.assertEquals("java.util.NoSuchElementException", e.message());
+                    Assertions.assertEquals("999B", e.code());
                     val reason = e.place();
                     Assertions.assertNotNull(reason);
                     Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
-                    Assertions.assertTrue(reason.contains("testEmpty"));
+                    Assertions.assertTrue(reason.contains("envelope1"));
                     log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
                 });
     }
@@ -244,7 +85,7 @@ public class TestFailure {
     public void testCustomError0() {
         log.info("6.0 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
-        val e = Hope.failure(error);
+        val e = Hope.fault(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
             val reason = z.place();
@@ -260,7 +101,7 @@ public class TestFailure {
     public void testCustomError1() {
         log.info("6.1 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
-        val e = Nope.failure(error);
+        val e = Nope.fault(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
             val reason = z.place();
@@ -276,7 +117,7 @@ public class TestFailure {
     public void testCustomError2() {
         log.info("6.2 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
-        val e = Some.failure(error);
+        val e = Some.fault(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
             val z = le.iterator().next();
@@ -294,7 +135,7 @@ public class TestFailure {
     public void testCustomError3() {
         log.info("6.3 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
-        val e = None.failure(error);
+        val e = None.fault(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
             val z = le.iterator().next();
@@ -310,32 +151,15 @@ public class TestFailure {
     @Test
     @Order(900)
     public void test900() {
-        val some = Some.failure(CUST_ERR);
+        val some = Some.fault(CUST_ERR);
         Assertions.assertFalse(some.completeSuccess());
     }
 
-    @Test
-    @Order(901)
-    public void test901() {
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            val hope = Hope.captureHere(e);
-            Assertions.assertFalse(hope.completeSuccess());
-            val fault = hope.fault();
-            val place = fault.place();
-            Assertions.assertNotNull(place);
-            Assertions.assertTrue(place.contains("test901"));
-        }
-
-        val some = Some.failure(CUST_ERR);
-        Assertions.assertFalse(some.completeSuccess());
-    }
 
     @Test
     @Order(910)
     public void test910() {
-        val none = None.failure(CUST_ERR);
+        val none = None.fault(CUST_ERR);
         Assertions.assertFalse(none.completeSuccess());
     }
 
@@ -360,23 +184,8 @@ public class TestFailure {
     @Test
     @Order(920)
     public void test920() {
-        val some = Nope.failure(CUST_ERR);
+        val some = Nope.fault(CUST_ERR);
         Assertions.assertFalse(some.completeSuccess());
-    }
-
-    @Test
-    @Order(921)
-    public void test921() {
-        try {
-            crashMethod();
-        } catch (Exception e) {
-            val hope = Nope.captureHere(e);
-            Assertions.assertFalse(hope.completeSuccess());
-            val fault = hope.fault();
-            val place = fault.place();
-            Assertions.assertNotNull(place);
-            Assertions.assertTrue(place.contains("test921"));
-        }
     }
 
     @Test

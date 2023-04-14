@@ -13,15 +13,20 @@ import java.util.function.Function;
 public interface ChoiceValueWhenAsContext<U, T> {
     /**
      * performs an action on the value
-     * @param action    action on the value
-     * @return      instance of {@link ChoiceValueContext}
+     *
+     * @param action action on the value
+     * @return instance of {@link ChoiceValueContext}
      */
-    @NotNull ChoiceValueContext<T> accept(@NotNull Consumer<? super U> action);
+    @NotNull ChoiceValueContext<T> peek(@NotNull Consumer<? super U> action);
 
     /**
      * performs a fallible function on the value
-     * @param fcn       fallible function on the value
-     * @return      instance of {@link ChoiceValueContext}
+     *
+     * @param fcn fallible function on the value
+     * @return instance of {@link ChoiceValueContext}
      */
-    @NotNull ChoiceValueContext<T> apply(@NotNull Function<? super U, ? extends AnyError> fcn);
+    @NotNull ChoiceValueContext<T> ergo(@NotNull Function<? super U, ? extends ItemStatus> fcn);
+
+    @NotNull ChoiceValueContext<T> fault(CustMsg ce, Object... argv);
+
 }

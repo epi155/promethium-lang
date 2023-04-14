@@ -1,30 +1,30 @@
 package io.github.epi155.pm.lang;
 
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import static java.util.Optional.ofNullable;
 
-@RequiredArgsConstructor(access = lombok.AccessLevel.PACKAGE)
-class PmSignal implements Signal{
-    protected static final int JAVA_EXCEPTION_STATUS = 500;
-    protected static final String JAVA_EXCEPTION_CODE = "999J";
-
+abstract class PmSignal implements Signal {
     @NotNull
     protected final String theCode;
     protected final int theStatus;
     @NotNull
     protected final String theMessage;
-    protected final StackTraceElement theStackTraceElement;
     protected final Map<String, Object> properties = new HashMap<>();
+
+    protected PmSignal(@NotNull String theCode, int theStatus, @NotNull String theMessage) {
+        this.theCode = theCode;
+        this.theStatus = theStatus;
+        this.theMessage = theMessage;
+    }
 
     protected static @NotNull String lineOf(@NotNull StackTraceElement stackElem) {
         String className = stackElem.getClassName();
@@ -33,27 +33,6 @@ class PmSignal implements Signal{
         int lineNumber = stackElem.getLineNumber();
         return className + "->" + methodName + "(" + fileName + ":" + lineNumber + ")";
     }
-
-    protected static StackTraceElement guessLine(Throwable ex, @NotNull StackTraceElement caller) {
-        String packagePrefix = caller.getClassName().replaceFirst("(^\\w+[.]\\w+)[.].*", "$1");
-        return scan(ex, packagePrefix);
-    }
-    protected static StackTraceElement caller() {
-        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        return stPtr[PmAnyBuilder.J_DEEP_CALL];
-    }
-
-    protected static @Nullable StackTraceElement scan(@NotNull Throwable t, String packagePrefix) {
-        StackTraceElement[] stackElems = t.getStackTrace();
-        for (StackTraceElement stackElem : stackElems) {
-            String className = stackElem.getClassName();
-            if (className.startsWith(packagePrefix)) {
-                return stackElem;
-            }
-        }
-        return null;
-    }
-
 
     //___ delegate Properties___
     @Override
@@ -83,14 +62,27 @@ class PmSignal implements Signal{
     public String toString() {
         val sw = new StringWriter();
         try(val pw = new PrintWriter(sw)) {
-            pw.printf("- code: %s%n", theCode);
-            pw.printf("  status: %s%n",theStatus);
-            pw.printf("  message: %s%n", theMessage);
-            ofNullable(place()).ifPresent(place -> pw.printf("  place: %s%n", place)) ;
+            pw.printf("{ code: \"%s\", ", theCode);
+            pw.printf("status: %d, ", theStatus);
+            pw.printf("message: \"%s\"", theMessage);
+            ofNullable(place()).ifPresent(place -> pw.printf(", place: \"%s\"", place));
             if (!properties.isEmpty()) {
-                pw.printf("  properties:%n");
-                properties.forEach((key, value) -> pw.printf("    %s: %s%n", key, value.toString()));
+                pw.printf(", properties: { ");
+                Set<Map.Entry<String, Object>> entries = properties.entrySet();
+                boolean append = false;
+                for (Map.Entry<String, Object> entry : entries) {
+                    if (append) pw.printf(", ");
+                    val value = entry.getValue();
+                    if (value instanceof String) {
+                        pw.printf("%s: \"%s\"", entry.getKey(), value);
+                    } else {
+                        pw.printf("%s: %s", entry.getKey(), value.toString());
+                    }
+                    append = true;
+                }
+                pw.printf(" }");    // end property
             }
+            pw.printf(" }");    // end object
         }
         return sw.toString();
     }
@@ -124,11 +116,6 @@ class PmSignal implements Signal{
     }
 
     @Override
-    public String place() {
-        return theStackTraceElement == null ? null : lineOf(theStackTraceElement);
-    }
-
-    @Override
     public @NotNull String code() {
         return theCode;
     }
@@ -141,11 +128,6 @@ class PmSignal implements Signal{
     @Override
     public @NotNull String message() {
         return theMessage;
-    }
-
-    @Override
-    public StackTraceElement stackTraceElement() {
-        return theStackTraceElement;
     }
 
 }

@@ -12,11 +12,10 @@ import java.util.function.Supplier;
  *     The interface has static constructors with custom error message or without
  *     <pre>
  *      Nope.nope();                                    // no error
- *      Nope.failure(CustMsg ce, Object... argv);       // error message </pre>
+ *      Nope.fault(CustMsg ce, Object... argv);         // error message </pre>
  *     and with Exception
  *     <pre>
- *      Nope.capture(Throwable t);      // error from Exception (package level)
- *      Nope.captureHere(Throwable t);  // error from Exception (method level) </pre>
+ *      Nope.capture(Throwable t);      // error from Exception (package level)</pre>
  * <p>
  *     The outcome can be evaluated imperatively
  *     <pre>
@@ -44,7 +43,7 @@ public interface Nope extends SingleError, OnlyError {
      * @return Nope senza errori
      */
     static @NotNull Nope nope() {
-        return new PmNope();
+        return PmNope.nope();
     }
 
     /**
@@ -54,7 +53,7 @@ public interface Nope extends SingleError, OnlyError {
      * @param argv parametri per dettaglio errore
      * @return Nope con errore
      */
-    static @NotNull Nope failure(@NotNull CustMsg ce, Object... argv) {
+    static @NotNull Nope fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmNope(PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
@@ -72,32 +71,11 @@ public interface Nope extends SingleError, OnlyError {
      * @return instance of {@link PmNope} with error
      */
     static @NotNull Nope capture(@NotNull Throwable t) {
-        return new PmNope(PmFailure.of(t));
-    }
-
-    /**
-     * Create an error <b> Nope </b>
-     * <p>
-     * The <i> method / line </i> of the stacktrace,
-     * which threw the class-internal exception calling <i> capture </i>,
-     * is identified as a detail of the error
-     * </p>
-     *
-     * @param t exception to catch
-     * @return instance of {@link PmNope} with error
-     */
-    static @NotNull Nope captureHere(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
-        StackTraceElement[] stErr = t.getStackTrace();
-        for (int i = 1; i < stErr.length; i++) {
-            StackTraceElement error = stErr[i];
-            if (caller.getClassName().equals(error.getClassName()) && caller.getMethodName().equals(error.getMethodName())) {
-                return new PmNope(PmFailure.ofException(error, t));
-            }
-        }
-        return new PmNope(PmFailure.of(t));
+        return new PmNope(PmTrouble.of(t, caller));
     }
+
 
     /**
      * Set the action on success
@@ -111,12 +89,7 @@ public interface Nope extends SingleError, OnlyError {
      */
     @NotNull Glitch onSuccess(Runnable action);
 
-    /**
-     * If there is an error throw an exception
-     *
-     * @throws FailureException exception with error payload
-     */
-    void orThrow() throws FailureException;
+    @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn);
 
     /**
      * If there is no error, the supplier is called,
@@ -127,7 +100,7 @@ public interface Nope extends SingleError, OnlyError {
      * @return {@link Nope} instance, if this has an error,
      * the producer is not called and the result has the original error
      */
-    @NotNull Nope ergo(@NotNull Supplier<? extends SingleError> fcn);
+    @NotNull Nope thus(@NotNull Supplier<? extends SingleError> fcn);
 
     /**
      * If there are no errors, the supplier is called,
@@ -153,7 +126,13 @@ public interface Nope extends SingleError, OnlyError {
      * @return      {@link Hope} instance
      * @param <R>   {@link Hope} type
      */
-    @NotNull <R> Hope<R> map(@NotNull Supplier<Hope<R>> fcn);
+    @NotNull <R> Hope<R> into(@NotNull Supplier<Hope<R>> fcn);
+
+    @NotNull <R> Hope<R> intoOf(@NotNull Supplier<? extends R> fcn);
+
+    @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn);
+
+    @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn);
 
     /**
      * If there is no error, the action is performed.

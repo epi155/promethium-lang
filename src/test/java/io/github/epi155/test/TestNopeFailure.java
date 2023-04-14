@@ -26,11 +26,11 @@ public class TestNopeFailure {
             nope = Nope.capture(e);
         }
         Assertions.assertFalse(nope.completeSuccess());
-        val fault = nope.fault();
+        val fault = nope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
         Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestNopeFailure"));
+        Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
         log.error("* Errore: [{}] - ({},{})", fault.message(), fault.code(), fault.place());
     }
@@ -43,14 +43,14 @@ public class TestNopeFailure {
             crashMethod();
             nope = Nope.nope();
         } catch (Exception e) {
-            nope = Nope.captureHere(e);
+            nope = Nope.capture(e);
         }
         Assertions.assertFalse(nope.completeSuccess());
-        val fault = nope.fault();
+        val fault = nope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
         Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestNopeFailure"));
+        Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("testCaptureHere"));
     }
 
@@ -65,11 +65,11 @@ public class TestNopeFailure {
             hope = Hope.capture(e);
         }
         Assertions.assertFalse(hope.completeSuccess());
-        val fault = hope.fault();
+        val fault = hope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
         Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestNopeFailure"));
+        Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
         log.error("* Errore: [{}] - ({},{})", fault.message(), fault.code(), fault.place());
     }
@@ -81,14 +81,14 @@ public class TestNopeFailure {
             crashMethod();
             hope = Hope.of(1);
         } catch (Exception e) {
-            hope = Hope.captureHere(e);
+            hope = Hope.capture(e);
         }
         Assertions.assertFalse(hope.completeSuccess());
-        val fault = hope.fault();
+        val fault = hope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
         val reason = fault.place();
         Assertions.assertNotNull(reason);
-        Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestNopeFailure"));
+        Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("testCaptureHereH"));
         log.error("* Errore: [{}] - ({},{})", fault.message(), fault.code(), fault.place());
     }

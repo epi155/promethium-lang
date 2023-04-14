@@ -14,16 +14,25 @@ import org.junit.jupiter.api.TestMethodOrder;
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestWarning {
-    private None good() { return None.none();}
-    private None fail() { return  None.failure(CustMsg.of("E01", "Errore")); }
-    private None warn() { return  None.warning(CustMsg.of("W01", "Allarme")); }
+    private None good() {
+        return None.none();
+    }
+
+    private None fail() {
+        return None.fault(CustMsg.of("E01", "Errore"));
+    }
+
+    private None warn() {
+        return None.alert(CustMsg.of("W01", "Allarme"));
+    }
+
     private None wArn() {
         val bld = None.builder();
         bld.alert(CustMsg.of("W02", "Attenzione"))
-            .setProperty("altezza", 3.14F)
-            .setProperty("larghezza", 1.41F)
-            .setProperty("profondità", "N/A");
-        return  bld.build();
+                .setProperty("altezza", 3.14F)
+                .setProperty("larghezza", 1.41F)
+                .setProperty("profondità", "N/A");
+        return bld.build();
     }
 
     @Test
@@ -36,7 +45,7 @@ public class TestWarning {
     void test112() {
         val result = good().ergo(() -> good().ergo(this::warn));
         log.info("result is: {}", result);
-        Assertions.assertTrue(result.completeWithWarnings());
+        Assertions.assertTrue(result.completeWarning());
     }
     @Test
     void test113() {
@@ -48,13 +57,13 @@ public class TestWarning {
     void test121() {
         val result = good().ergo(() -> warn().ergo(this::good));
         log.info("result is: {}", result);
-        Assertions.assertTrue(result.completeWithWarnings());
+        Assertions.assertTrue(result.completeWarning());
     }
     @Test
     void test122() {
         val result = good().ergo(() -> warn().ergo(this::wArn));
         log.info("result is: {}", result);
-        Assertions.assertTrue(result.completeWithWarnings());
+        Assertions.assertTrue(result.completeWarning());
         Assertions.assertEquals(2, result.signals().size());
     }
     @Test
@@ -89,13 +98,13 @@ public class TestWarning {
     void test211() {
         val result = warn().ergo(() -> good().ergo(this::good));
         log.info("result is: {}", result);
-        Assertions.assertTrue(result.completeWithWarnings());
+        Assertions.assertTrue(result.completeWarning());
     }
     @Test
     void test212() {
         val result = warn().ergo(() -> good().ergo(this::warn));
         log.info("result is: {}", result);
-        Assertions.assertTrue(result.completeWithWarnings());
+        Assertions.assertTrue(result.completeWarning());
         Assertions.assertEquals(2, result.signals().size());
     }
     @Test
@@ -109,7 +118,7 @@ public class TestWarning {
     void test221() {
         val result = warn().ergo(() -> warn().ergo(this::good));
         log.info("result is: {}", result);
-        Assertions.assertTrue(result.completeWithWarnings());
+        Assertions.assertTrue(result.completeWarning());
         Assertions.assertEquals(2, result.signals().size());
     }
     @Test

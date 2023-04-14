@@ -3,6 +3,7 @@ package io.github.epi155.test;
 import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import java.util.Random;
 
 @Slf4j
 class TestHope {
+    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
 
 
     @Test
@@ -23,7 +25,7 @@ class TestHope {
 
     @Test
     void test2() {
-        Hope.failure(CustMsg.of("E01", "Houston we have had a problem"))
+        Hope.fault(CustMsg.of("E01", "Houston we have had a problem"))
             .onSuccess(i -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -39,46 +41,35 @@ class TestHope {
 
     @Test
     void test4() {
-        val result = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"))
-            .mapTo(
-                    i -> "all fine",
-                    e -> String.format("oops %s", e.message()));
+        val result = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"))
+                .mapTo(
+                        i -> "all fine",
+                        e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
         Assertions.assertEquals("oops Houston we have had a problem", result);
-    }
-
-    @Test
-    void test5() {
-        val hope = Hope.of(1);
-        Assertions.assertDoesNotThrow(() -> hope.orThrow());
-        Assertions.assertDoesNotThrow(() -> hope.onSuccess(k -> log.info("Hi")).orThrow(f -> new FailureException(new NullPointerException())));
-    }
-
-    @Test
-    void test6() {
-        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
-        Assertions.assertThrows(FailureException.class, hope::orThrow);
     }
 
     @Test
     void test7() {
         val hope = Hope.of(1);
         hope.peek(i -> log.info("to be continue"));
+        Assertions.assertFalse(hope.completeWarning());
     }
 
     @Test
     void test8() {
-        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
+        val hope = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"));
         hope.peek(i -> log.info("to be continue"));
         Assertions.assertTrue(hope.completeWithErrors());
+        Assertions.assertFalse(hope.completeWarning());
         if (hope.completeWithErrors()) {
-            val fail = hope.fault();
+            val fail = hope.failure();
             Assertions.assertEquals("E01", fail.code());
         }
         if (hope.completeWithoutErrors()) {
             val value = hope.value();
         } else {
-            val fault = hope.fault();
+            val fault = hope.failure();
         }
     }
 
@@ -95,14 +86,8 @@ class TestHope {
     }
 
     @Test
-    void test11() {
-        val hope = Hope.of(1);
-        hope.ergo(i -> Hope.captureHere(new NullPointerException()));
-    }
-
-    @Test
     void test12() {
-        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
+        val hope = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"));
         hope.ergo(Hope::of);
     }
 
@@ -110,28 +95,43 @@ class TestHope {
     void test13() {
         val hope = Hope.of(1);
         Assertions.assertThrows(NoSuchElementException.class, () -> {
-            val fault = hope.fault();
+            val fault = hope.failure();
         });
     }
 
     @Test
     void test14() {
-        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
+        val hope = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
-            val fault = hope.fault();
+            val fault = hope.failure();
         });
     }
 
     @Test
+        // mvn test -Dtest="TestHope#test15"
     void test15() {
-        val hope = Hope.of(1);
-        Assertions.assertDoesNotThrow(() -> hope.orThrow(fault -> new FailureException(CustMsg.of("E02", "Error is {}"), fault.message())));
-    }
+        val h1 = Hope.of(null);
+        Assertions.assertTrue(h1.completeWithErrors());
+        log.warn("null -> {}", h1.failure());
 
-    @Test
-    void test16() {
-        val hope = Hope.failure(CustMsg.of("E01", "Houston we have had a problem"));
-        Assertions.assertThrows(FailureException.class, () -> hope.orThrow(fault -> new FailureException(CustMsg.of("E02", "Error is {}"), fault.message())));
+        val h2 = Hope.of(h1.failure());
+        Assertions.assertTrue(h2.completeWithErrors());
+        log.warn("signal -> {}", h2.failure());
+        val f2 = h2.failure();
+        log.info("status: {}", f2.status());
+        f2.forEach((k, v) -> log.info("{}: {}", k, v));
+
+        @NotNull Some<@NotNull Failure> s1 = Some.of(h1.failure());
+        Assertions.assertTrue(s1.completeWithErrors());
+        log.warn("some -> {}", s1);
+
+        val s2 = Some.pull(h2);
+        Assertions.assertTrue(s2.completeWithErrors());
+        log.warn("some -> {}", s2);
+        val n1 = None.pull(Nope.nope());
+        Assertions.assertTrue(n1.completeSuccess());
+
+        val m = f2.getStrProperty("dummy", "non esiste");
     }
 
     @Test
@@ -142,84 +142,181 @@ class TestHope {
 
     @Test
     void test20() {
-        val hope = Hope.of(1).mapOf(it -> it + 1);
+        val hope = Hope.of(1).intoOf(it -> it + 1);
         Assertions.assertTrue(hope.completeSuccess());
         Assertions.assertEquals(2, hope.value());
         val nope = hope.asNope();
         Assertions.assertTrue(nope.completeSuccess());
-        val some = Hope.of(1).mapOut(it -> Some.of(it + 1));
+        val some = Hope.of(1).map(it -> Some.of(it + 1));
         Assertions.assertTrue(some.completeSuccess());
         Assertions.assertEquals(2, some.value());
 
-        val some2 = Hope.of(1).mapOut(it -> Some.<Integer>capture(new NullPointerException()));
+        val some2 = Hope.of(1).map(it -> Some.<Integer>capture(new NullPointerException()));
         Assertions.assertFalse(some2.completeSuccess());
     }
 
     @Test
     void test21() {
-        val hope = Hope.<Integer>capture(new NullPointerException()).mapOf(it -> it + 1);
+        val hope = Hope.<Integer>capture(new NullPointerException()).intoOf(it -> it + 1);
         Assertions.assertFalse(hope.completeSuccess());
         val nope = hope.asNope();
         Assertions.assertFalse(nope.completeSuccess());
-        val some = Hope.<Integer>capture(new NullPointerException()).mapOut(it -> Some.of(it + 1));
+        val some = Hope.<Integer>capture(new NullPointerException()).map(it -> Some.of(it + 1));
         Assertions.assertFalse(some.completeSuccess());
     }
     @Test
     void test22() {
         val z = Hope.of(1)
-            .map(u -> Hope.of("0123456789ABCDEF".charAt(u))
-                .map(v -> Hope.of(BigInteger.probablePrime(v, new Random()))));
+                .into(u -> Hope.of("0123456789ABCDEF".charAt(u))
+                        .into(v -> Hope.of(BigInteger.probablePrime(v, new Random()))));
         Assertions.assertTrue(z.completeSuccess());
-        log.info("Result is {}", z.toString());
+        log.info("Result is {}", z);
     }
     private class A {}
     private class B {}
     private class C {}
     private class D {}
-
     void test501(A a) {
         val bld = Some.<C>builder();
         formalValidation(a)
             .onSuccess(() -> decode(a)
                 .onSuccess(b -> meritValidation(b)
                     .onSuccess(() -> translate(b)
-                        .onSuccess(bld::withValue)
+                            .onSuccess(bld::value)
                         .onFailure(bld::add))
                     .onFailure(bld::add))
                 .onFailure(bld::add))
             .onFailure(bld::add);
         Some<C> sc = bld.build();
     }
+
     void test502(A a) {
         val bld = Some.<C>builder();
         bld.add(
-            formalValidation(a)
-                .ergo(() -> decode(a)
-                    .ergo(b -> meritValidation(b)
-                        .ergo(() -> translate(b)
-                            .peek(bld::value))))
+                formalValidation(a)
+                        .ergo(() -> decode(a)
+                                .ergo(b -> meritValidation(b)
+                                        .ergo(() -> translate(b)
+                                                .peek(bld::value))))
         );
         Some<C> au = bld.build();
 
         Some<C> ax = formalValidation(a)
-            .<B>map(() -> decode(a))
-            .<C>map(b -> meritValidation(b)
-                .<C>map(() -> translate(b)));
+                .map(() -> decode(a))
+                .map(b -> meritValidation(b)
+                        .map(() -> translate(b)));
 
         None nn = formalValidation(a)
-            .ergo(() -> decode(a)
-                .ergo(b -> meritValidation(b)
-                    .ergo(() -> translate(b))));
+                .ergo(() -> decode(a)
+                        .ergo(b -> meritValidation(b)
+                                .ergo(() -> translate(b))));
 
+        Hope<C> hx = formalValidation(a)
+                .into(() -> decode(a))
+                .into(b -> meritValidation(b)
+                        .into(() -> translate(b)));
+        Nope nx = formalValidation(a)
+                .thus(() -> decode(a)
+                        .thus(b -> meritValidation(b)
+                                .thus(() -> translate(b))));
+
+        @NotNull None nz = hx
+                .choice()
+                .when(false).peek(c -> {
+                })
+                .when(false).ergo(c -> Nope.nope())
+                .when(false).fault(MY_FAULT)
+                .when(c -> false).peek(c -> {
+                })
+                .whenInstanceOf(String.class).peek(c -> {
+                })
+                .whenInstanceOf(String.class).ergo(c -> Nope.nope())
+                .whenInstanceOf(String.class).fault(MY_FAULT)
+                .otherwise().ergo(c -> Nope.nope())
+                .end();
+
+        Some<D> iz = hx
+                .<D>choiceMap()
+                .when(false)
+                .map(c -> fromCtoDh(c))
+                .when(false)
+                .mapOf(c -> fromCtoD(c))
+                .when(false)
+                .fault(MY_FAULT)
+                .when(c -> false)
+                .map(c -> fromCtoDs(c))
+                .whenInstanceOf(String.class)
+                .map(s -> fromStoDh(s))
+                .whenInstanceOf(String.class)
+                .mapOf(s -> fromStoD(s))
+                .whenInstanceOf(String.class)
+                .fault(MY_FAULT)
+                .otherwise()
+                .map(c -> fromCtoDs(c))
+                .end();
+
+        @NotNull None vz = ChoiceContext.choice(1)
+                .when(false)
+                .peek(c -> {
+                })
+                .when(false).ergo(c -> Nope.nope())
+                .when(false).fault(MY_FAULT)
+                .when(c -> false).peek(c -> {
+                })
+                .whenInstanceOf(String.class).peek(c -> {
+                })
+                .whenInstanceOf(String.class).ergo(c -> Nope.nope())
+                .whenInstanceOf(String.class).fault(MY_FAULT)
+                .otherwise().ergo(c -> Nope.nope())
+                .end();
+
+        @NotNull Some<Integer> wz = ChoiceContext.<Long, Integer>choiceMap(1L)
+                .when(false).map(c -> Hope.of(1))
+                .when(false).mapOf(c -> 1)
+                .when(false).fault(MY_FAULT)
+                .when(c -> false).map(c -> Hope.of(1))
+                .whenInstanceOf(String.class).map(c -> Hope.of(1))
+                .whenInstanceOf(String.class).mapOf(c -> 1)
+                .whenInstanceOf(String.class).fault(MY_FAULT)
+                .otherwise().map(c -> Hope.of(1))
+                .end();
     }
 
-    private Some<C> translate(B bData) { return Some.of(new C()); }
+    private D fromStoD(String s) {
+        return new D();
+    }
 
-    private None meritValidation(B bData) { return None.none();}
+    private AnyValue<D> fromStoDh(String s) {
+        return Hope.of(new D());
+    }
 
-    private Some<B> decode(A rawdata) { return Some.of(new B());     }
+    private AnyValue<D> fromCtoDs(C c) {
+        return Some.of(new D());
+    }
 
-    private None formalValidation(A rawdata) { return None.none();     }
+    private D fromCtoD(C c) {
+        return new D();
+    }
+
+    private Hope<D> fromCtoDh(C c) {
+        return Hope.of(new D());
+    }
+
+    private Hope<C> translate(B bData) {
+        return Hope.of(new C());
+    }
+
+    private Nope meritValidation(B bData) {
+        return Nope.nope();
+    }
+
+    private Hope<B> decode(A rawdata) {
+        return Hope.of(new B());
+    }
+
+    private Nope formalValidation(A rawdata) {
+        return Nope.nope();
+    }
 
     private <B, A> Some<B> a2sb(A value) {
         return null;

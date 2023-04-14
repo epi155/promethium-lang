@@ -74,6 +74,17 @@ class PmNone extends PmManyError implements None {
         }
     }
 
+    @Override
+    public @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn) {
+        if (completeSuccess()) {
+            return new PmSome<>(fcn.get());
+        } else if (completeWithErrors()) {
+            return new PmSome<>(signals());
+        } else /*completeWithWarnings()*/ {
+            return new PmSome<>(fcn.get(), signals());
+        }
+    }
+
     public @NotNull None peek(@NotNull Runnable action) {
         if (completeWithoutErrors()) {
             action.run();

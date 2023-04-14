@@ -3,6 +3,7 @@ package io.github.epi155.pm.lang;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -36,35 +37,45 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public T orThrow() throws FailureException {
-        if (completeSuccess()) {
-            return value;
-        } else {
-            throw new FailureException(fault());
-        }
-    }
-
-    @Override
-    public @NotNull <R> Hope<R> map(@NotNull Function<? super T, Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> into(@NotNull Function<? super T, Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.apply(value);
         } else {
-            return new PmHope<>(null, fault());
+            return new PmHope<>(null, failure());
         }
     }
 
     @Override
-    public @NotNull <R> Some<R> mapOut(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
+    public @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn) {
+        if (completeSuccess()) {
+            val result = fcn.apply(value);
+            if (result.completeWithoutErrors()) {
+                return Nope.nope();
+            } else {
+                return new PmNope(result.failure());
+            }
+        } else {
+            return new PmNope(failure());
+        }
+    }
+
+    @Override
+    public @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
         if (completeSuccess()) {
             return PmSome.of(fcn.apply(value));
         } else {
-            return new PmSome<>(Collections.singletonList(fault()));
+            return new PmSome<>(Collections.singletonList(failure()));
         }
     }
 
     @Override
-    public @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
-        return completeSuccess() ? Hope.of(fcn.apply(value)) : new PmHope<>(null, fault());
+    public @NotNull <R> Hope<R> intoOf(@NotNull Function<? super T, ? extends R> fcn) {
+        return completeSuccess() ? Hope.of(fcn.apply(value)) : new PmHope<>(null, failure());
+    }
+
+    @Override
+    public @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
+        return completeSuccess() ? new PmSome<>(fcn.apply(value)) : new PmSome<>(Collections.singletonList(failure()));
     }
 
     @Override
@@ -85,7 +96,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
                 return new PmNone(many.signals());
             }
         } else {
-            return new PmNone(Collections.singletonList(fault()));
+            return new PmNone(Collections.singletonList(failure()));
         }
     }
 
@@ -100,12 +111,12 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     @Override
     @NotNull
     public Nope asNope() {
-        return completeSuccess() ? new PmNope() : new PmNope(fault());
+        return completeSuccess() ? Nope.nope() : new PmNope(failure());
     }
 
     @Override
     public <R> R mapTo(Function<T, R> onSuccess, Function<Failure, R> onFailure) {
-        return completeSuccess() ? onSuccess.apply(value) : onFailure.apply(fault());
+        return completeSuccess() ? onSuccess.apply(value) : onFailure.apply(failure());
     }
 
     @Override
@@ -118,6 +129,12 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
         return new PmChoiceMapContext<>(this);
     }
 
+    @Override
+    protected void extraToString(PrintWriter pw) {
+        if (value != null) {
+            pw.printf("finalValue: %s!%s%n", value.getClass().getName(), value);
+        }
+    }
 
     class GlitchImpl implements Glitch {
 
@@ -126,9 +143,5 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
             PmHope.this.onFailure(errorAction);
         }
 
-        @Override
-        public void orThrow(@NotNull Function<Failure, FailureException> fcn) throws FailureException {
-            PmHope.this.orThrow(fcn);
-        }
     }
 }

@@ -10,15 +10,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface SomeBuilder<T> extends ErrorBuilder {
     /**
-     * value setter (builder style)
-     *
-     * @param value payload
-     * @return {@link SomeBuilder} instance
-     */
-    @NotNull SomeBuilder<T> withValue(@NotNull T value);
-
-    /**
      * value setter
+     * <p>
+     * The value cannot be set if there are errors.
+     * If a value is set in these conditions, the value is ignored and a warning is added.
+     * <p>
+     * The value cannot be null.
+     * If a null value is set, an error message is set.
+     * <p>
+     * The value cannot be an instance of Signal (Warning or Failure).
+     * If such a value is set, it is set as a signal message (error or warning),
+     * an error message is also added.
+     * <p>
+     * A value cannot be set more than once.
+     * If a further value is set, an error message is set and all values are ignored.
      *
      * @param value payload
      */
@@ -26,10 +31,37 @@ public interface SomeBuilder<T> extends ErrorBuilder {
 
     /**
      * Final builder
+     * <p>
+     * If neither a value nor an error has been set, an error is set.
+     * <p>
+     * If an error was set after a value was set,
+     * the value is ignored and a warning message is added
      *
      * @return {@link Some} instance
      */
     @NotNull Some<T> build();
+
+    /**
+     * set final value and return {@link Some} instance
+     * <p>
+     * The value cannot be set if there are errors.
+     * If a value is set in these conditions, the value is ignored and a warning is added.
+     * <p>
+     * The value cannot be null.
+     * If a null value is set, an error message is set.
+     * <p>
+     * The value cannot be an instance of Signal (Warning or Failure).
+     * If such a value is set, it is set as a signal message (error or warning),
+     * an error message is also added.
+     * <p>
+     * A value cannot be set more than once.
+     * If a value has already been set, an error message is set and all values are ignored
+     * (use {@link #build()}.
+     *
+     * @param value final value
+     * @return {@link Some} instance
+     */
+    @NotNull Some<T> buildWithValue(@NotNull T value);
 
     /**
      * Add error(s)

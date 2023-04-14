@@ -3,6 +3,7 @@ package io.github.epi155.test;
 import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,19 +16,48 @@ import java.util.stream.IntStream;
 @Slf4j
 public class TestChoice {
     private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error {} !!");
+
+    @Test
+    void testC0() {
+        @NotNull None ee = Some.<Integer>builder()
+                .withAlert(MY_FAULT)
+                .buildWithValue(100)
+                .choice()
+                .when(it -> it > 50)
+                .ergo(it -> Nope.fault(MY_FAULT))
+                .end();
+        System.out.println(ee);
+        @NotNull None res = Hope.<Integer>fault(MY_FAULT).choice()
+                .when(1).peek(it -> System.out.println("one"))
+                .otherwise().peek(it -> System.out.println("off"))
+                .end();
+//        @NotNull None z = Hope.of(1).choice()
+//                .when(1).peek(k -> System.out.println("one"))
+//                .when(2).ergo(k -> Nope.failure(MY_FAULT))
+//                .otherwise().peek(k -> System.out.println("boh"))
+//                .end();
+//        @NotNull Some<String> s = Hope.of(2).<String>choiceMap()
+//                .when(1).map(k -> Hope.of("one").mapOf(String::toUpperCase))
+//                .when(2).mapOf(k -> "Two")
+//                .when(k -> k==3).mapOf(k -> "Two")
+//                .whenInstanceOf(String.class).mapOf(String::trim)
+//                .otherwise().map(k -> Hope.failure(MY_FAULT))
+//                .end();
+    }
+
     @Test
     public void testC1() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
-            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
-            .collect(Collectors.toList());
+                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
+                .collect(Collectors.toList());
         val bld = None.builder();
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> bld.add(it.choice()
-            .when(fst.get()).accept(v -> fst.set(false))
-            .when(v -> v%2 == 0).accept(v -> log.info("{} is even", v))
-            .when(v -> v%3 == 0).accept(v -> log.info("{} is 3-fold", v))
-            .otherwise().accept(v -> log.info("{} is odd", v))
+                .when(fst.get()).peek(v -> fst.set(false))
+                .when(v -> v % 2 == 0).peek(v -> log.info("{} is even", v))
+                .when(v -> v % 3 == 0).peek(v -> log.info("{} is 3-fold", v))
+                .otherwise().peek(v -> log.info("{} is odd", v))
             .end()));
         val none = bld.build();
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
@@ -36,18 +66,18 @@ public class TestChoice {
     public void testC2() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
-            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
+                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
             .collect(Collectors.toList());
         val bld = None.builder();
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> bld.add(it.choice()
-            .when(fst.get()).apply(v -> {
-                fst.set(false);
-                return Nope.nope();
-            })
-            .when(v -> v%2 == 0).apply(v -> randm.nextInt(v) < v/2 ? Hope.of(v/2) : Hope.failure(MY_FAULT, v))
-            .when(v -> v%3 == 0).apply(v -> Nope.nope())
-            .otherwise().apply(v -> randm.nextDouble()<0.5 ? Hope.of(1) : Hope.capture(new NoSuchElementException()))
+                .when(fst.get()).ergo(v -> {
+                    fst.set(false);
+                    return Nope.nope();
+                })
+                .when(v -> v % 2 == 0).ergo(v -> randm.nextInt(v) < v / 2 ? Hope.of(v / 2) : Hope.fault(MY_FAULT, v))
+                .when(v -> v % 3 == 0).ergo(v -> Nope.nope())
+                .otherwise().ergo(v -> randm.nextDouble() < 0.5 ? Hope.of(1) : Hope.capture(new NoSuchElementException()))
             .end()));
         val none = bld.build();
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
@@ -57,16 +87,16 @@ public class TestChoice {
     public void testC3() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
-            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>failure(MY_FAULT, k) : Hope.of(k))
+                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
             .collect(Collectors.toList());
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> it.<String>choiceMap()
-            .when(fst.get()).map(k -> {
-                fst.set(false);
-                return Hope.of("zero");
-            })
-            .when(v -> v % 4 == 0).map(v -> Hope.of("quattro"))
-            .when(v -> v % 4 == 1).map(v -> Hope.failure(MY_FAULT, v))
+                .when(fst.get()).map(k -> {
+                    fst.set(false);
+                    return Hope.of("zero");
+                })
+                .when(v -> v % 4 == 0).map(v -> Hope.of("quattro"))
+                .when(v -> v % 4 == 1).map(v -> Hope.fault(MY_FAULT, v))
             .when(v -> v % 3 == 0).map(v -> Hope.of("tre"))
             .otherwise().map(v -> Hope.of("altro"))
             .end()
@@ -78,15 +108,15 @@ public class TestChoice {
     public void testC6() {
         val randm = new Random();
         List<Some<Integer>> values = IntStream.rangeClosed(1, 50)
-            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>failure(MY_FAULT, k) : Some.of(k))
+                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>fault(MY_FAULT, k) : Some.of(k))
             .collect(Collectors.toList());
         val bld = None.builder();
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> bld.add(it.choice()
-            .when(fst.get()).accept(v -> fst.set(false))
-            .when(v -> v%2 == 0).accept(v -> log.info("{} is even", v))
-            .when(v -> v%3 == 0).accept(v -> log.info("{} is 3-fold", v))
-            .otherwise().accept(v -> log.info("{} is odd", v))
+                .when(fst.get()).peek(v -> fst.set(false))
+                .when(v -> v % 2 == 0).peek(v -> log.info("{} is even", v))
+                .when(v -> v % 3 == 0).peek(v -> log.info("{} is 3-fold", v))
+                .otherwise().peek(v -> log.info("{} is odd", v))
             .end()));
         val none = bld.build();
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
@@ -95,16 +125,16 @@ public class TestChoice {
     public void testC7() {
         val randm = new Random();
         List<Some<Integer>> values = IntStream.rangeClosed(1, 50)
-            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>failure(MY_FAULT, k) : Some.of(k))
+                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>fault(MY_FAULT, k) : Some.of(k))
             .collect(Collectors.toList());
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> it.<String>choiceMap()
-            .when(fst.get()).map(k -> {
-                fst.set(false);
-                return Hope.of("zero");
-            })
-            .when(v -> v % 4 == 0).map(v -> Hope.of("quattro"))
-            .when(v -> v % 4 == 1).map(v -> Hope.failure(MY_FAULT, v))
+                .when(fst.get()).map(k -> {
+                    fst.set(false);
+                    return Hope.of("zero");
+                })
+                .when(v -> v % 4 == 0).map(v -> Hope.of("quattro"))
+                .when(v -> v % 4 == 1).map(v -> Hope.fault(MY_FAULT, v))
             .when(v -> v % 3 == 0).map(v -> Hope.of("tre"))
             .otherwise().map(v -> Hope.of("altro"))
             .end()
@@ -116,33 +146,33 @@ public class TestChoice {
         Number[] nn = { 1, 2L, 3F, 3.1415926535_8979323846_2643383279 };
         for(Number z: nn) {
             val a = Hope.of(z).choice()
-                .whenInstanceOf(Integer.class).accept(n -> n++)
-                .whenInstanceOf(Double.class).apply(n -> Hope.of(Math.sqrt(n)))
-                .otherwise().apply(x -> Nope.failure(MY_FAULT))
-                .end();
+                    .whenInstanceOf(Integer.class).peek(n -> n++)
+                    .whenInstanceOf(Double.class).ergo(n -> Hope.of(Math.sqrt(n)))
+                    .otherwise().ergo(x -> Nope.fault(MY_FAULT))
+                    .end();
             val b = Hope.of(z).<String>choiceMap()
-                .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
-                .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
-                .otherwise().map(x -> Hope.failure(MY_FAULT))
-                .end();
+                    .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
+                    .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
+                    .otherwise().map(x -> Hope.fault(MY_FAULT))
+                    .end();
             val c = ChoiceContext.choice(z)
-                .whenInstanceOf(Integer.class).accept(n -> n++)
-                .whenInstanceOf(Double.class).apply(n -> Hope.of(Math.sqrt(n)))
-                .otherwise().apply(x -> Nope.failure(MY_FAULT))
-                .end();
-            val d = ChoiceContext.<Number,String>choiceMap(z)
-                .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
-                .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
-                .otherwise().map(x -> Hope.failure(MY_FAULT))
-                .end();
+                    .whenInstanceOf(Integer.class).peek(n -> n++)
+                    .whenInstanceOf(Double.class).ergo(n -> Hope.of(Math.sqrt(n)))
+                    .otherwise().ergo(x -> Nope.fault(MY_FAULT))
+                    .end();
+            val d = ChoiceContext.<Number, String>choiceMap(z)
+                    .whenInstanceOf(Integer.class).map(n -> Hope.of("String"))
+                    .whenInstanceOf(Double.class).map(n -> Hope.of("Double"))
+                    .otherwise().map(x -> Hope.fault(MY_FAULT))
+                    .end();
         }
         ChoiceContext.choice(1)
-            .when(1).accept(k -> log.info("one"))
-            .when(2).accept(k -> log.info("two"))
+                .when(1).peek(k -> log.info("one"))
+                .when(2).peek(k -> log.info("two"))
             .end();
         ChoiceContext.choice(2)
-            .when(1).accept(k -> log.info("one"))
-            .when(2).accept(k -> log.info("two"))
+                .when(1).peek(k -> log.info("one"))
+                .when(2).peek(k -> log.info("two"))
             .end();
         ChoiceContext.<Integer,String>choiceMap(1)
             .when(1).map(k -> Hope.of("one"))
@@ -166,21 +196,21 @@ public class TestChoice {
             .end();
 
         ChoiceContext.choice(1)
-            .when(1).apply(k -> Hope.of("a"))
-            .when(2).accept(k -> Nope.nope())
+                .when(1).ergo(k -> Hope.of("a"))
+                .when(2).peek(k -> Nope.nope())
             .end();
         ChoiceContext.choice(2)
-            .when(1).apply(k -> Hope.of("a"))
-            .when(2).accept(k -> Nope.nope())
+                .when(1).ergo(k -> Hope.of("a"))
+                .when(2).peek(k -> Nope.nope())
             .end();
 
         Hope.of(1).choice()
-            .when(1).accept(k -> log.info("one"))
-            .when(2).accept(k -> log.info("two"))
+                .when(1).peek(k -> log.info("one"))
+                .when(2).peek(k -> log.info("two"))
             .end();
         Hope.of(2).choice()
-            .when(1).accept(k -> log.info("one"))
-            .when(2).accept(k -> log.info("two"))
+                .when(1).peek(k -> log.info("one"))
+                .when(2).peek(k -> log.info("two"))
             .end();
         Hope.of(1).<String>choiceMap()
             .when(1).map(k -> Hope.of("one"))
@@ -201,17 +231,17 @@ public class TestChoice {
             .end();
 
         Hope.of(1).choice()
-            .when(1).apply(k -> Hope.of("a"))
-            .when(2).accept(k -> Nope.nope())
+                .when(1).ergo(k -> Hope.of("a"))
+                .when(2).peek(k -> Nope.nope())
             .end();
         Hope.of(2).choice()
-            .when(1).apply(k -> Hope.of("a"))
-            .when(2).accept(k -> Nope.nope())
+                .when(1).ergo(k -> Hope.of("a"))
+                .when(2).peek(k -> Nope.nope())
             .end();
 
         Hope.<Integer>capture(new NullPointerException()).choice()
-            .when(1).apply(k -> Hope.of("a"))
-            .when(2).accept(k -> Nope.nope())
+                .when(1).ergo(k -> Hope.of("a"))
+                .when(2).peek(k -> Nope.nope())
             .end();
         Hope.<Number>capture(new NullPointerException()).<String>choiceMap()
             .when(1).map(k -> Hope.of("a"))
@@ -227,13 +257,13 @@ public class TestChoice {
         List<Integer> values = IntStream.rangeClosed(1, 50).boxed().collect(Collectors.toList());
         values.forEach(value -> {
             None none1 = ChoiceContext.choice(value)
-                .when(randm.nextDouble()<0.05).apply(v -> Nope.nope())
-                .when(v -> v%2 == 0).accept(v -> log.info("{} is even", v))
-                .when(randm.nextDouble()<0.1).accept(v -> log.info("{} is bingo !!", v))
-                .when(randm.nextDouble()<0.1).apply(v -> Nope.nope())
-                .when(v -> v%3 == 0).accept(v -> log.info("{} is 3-fold", v))
-                .when(v -> v%5 == 0).apply(v -> Nope.nope())
-                .otherwise().accept(v -> log.info("{} is odd", v))
+                    .when(randm.nextDouble() < 0.05).ergo(v -> Nope.nope())
+                    .when(v -> v % 2 == 0).peek(v -> log.info("{} is even", v))
+                    .when(randm.nextDouble() < 0.1).peek(v -> log.info("{} is bingo !!", v))
+                    .when(randm.nextDouble() < 0.1).ergo(v -> Nope.nope())
+                    .when(v -> v % 3 == 0).peek(v -> log.info("{} is 3-fold", v))
+                    .when(v -> v % 5 == 0).ergo(v -> Nope.nope())
+                    .otherwise().peek(v -> log.info("{} is odd", v))
                 .end();
 
             Some<Integer> value1 = ChoiceContext.<Integer,Integer>choiceMap(value)
@@ -244,12 +274,12 @@ public class TestChoice {
                 .end();
         });
         None none = ChoiceContext.choice(1)
-            .when(v -> v%2 == 0).apply(v -> Hope.capture(new NullPointerException()))
-            .otherwise().apply(v -> Nope.nope())
+                .when(v -> v % 2 == 0).ergo(v -> Hope.capture(new NullPointerException()))
+                .otherwise().ergo(v -> Nope.nope())
             .end();
         None none2 = ChoiceContext.choice(1)
-            .when(v -> v%2 == 0).apply(v -> Nope.nope())
-            .otherwise().apply(v -> Hope.capture(new NullPointerException()))
+                .when(v -> v % 2 == 0).ergo(v -> Nope.nope())
+                .otherwise().ergo(v -> Hope.capture(new NullPointerException()))
             .end();
     }
 

@@ -15,7 +15,6 @@ abstract class PmFinalStatus implements ItemStatus {
     private static final String L_ERRORS = "Errors";
     private final Collection<Signal> signals;
     private final Collection<Warning> alerts;
-    private final Collection<Failure> errors;
     private final boolean zSuccess;
     private final boolean zErrors;
     private final boolean zAlerts;
@@ -23,25 +22,23 @@ abstract class PmFinalStatus implements ItemStatus {
     protected PmFinalStatus(Collection<? extends Signal> signals) {
         this.signals = Collections.unmodifiableCollection(signals);
         List<Warning> warnings = new ArrayList<>();
-        List<Failure> failures = new ArrayList<>();
-        for(Signal signal: getSignalsQueue()) {
+        boolean zErrors = false;
+        for (Signal signal : getSignalsQueue()) {
             if (signal instanceof Warning) {
                 warnings.add((Warning) signal);
-            } else if (signal instanceof Failure) {
-                failures.add((Failure) signal);
+            } else {
+                zErrors = true;
             }
         }
         this.alerts = Collections.unmodifiableCollection(warnings);
-        this.errors = Collections.unmodifiableCollection(failures);
         this.zSuccess = signals.isEmpty();
-        this.zErrors = !failures.isEmpty();
-        this.zAlerts = failures.isEmpty() && !alerts.isEmpty();
+        this.zErrors = zErrors;
+        this.zAlerts = !zErrors && !alerts.isEmpty();
     }
 
     protected PmFinalStatus() {
         this.signals = Collections.emptyList();
         this.alerts = Collections.emptyList();
-        this.errors = Collections.emptyList();
         this.zSuccess = true;
         this.zAlerts = false;
         this.zErrors = false;
@@ -50,7 +47,6 @@ abstract class PmFinalStatus implements ItemStatus {
     public PmFinalStatus(PmFinalStatus status) {
         this.signals = status.signals;
         this.alerts = status.alerts;
-        this.errors = status.errors;
         this.zSuccess = status.zSuccess;
         this.zAlerts = status.zAlerts;
         this.zErrors = status.zErrors;
@@ -67,17 +63,13 @@ abstract class PmFinalStatus implements ItemStatus {
     public Collection<Warning> alerts() {
         return alerts;
     }
-    protected Collection<Failure> errors() {
-        return errors;
-    }
-
     @Override
     public boolean completeSuccess() {
         return zSuccess;
     }
 
     @Override
-    public boolean completeWithWarnings() {
+    public boolean completeWarning() {
         return zAlerts;
     }
 
@@ -91,17 +83,31 @@ abstract class PmFinalStatus implements ItemStatus {
         String status = zSuccess ? L_SUCCESS : zErrors ? L_ERRORS : L_WARNIGS;
         val sw = new StringWriter();
         val pw = new PrintWriter(sw);
-        pw.printf("%n---%n");
-        pw.printf("finalStatus: %s%n",status);
+        pw.printf("{ finalStatus: %s", status);
         extraToString(pw);
         if (!alerts.isEmpty()) {
-            pw.println("warnings:");
-            alerts.forEach(s -> pw.printf(s.toString()));
+            pw.print(", warnings: [ ");
+            boolean append = false;
+            for (Warning alert : alerts) {
+                if (append) pw.print(", ");
+                pw.print(alert.toString());
+                append = true;
+            }
+            pw.print(" ]");
         }
-        if (!errors.isEmpty()) {
-            pw.println("errors:");
-            errors.forEach(s -> pw.printf(s.toString()));
+        if (zErrors) {
+            pw.print(", errors: [ ");
+            boolean append = false;
+            for (Signal signal : signals) {
+                if (signal instanceof Failure) {
+                    if (append) pw.print(", ");
+                    pw.print(signal);
+                    append = true;
+                }
+            }
+            pw.print(" ]");
         }
+        pw.print(" }");
         return sw.toString();
     }
 

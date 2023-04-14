@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
+import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,9 +52,9 @@ public class TestConcat {
 
     public void test32() {
         val k1 = fun1(1)
-            .map(this::fun2)
-            .map(this::fun3)
-            .map(this::fun4)
+                .into(this::fun2)
+                .into(this::fun3)
+                .into(this::fun4)
                 .asNope();
         k1.onFailure(e -> log.warn(e.message()));
     }
@@ -67,47 +68,33 @@ public class TestConcat {
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
-    @Test
-    public void test50() {
-        val list = Arrays.asList(1, 2, 3, 4, 5, 6);
-        val bld = None.builder();
-        list.stream()
-                .map(this::func1)
-                .flatMap(bld::flat)
-                .map(this::func2)
-            .flatMap(bld::flat)
-            .map(this::func3)
-            .flatMap(bld::flat)
-            .map(this::func4)
-            .flatMap(bld::flat)
-            .forEach(it -> {
-            });
-        val z = bld.build();
-        z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
-    }
+//    @Test
+//    public void test50() {
+//        val list = Arrays.asList(1, 2, 3, 4, 5, 6);
+//        val bld = None.builder();
+//        list.stream()
+//                .map(this::func1)
+//                .flatMap(bld::flat)
+//                .map(this::func2)
+//            .flatMap(bld::flat)
+//            .map(this::func3)
+//            .flatMap(bld::flat)
+//            .map(this::func4)
+//            .flatMap(bld::flat)
+//            .forEach(it -> {
+//            });
+//        val z = bld.build();
+//        z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
+//    }
 
-    @Test
-    public void test50b() {
-        val list = Arrays.asList(1, 2, 3, 4, 5, 6);
-        val bld = None.builder();
-        list.stream()
-            .map(k -> Hope.of(2 * k))
-            .flatMap(bld::flat)
-            .map(k -> Hope.<String>captureHere(new NullPointerException()))
-            .flatMap(bld::flat)
-            .forEach(it -> {
-            });
-        val z = bld.build();
-        z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
-    }
 
     @Test
     public void test51() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> func1(n)
-            .map(this::func2)
-            .map(this::func3)
-            .map(this::func4)).collect(None.collect());
+                .map(this::func2)
+                .map(this::func3)
+                .map(this::func4)).collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -115,9 +102,9 @@ public class TestConcat {
     public void test52() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> fun1(n)
-            .map(this::fun2)
-            .map(this::fun3)
-            .map(this::fun4)).collect(None.collect());
+                .into(this::fun2)
+                .into(this::fun3)
+                .into(this::fun4)).collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
 
     }
@@ -162,7 +149,7 @@ public class TestConcat {
         try {
             Eins value = new Eins(k);
             return Some.of(value);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Some.capture(e);
         }
     }
@@ -193,9 +180,9 @@ public class TestConcat {
     public void test65() {
         val list = Arrays.asList(1, 2, 3, 4, 5, 6);
         val k1 = None.iterableOf(list).forEach(n -> fun1(n)
-            .map(this::fun2)
-            .map(this::fun3)
-            .map(this::fun4));
+                .into(this::fun2)
+                .into(this::fun3)
+                .into(this::fun4));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -203,9 +190,9 @@ public class TestConcat {
     public void test66() {
         Stream<Integer> stream = IntStream.range(0, 100).boxed();
         val k1 = None.streamOf(stream).forEachParallel(5, n -> fun1(n)
-            .map(this::fun2)
-            .map(this::fun3)
-            .map(this::fun4));
+                .into(this::fun2)
+                .into(this::fun3)
+                .into(this::fun4));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -218,7 +205,7 @@ public class TestConcat {
         try {
             Eins value = new Eins(k);
             return Hope.of(value);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Hope.capture(e);
         }
     }
@@ -227,7 +214,7 @@ public class TestConcat {
         try {
             val next = new Zwei(value);
             return Some.of(next);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Some.capture(e);
         }
     }
@@ -236,7 +223,7 @@ public class TestConcat {
         try {
             val next = new Zwei(value);
             return Hope.of(next);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Hope.capture(e);
         }
     }
@@ -245,7 +232,7 @@ public class TestConcat {
         try {
             val next = new Drei(value);
             return Some.of(next);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Some.capture(e);
         }
     }
@@ -254,7 +241,7 @@ public class TestConcat {
         try {
             val next = new Drei(value);
             return Hope.of(next);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Hope.capture(e);
         }
     }
@@ -263,7 +250,7 @@ public class TestConcat {
         try {
             val next = new Vier(value);
             return Some.of(next);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Some.capture(e);
         }
     }
@@ -272,7 +259,7 @@ public class TestConcat {
         try {
             val next = new Vier(value);
             return Hope.of(next);
-        } catch (FailureException e) {
+        } catch (Exception e) {
             return Hope.capture(e);
         }
     }
@@ -280,30 +267,30 @@ public class TestConcat {
     private static class Eins {
         private final int value;
 
-        public Eins(int value) throws FailureException {
+        public Eins(int value) {
             this.value = value - 1;
             log.debug("Current value is {}", this.value);
-            if (this.value < 0) throw new FailureException(NEG, 1);
+            if (this.value < 0) throw new InvalidParameterException();
         }
     }
 
     private static class Zwei {
         private final int value;
 
-        public Zwei(Eins value) throws FailureException {
+        public Zwei(Eins value) {
             this.value = value.value - 1;
             log.debug("Current value is {}", this.value);
-            if (this.value < 0) throw new FailureException(NEG, 2);
+            if (this.value < 0) throw new InvalidParameterException();
         }
     }
 
     private static class Drei {
         private final int value;
 
-        public Drei(Zwei value) throws FailureException {
+        public Drei(Zwei value) {
             this.value = value.value - 1;
             log.debug("Current value is {}", this.value);
-            if (this.value < 0) throw new FailureException(NEG, 3);
+            if (this.value < 0) throw new InvalidParameterException();
         }
     }
 
@@ -311,10 +298,10 @@ public class TestConcat {
     private static class Vier {
         private final int value;
 
-        public Vier(Drei value) throws FailureException {
+        public Vier(Drei value) {
             this.value = value.value - 1;
             log.debug("Current value is {}", this.value);
-            if (this.value < 0) throw new FailureException(NEG, 4);
+            if (this.value < 0) throw new InvalidParameterException();
         }
     }
 }

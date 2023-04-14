@@ -12,11 +12,10 @@ import java.util.function.Function;
  *     The interface has static constructors with value or custom error message
  *     <pre>
  *      Hope.of(T value);                                // final value
- *      Hope.failure(CustMsg ce, Object... argv);       // error message </pre>
+ *      Hope.fault(CustMsg ce, Object... argv);          // error message </pre>
  *     and with Exception
  *     <pre>
- *      Hope.capture(Throwable t);      // error from Exception (package level)
- *      Hope.captureHere(Throwable t);  // error from Exception (method level) </pre>
+ *      Hope.capture(Throwable t);      // error from Exception </pre>
  * <p>
  *     The outcome can be evaluated imperatively
  *     <pre>
@@ -50,11 +49,10 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
     static <S> @NotNull Hope<S> of(@NotNull S value) {
         if (value == null) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be null"));
-            return new PmHope<>(null, fail);
+            return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG));
         } else if (value instanceof Signal) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.ofException(stPtr[PmAnyBuilder.J_LOCATE], new IllegalArgumentException("the argument cannot be an instanceof Signal"));
+            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
             fail.setProperty("cause", value);
             return new PmHope<>(null, fail);
         }
@@ -69,7 +67,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <S>  type value in case of success
      * @return <b>Hope</b> instance
      */
-    static <S> @NotNull Hope<S> failure(@NotNull CustMsg ce, Object... argv) {
+    static <S> @NotNull Hope<S> fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
@@ -88,51 +86,11 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @return <b>Hope</b> instance
      */
     static <S> @NotNull Hope<S> capture(@NotNull Throwable t) {
-        return new PmHope<>(null, PmFailure.of(t));
-    }
-
-    /**
-     * Create an error <b> Hope </b>
-     * <p>
-     * The <i> method / line </i> of the stacktrace,
-     * which threw the class-internal exception calling <i> capture </i>,
-     * is identified as a detail of the error
-     * </p>
-     *
-     * @param t   exception to catch
-     * @param <S> type value in case of success
-     * @return <b>Hope</b> instance
-     */
-    static <S> @NotNull Hope<S> captureHere(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
-        StackTraceElement[] stErr = t.getStackTrace();
-        for (int i = 1; i < stErr.length; i++) {
-            StackTraceElement error = stErr[i];
-            if (caller.getClassName().equals(error.getClassName()) && caller.getMethodName().equals(error.getMethodName())) {
-                return new PmHope<>(null, PmFailure.ofException(error, t));
-            }
-        }
-        return new PmHope<>(null, PmFailure.of(t));
+        return new PmHope<>(null, PmTrouble.of(t, caller));
     }
 
-    /**
-     * Static constructor with {@link SingleError} ({@link Hope} or {@link Nope} completeWithErrors)
-     * @param se    {@link SingleError} instance
-     * @return      {@link Hope} instance in error status
-     * @param <S>   {@link Hope} data type (dummy)
-     */
-    static <S> Hope<S> failure(SingleError se) {
-        return new PmHope<>(null, se.fault());
-    }
-
-    /**
-     * Retrieve the value if there is no error or throw an exception
-     *
-     * @return value
-     * @throws FailureException exception with error payload
-     */
-    T orThrow() throws FailureException;
 
     /**
      * Compose operator
@@ -157,7 +115,9 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <R> result type
      * @return result {@link Hope} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Hope<R> map(@NotNull Function<? super T, Hope<R>> fcn);
+    @NotNull <R> Hope<R> into(@NotNull Function<? super T, Hope<R>> fcn);
+
+    @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn);
 
     /**
      * External compose operator to {@link Some}
@@ -167,7 +127,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <R> result type
      * @return result {@link Some} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Some<R> mapOut(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
+    @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
 
     /**
      * map value
@@ -179,7 +139,9 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * if this has errors, the transformation is not called and the result has the original error;
      * RuntimeException are caught as new error
      */
-    @NotNull <R> Hope<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
+    @NotNull <R> Hope<R> intoOf(@NotNull Function<? super T, ? extends R> fcn);
+
+    @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * If there is no error and the value is present, the action on the value is performed.

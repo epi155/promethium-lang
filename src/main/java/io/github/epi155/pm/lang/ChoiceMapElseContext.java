@@ -12,8 +12,13 @@ import java.util.function.Function;
 public interface ChoiceMapElseContext<T, R> {
     /**
      * fallible function to apply to the chosen value
-     * @param fcn   fallible function
-     * @return      instance of {@link ChoiceMapExitContext}
+     *
+     * @param fcn fallible function
+     * @return instance of {@link ChoiceMapExitContext}
      */
     @NotNull ChoiceMapExitContext<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
+
+    @NotNull ChoiceMapExitContext<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
+
+    @NotNull ChoiceMapExitContext<R> fault(CustMsg ce, Object... argv);
 }

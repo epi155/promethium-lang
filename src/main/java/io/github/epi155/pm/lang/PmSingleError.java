@@ -1,14 +1,18 @@
 package io.github.epi155.pm.lang;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 abstract class PmSingleError implements SingleError {
+    private static final String L_SUCCESS = "Success";
+    private static final String L_ERRORS = "Errors";
     private final Failure fault;
 
     protected PmSingleError(Failure fault) {
@@ -36,7 +40,7 @@ abstract class PmSingleError implements SingleError {
     }
 
     @Override
-    public @NotNull Failure fault() {
+    public @NotNull Failure failure() {
         if (fault != null) {
             return fault;
         } else {
@@ -49,9 +53,21 @@ abstract class PmSingleError implements SingleError {
         if (fault != null) errorAction.accept(fault);
     }
 
-    @Override
-    public void orThrow(@NotNull Function<Failure, FailureException> fcn) throws FailureException {
-        if (fault != null) throw fcn.apply(fault);
+    public String toString() {
+        String status = fault == null ? L_SUCCESS : L_ERRORS;
+        val sw = new StringWriter();
+        try (val pw = new PrintWriter(sw)) {
+            pw.printf("{ finalStatus: %s, ", status);
+            extraToString(pw);
+            if (fault != null) {
+                pw.printf("error: %s", fault);
+            }
+            pw.print(" }");
+        }
+        return sw.toString();
+    }
+
+    protected void extraToString(PrintWriter pw) {
     }
 
 }
