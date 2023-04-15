@@ -19,8 +19,21 @@ public interface ChoiceMapWhenAsContext<U, T, R> {
      */
     @NotNull ChoiceMapContext<T, R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn);
 
+    /**
+     * Apply transformation to the chosen value
+     *
+     * @param fcn transformation function
+     * @return instance of {@link ChoiceMapContext}
+     */
     @NotNull ChoiceMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn);
 
+    /**
+     * Set custom error message
+     *
+     * @param ce   custom error
+     * @param argv error arguments
+     * @return instance of {@link ChoiceMapContext}
+     */
     @NotNull ChoiceMapContext<T, R> fault(CustMsg ce, Object... argv);
 
 }

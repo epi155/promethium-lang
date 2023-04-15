@@ -20,11 +20,12 @@ public class TestChoice {
     @Test
     void testC0() {
         @NotNull None ee = Some.<Integer>builder()
-                .withAlert(MY_FAULT)
-                .buildWithValue(100)
-                .choice()
-                .when(it -> it > 50)
-                .ergo(it -> Nope.fault(MY_FAULT))
+            .withAlert(MY_FAULT)
+            .buildWithValue(100)
+            .choice()
+            .when(it -> it > 50)
+            .ergo(it -> Nope.fault(MY_FAULT))
+            .otherwise().nop()
                 .end();
         System.out.println(ee);
         @NotNull None res = Hope.<Integer>fault(MY_FAULT).choice()
@@ -167,12 +168,14 @@ public class TestChoice {
                     .end();
         }
         ChoiceContext.choice(1)
-                .when(1).peek(k -> log.info("one"))
-                .when(2).peek(k -> log.info("two"))
+            .when(1).peek(k -> log.info("one"))
+            .when(2).peek(k -> log.info("two"))
+            .otherwise().nop()
             .end();
         ChoiceContext.choice(2)
-                .when(1).peek(k -> log.info("one"))
-                .when(2).peek(k -> log.info("two"))
+            .when(1).peek(k -> log.info("one"))
+            .when(2).peek(k -> log.info("two"))
+            .otherwise().nop()
             .end();
         ChoiceContext.<Integer,String>choiceMap(1)
             .when(1).map(k -> Hope.of("one"))
@@ -196,21 +199,25 @@ public class TestChoice {
             .end();
 
         ChoiceContext.choice(1)
-                .when(1).ergo(k -> Hope.of("a"))
-                .when(2).peek(k -> Nope.nope())
+            .when(1).ergo(k -> Hope.of("a"))
+            .when(2).peek(k -> Nope.nope())
+            .otherwise().nop()
             .end();
         ChoiceContext.choice(2)
-                .when(1).ergo(k -> Hope.of("a"))
-                .when(2).peek(k -> Nope.nope())
+            .when(1).ergo(k -> Hope.of("a"))
+            .when(2).peek(k -> Nope.nope())
+            .otherwise().nop()
             .end();
 
         Hope.of(1).choice()
-                .when(1).peek(k -> log.info("one"))
-                .when(2).peek(k -> log.info("two"))
+            .when(1).peek(k -> log.info("one"))
+            .when(2).peek(k -> log.info("two"))
+            .otherwise().nop()
             .end();
         Hope.of(2).choice()
-                .when(1).peek(k -> log.info("one"))
-                .when(2).peek(k -> log.info("two"))
+            .when(1).peek(k -> log.info("one"))
+            .when(2).peek(k -> log.info("two"))
+            .otherwise().nop()
             .end();
         Hope.of(1).<String>choiceMap()
             .when(1).map(k -> Hope.of("one"))
@@ -231,17 +238,20 @@ public class TestChoice {
             .end();
 
         Hope.of(1).choice()
-                .when(1).ergo(k -> Hope.of("a"))
-                .when(2).peek(k -> Nope.nope())
+            .when(1).ergo(k -> Hope.of("a"))
+            .when(2).peek(k -> Nope.nope())
+            .otherwise().nop()
             .end();
         Hope.of(2).choice()
-                .when(1).ergo(k -> Hope.of("a"))
-                .when(2).peek(k -> Nope.nope())
+            .when(1).ergo(k -> Hope.of("a"))
+            .when(2).peek(k -> Nope.nope())
+            .otherwise().nop()
             .end();
 
         Hope.<Integer>capture(new NullPointerException()).choice()
-                .when(1).ergo(k -> Hope.of("a"))
-                .when(2).peek(k -> Nope.nope())
+            .when(1).ergo(k -> Hope.of("a"))
+            .when(2).peek(k -> Nope.nope())
+            .otherwise().nop()
             .end();
         Hope.<Number>capture(new NullPointerException()).<String>choiceMap()
             .when(1).map(k -> Hope.of("a"))

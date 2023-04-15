@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -76,4 +77,52 @@ public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
      * the transformation is not called and the result has the original error
      */
     @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
+
+    /**
+     * Compose operator
+     * <p>Some &bull; AnyValue<sup>+</sup> &rarr; Some</p>
+     *
+     * <p>
+     * The method allows to compose two Somes (or a Some and an Hope).
+     * Using an imperative outcome evaluation we would have
+     * <pre>
+     *      Some&lt;A&gt; sa = computeA();
+     *      Some&lt;B&gt; sb;
+     *      if (sa.completeWithoutErrors()) {
+     *          sb = a2sb(sa.value());      // Some&lt;B&gt; a2sb(A value)
+     *      } else {
+     *          sb = Some.failure(sa);
+     *      } </pre>
+     * The method simplifies it to
+     * <pre>
+     *      Some&lt;B&gt; kb = computeA().map(this::a2sb); </pre>
+     * in addition, the method also propagates any warnings
+     *
+     * @param fcn transform value to result {@link Some}
+     * @param <R> result type
+     * @return result {@link Some} instance, if this has errors, the transformation is not called and the result has the original error
+     */
+    @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
+
+    /**
+     * map value
+     * <p>Some &bull; <i>value</i> &rarr; Some</p>
+     *
+     * @param fcn mapping function
+     * @param <R> result type
+     * @return {@link Some} instance with new value,
+     * if this has errors, the transformation is not called and the result has the original error;
+     * RuntimeException are caught as new error
+     */
+    @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
+
+    /**
+     * If there are no errors and the value is present, the action on the value is performed.
+     * In any case the initial class is returned.
+     *
+     * @param action action on value, executed if there are no errors
+     * @return original {@link AnyValue} instance, with value/errors
+     */
+    @NotNull AnyValue<T> peek(@NotNull Consumer<? super T> action);
+
 }

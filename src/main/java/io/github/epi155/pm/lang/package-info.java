@@ -117,6 +117,97 @@
  *     .{@link io.github.epi155.pm.lang.Nope#thus(java.util.function.Supplier) thus}(() -> decode(a)                    // Hope&lt;B>
  *         .{@link io.github.epi155.pm.lang.Hope#thus(java.util.function.Function) thus}(b -> meritValidation(b)        // Nope
  *             .thus(() -> translate(b))));     // Hope&lt;C> </pre>
+ * <h3>Composition summary</h3>
+ * <table class="plain">
+ *     <tr>
+ *         <th>origin</th><th>method</th><th>argument</th><th>result</th>
+ *     </tr>
+ *     <tr>
+ *         <td rowspan="4">{@code AnyValue<T>}</td>
+ *         <td><code>{@link io.github.epi155.pm.lang.AnyValue#map(java.util.function.Function) map}</code></td>
+ *         <td>{@code Function<? super T,? extends AnyValue<R>>}</td>
+ *         <td>{@code Some<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.AnyValue#mapOf(java.util.function.Function) mapOf}</code></td>
+ *         <td>{@code Function<? super T,? extends R>}</td>
+ *         <td>{@code Some<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.AnyValue#ergo(java.util.function.Function) ergo}</code></td>
+ *         <td>{@code Function<? super T,? extends ItemStatus>}</td>
+ *         <td>{@code None}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.AnyValue#peek(java.util.function.Consumer) peek}</code></td>
+ *         <td>{@code Consumer<? super T>}</td>
+ *         <td><i>{@code AnyValue<T>}</i></td>
+ *     </tr>
+ *     <tr>
+ *         <td rowspan="4">{@code OnlyError}</td>
+ *         <td><code>{@link io.github.epi155.pm.lang.OnlyError#map(java.util.function.Supplier) map}</code></td>
+ *         <td>{@code Supplier<? extends AnyValue<R>>}</td>
+ *         <td>{@code Some<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.OnlyError#mapOf(java.util.function.Supplier) mapOf}</code></td>
+ *         <td>{@code Supplier<? extends R>}</td>
+ *         <td>{@code Some<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.OnlyError#ergo(java.util.function.Supplier) ergo}</code></td>
+ *         <td>{@code Supplier<? extends ItemStatus>}</td>
+ *         <td>{@code None}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.OnlyError#peek(java.lang.Runnable) peek}</code></td>
+ *         <td>{@code Runnable}</td>
+ *         <td><i>{@code OnlyError}</i></td>
+ *     </tr>
+ *     <tr>
+ *         <td rowspan="4">{@code Hope<T>}</td>
+ *         <td><code>{@link io.github.epi155.pm.lang.Hope#into(java.util.function.Function) into}</code></td>
+ *         <td>{@code Function<? super T,? extends Hope<R>>}</td>
+ *         <td>{@code Hope<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.Hope#intoOf(java.util.function.Function) intoOf}</code></td>
+ *         <td>{@code Function<? super T,? extends R>}</td>
+ *         <td>{@code Hope<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.Hope#thus(java.util.function.Function) thus}</code></td>
+ *         <td>{@code Function<? super T,? extends SingleError>}</td>
+ *         <td>{@code Nope}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.Hope#peek(java.util.function.Consumer) peek}  </code></td>
+ *         <td>{@code Consumer<? super T>}</td>
+ *         <td>{@code Hope<T>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td rowspan="4">{@code Nope}</td>
+ *         <td><code>{@link io.github.epi155.pm.lang.Nope#into(java.util.function.Supplier) into}</code></td>
+ *         <td>{@code Supplier<? extends Hope<R>>}</td>
+ *         <td>{@code Hope<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.Nope#intoOf(java.util.function.Supplier) intoOf}</code></td>
+ *         <td>{@code Supplier<? extends R>}</td>
+ *         <td>{@code Hope<R>}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.Nope#thus(java.util.function.Supplier) thus}</code></td>
+ *         <td>{@code Supplier<? extends SingleError>}</td>
+ *         <td>{@code Nope}</td>
+ *     </tr>
+ *     <tr>
+ *         <td><code>{@link io.github.epi155.pm.lang.Nope#peek(java.lang.Runnable) peek}</code></td>
+ *         <td>{@code Runnable}</td>
+ *         <td>{@code Nope}</td>
+ *     </tr>
+ *      <caption>Composition rule</caption>
+ * </table>
  * <h2>Conditional</h2>
  * The classes that have their own value (Some and Hope) have two conditional methods which,
  * if there are no errors, allow the value contained to be evaluated

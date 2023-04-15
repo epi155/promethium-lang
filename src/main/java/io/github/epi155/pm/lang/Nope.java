@@ -89,8 +89,6 @@ public interface Nope extends SingleError, OnlyError {
      */
     @NotNull Glitch onSuccess(Runnable action);
 
-    @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn);
-
     /**
      * If there is no error, the supplier is called,
      * if this ends with an error, this error is returned.
@@ -126,13 +124,18 @@ public interface Nope extends SingleError, OnlyError {
      * @return      {@link Hope} instance
      * @param <R>   {@link Hope} type
      */
-    @NotNull <R> Hope<R> into(@NotNull Supplier<Hope<R>> fcn);
+    @NotNull <R> Hope<R> into(@NotNull Supplier<? extends Hope<R>> fcn);
 
+    /**
+     * map value
+     * <p>Nope &bull; <i>value</i> &rarr; Hope</p>
+     *
+     * @param fcn mapping function
+     * @param <R> result type
+     * @return {@link Hope} instance with new value,
+     * if this has errors, the transformation is not called and the result has the original error;
+     */
     @NotNull <R> Hope<R> intoOf(@NotNull Supplier<? extends R> fcn);
-
-    @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn);
-
-    @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn);
 
     /**
      * If there is no error, the action is performed.

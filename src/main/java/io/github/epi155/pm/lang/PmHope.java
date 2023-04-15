@@ -37,7 +37,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull <R> Hope<R> into(@NotNull Function<? super T, Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> into(@NotNull Function<? super T, ? extends Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.apply(value);
         } else {

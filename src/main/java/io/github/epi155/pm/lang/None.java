@@ -129,9 +129,16 @@ public interface None extends ManyErrors, OnlyError {
         }
     }
 
-    static <U> @NotNull None pull(@NotNull Nope u) {
-        return new PmNone(u.signals());
+    /**
+     * Build a Nope from a Nope
+     *
+     * @param nope {@link Nope} instance
+     * @return {@link None} instance
+     */
+    static @NotNull None pull(@NotNull Nope nope) {
+        return new PmNone(nope.signals());
     }
+
 
     /**
      * Error collector.
@@ -185,44 +192,6 @@ public interface None extends ManyErrors, OnlyError {
      * @see Glitches#onFailure(Consumer)
      */
     @NotNull Glitches onSuccess(@NotNull Consumer<Collection<Warning>> successAction);
-
-    /**
-     * If there are no errors, the supplier is called,
-     * if this ends with errors, these errors are returned.
-     * In the presence of errors, the supplier is not called, and the initial errors are returned
-     *
-     * @param fcn producer {@link ItemStatus}
-     * @return {@link None} instance,
-     */
-    @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn);
-    /**
-     * If there are no errors, the supplier is called,
-     * if this ends with errors, these errors are returned.
-     * In the presence of errors, the supplier is not called, and the initial errors are returned
-     *
-     * <p>
-     *     The method allows to compose the None with a Some (or a Hope).
-     *     Using an imperative outcome evaluation we would have
-     * <pre>
-     *      None na = compute();
-     *      Some&lt;B&gt; sb;
-     *      if (na.completeWithoutErrors()) {
-     *          sb = x2sb();    // Some&lt;B&gt; x2sb();
-     *      } else {
-     *          sb = Some.failure(na);
-     *      } </pre>
-     *      The method simplifies it to
-     * <pre>
-     *      Some&lt;B&gt; kb = compute().map(this::x2sb); </pre>
-     * in addition, the method also propagates any warnings
-     *
-     * @param fcn   producer {@link AnyValue}
-     * @return      {@link Some} instance
-     * @param <R>   {@link Some} type
-     */
-    @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn);
-
-    @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn);
 
     /**
      * If there are no errors, the action is performed.

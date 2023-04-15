@@ -26,5 +26,19 @@ public interface ChoiceValueElseContext<T> {
      */
     @NotNull ChoiceValueExitContext ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
 
+    /**
+     * Set custom error message
+     *
+     * @param ce   custom error
+     * @param argv error argument
+     * @return instance of {@link ChoiceValueExitContext}
+     */
     @NotNull ChoiceValueExitContext fault(CustMsg ce, Object... argv);
+
+    /**
+     * no operation
+     *
+     * @return instance of {@link ChoiceValueExitContext}
+     */
+    @NotNull ChoiceValueExitContext nop();
 }

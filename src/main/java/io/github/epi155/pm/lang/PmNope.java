@@ -57,7 +57,7 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     @Override
-    public @NotNull <R> Hope<R> into(@NotNull Supplier<Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> into(@NotNull Supplier<? extends Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.get();
         } else {

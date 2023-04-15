@@ -47,6 +47,7 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @return <b>Hope</b> instance
      */
     static <S> @NotNull Hope<S> of(@NotNull S value) {
+        //noinspection ConstantValue
         if (value == null) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
             return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG));
@@ -115,19 +116,16 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * @param <R> result type
      * @return result {@link Hope} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Hope<R> into(@NotNull Function<? super T, Hope<R>> fcn);
-
-    @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn);
+    @NotNull <R> Hope<R> into(@NotNull Function<? super T, ? extends Hope<R>> fcn);
 
     /**
-     * External compose operator to {@link Some}
-     * <p>Hope &bull; AnyValue<sup>+</sup> &rarr; Some</p>
+     * Compose operator
+     * <p>Hope &bull; SingleError &rarr; Nope</p>
      *
-     * @param fcn transform value to result {@link AnyValue}
-     * @param <R> result type
-     * @return result {@link Some} instance, if this has an error, the transformation is not called and the result has the original error
+     * @param fcn fallible function
+     * @return result {@link Nope} instance, if this has an error, the function is not called and the result has the original error
      */
-    @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn);
+    @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn);
 
     /**
      * map value
@@ -140,8 +138,6 @@ public interface Hope<T> extends SingleError, AnyValue<T> {
      * RuntimeException are caught as new error
      */
     @NotNull <R> Hope<R> intoOf(@NotNull Function<? super T, ? extends R> fcn);
-
-    @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * If there is no error and the value is present, the action on the value is performed.

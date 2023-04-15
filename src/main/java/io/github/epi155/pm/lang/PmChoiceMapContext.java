@@ -2,16 +2,17 @@ package io.github.epi155.pm.lang;
 
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 class PmChoiceMapContext<T, R> implements ChoiceMapContext<T, R> {
-    private final AnyValue<T> parent;
+    private final @NotNull AnyValue<T> parent;
     private boolean branchExecuted = false;
-    private AnyValue<R> result;
+    private @Nullable AnyValue<R> result;
 
-    PmChoiceMapContext(AnyValue<T> anyValue) {
+    PmChoiceMapContext(@NotNull AnyValue<T> anyValue) {
         this.parent = anyValue;
     }
 
@@ -37,10 +38,12 @@ class PmChoiceMapContext<T, R> implements ChoiceMapContext<T, R> {
 
     @Override
     public @NotNull ChoiceMapElseContext<T, R> otherwise() {
+        //noinspection Convert2Diamond
         return new ChoiceMapElseContext<T, R>() {
             private ChoiceMapExitContext<R> exit() {
                 return () -> {
                     if (parent.completeSuccess()) {
+                        //noinspection DataFlowIssue
                         if (result.completeSuccess()) {
                             return new PmSome<>(result.value());
                         } else if (result.completeWithErrors()) {
@@ -51,6 +54,7 @@ class PmChoiceMapContext<T, R> implements ChoiceMapContext<T, R> {
                     } else if (parent.completeWithErrors()) {
                         return new PmSome<>(parent.signals());  // parent errors (warnings)
                     } else /*parent.completeWithWarnings()*/ {
+                        //noinspection DataFlowIssue
                         if (result.completeSuccess()) {
                             return new PmSome<>(result.value(), parent.signals());
                         } else if (result.completeWithErrors()) {
@@ -96,6 +100,7 @@ class PmChoiceMapContext<T, R> implements ChoiceMapContext<T, R> {
 
     @Override
     public @NotNull <U> ChoiceMapWhenAsContext<U, T, R> whenInstanceOf(Class<U> cls) {
+        //noinspection Convert2Diamond
         return new ChoiceMapWhenAsContext<U, T, R>() {
             @Override
             public @NotNull ChoiceMapContext<T, R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn) {

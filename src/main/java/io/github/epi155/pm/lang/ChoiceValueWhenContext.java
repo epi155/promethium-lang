@@ -26,6 +26,13 @@ public interface ChoiceValueWhenContext<T> {
      */
     @NotNull ChoiceValueContext<T> ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
 
+    /**
+     * Set custom error message
+     *
+     * @param ce   custom error
+     * @param argv error argument
+     * @return instance of {@link ChoiceValueContext}
+     */
     @NotNull ChoiceValueContext<T> fault(CustMsg ce, Object... argv);
 
 }

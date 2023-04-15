@@ -16,15 +16,6 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
     }
 
     @Override
-    public @NotNull None end() {
-        if (result == null || result.completeSuccess()) {
-            return PmNone.none();
-        } else {
-            return new PmNone(result.signals());
-        }
-    }
-
-    @Override
     public @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate) {
         return new ChoiceValueWhenContextBase() {
             @Override
@@ -44,17 +35,16 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
         };
     }
 
-    @SuppressWarnings("Convert2Diamond")
     @Override
     public @NotNull ChoiceValueElseContext<T> otherwise() {
-        return new ChoiceValueElseContext<T>() {
+        return this.new ChoiceValueElseContextBase() {
             @Override
             public @NotNull ChoiceValueExitContext peek(@NotNull Consumer<? super T> action) {
                 if (!branchExecuted) {
                     action.accept(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceRawValueContext.this;
+                return this;
             }
 
             @Override
@@ -63,7 +53,7 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
                     result = fcn.apply(origin);
                     branchExecuted = true;
                 }
-                return PmChoiceRawValueContext.this;
+                return this;
             }
 
             @Override
@@ -72,13 +62,30 @@ class PmChoiceRawValueContext<T> implements ChoiceValueContext<T> {
                     result = Nope.fault(ce, argv);
                     branchExecuted = true;
                 }
-                return PmChoiceRawValueContext.this;
+                return this;
+            }
+
+            @Override
+            public @NotNull ChoiceValueExitContext nop() {
+                return this;
             }
         };
     }
 
+    private abstract class ChoiceValueElseContextBase implements ChoiceValueElseContext<T>, ChoiceValueExitContext {
+        @Override
+        public @NotNull None end() {
+            if (result == null || result.completeSuccess()) {
+                return PmNone.none();
+            } else {
+                return new PmNone(result.signals());
+            }
+        }
+    }
+
     @Override
     public @NotNull <U> ChoiceValueWhenAsContext<U, T> whenInstanceOf(@NotNull Class<U> cls) {
+        //noinspection Convert2Diamond
         return new ChoiceValueWhenAsContext<U, T>() {
             @Override
             public @NotNull ChoiceValueContext<T> peek(@NotNull Consumer<? super U> action) {

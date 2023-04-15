@@ -39,14 +39,15 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
 
     @Override
     public @NotNull ChoiceValueElseContext<T> otherwise() {
-        return new ChoiceValueElseContext<T>() {
+        return this.new ChoiceValueElseContextBase() {
+
             @Override
             public @NotNull ChoiceValueExitContext peek(@NotNull Consumer<? super T> action) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     action.accept(parent.value());
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return this;
             }
 
             @Override
@@ -55,7 +56,7 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
                     result = fcn.apply(parent.value());
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return this;
             }
 
             @Override
@@ -64,29 +65,38 @@ class PmChoiceValueContext<T> implements ChoiceValueContext<T> {
                     result = Nope.fault(ce, argv);
                     branchExecuted = true;
                 }
-                return PmChoiceValueContext.this;
+                return this;
+            }
+
+            @Override
+            public @NotNull ChoiceValueExitContext nop() {
+                return this;
             }
         };
     }
 
-    @Override
-    public @NotNull None end() {
-        if (parent.completeSuccess()) {
-            return result.completeSuccess() ? PmNone.none() : new PmNone(result.signals());
-        } else if (parent.completeWithErrors()) {
-            return new PmNone(parent.signals());    // parent errors (warnings)
-        } else if (result.completeSuccess()) {
-            return new PmNone(parent.signals());    // parent warnings
-        } else {
-            val bld = None.builder();
-            bld.add(parent.signals()); // parent warnings
-            bld.add(result.signals()); // result errors/warnings
-            return bld.build();
+    private abstract class ChoiceValueElseContextBase implements ChoiceValueElseContext<T>, ChoiceValueExitContext {
+        @Override
+        public @NotNull None end() {
+            if (parent.completeSuccess()) {
+                return result.completeSuccess() ? PmNone.none() : new PmNone(result.signals());
+            } else if (parent.completeWithErrors()) {
+                return new PmNone(parent.signals());    // parent errors (warnings)
+            } else if (result.completeSuccess()) {
+                return new PmNone(parent.signals());    // parent warnings
+            } else {
+                val bld = None.builder();
+                bld.add(parent.signals()); // parent warnings
+                bld.add(result.signals()); // result errors/warnings
+                return bld.build();
+            }
         }
     }
 
+
     @Override
     public @NotNull <U> ChoiceValueWhenAsContext<U, T> whenInstanceOf(@NotNull Class<U> cls) {
+        //noinspection Convert2Diamond
         return new ChoiceValueWhenAsContext<U, T>() {
             @Override
             public @NotNull ChoiceValueContext<T> peek(@NotNull Consumer<? super U> action) {

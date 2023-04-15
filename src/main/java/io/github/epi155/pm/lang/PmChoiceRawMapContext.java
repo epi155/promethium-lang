@@ -1,14 +1,15 @@
 package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
-    private final T origin;
+    private final @NotNull T origin;
     private boolean branchExecuted = false;
-    private AnyValue<R> result;
+    private @Nullable AnyValue<R> result;
 
     PmChoiceRawMapContext(@NotNull T value) {
         this.origin = value;
@@ -36,21 +37,14 @@ class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
 
     @Override
     public @NotNull ChoiceMapElseContext<T, R> otherwise() {
-        return new ChoiceMapElseContext<T, R>() {
+        return this.new ChoiceMapElseContextBase() {
+
             @Override
             public @NotNull ChoiceMapExitContext<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
                 if (!branchExecuted) {
                     result = fcn.apply(origin);
                 }
-                return () -> {
-                    if (result.completeSuccess()) {
-                        return new PmSome<>(result.value());
-                    } else if (result.completeWithErrors()) {
-                        return new PmSome<>(result.signals());
-                    } else /*result.completeWithWarnings()*/ {
-                        return new PmSome<>(result.value(), result.signals());
-                    }
-                };
+                return this;
             }
 
             @Override
@@ -58,15 +52,7 @@ class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
                 if (!branchExecuted) {
                     result = Hope.of(fcn.apply(origin));
                 }
-                return () -> {
-                    if (result.completeSuccess()) {
-                        return new PmSome<>(result.value());
-                    } else if (result.completeWithErrors()) {
-                        return new PmSome<>(result.signals());
-                    } else /*result.completeWithWarnings()*/ {
-                        return new PmSome<>(result.value(), result.signals());
-                    }
-                };
+                return this;
             }
 
             @Override
@@ -74,21 +60,28 @@ class PmChoiceRawMapContext<T, R> implements ChoiceMapContext<T, R> {
                 if (!branchExecuted) {
                     result = Hope.fault(ce, argv);
                 }
-                return () -> {
-                    if (result.completeSuccess()) {
-                        return new PmSome<>(result.value());
-                    } else if (result.completeWithErrors()) {
-                        return new PmSome<>(result.signals());
-                    } else /*result.completeWithWarnings()*/ {
-                        return new PmSome<>(result.value(), result.signals());
-                    }
-                };
+                return this;
             }
         };
     }
 
+    private abstract class ChoiceMapElseContextBase implements ChoiceMapElseContext<T, R>, ChoiceMapExitContext<R> {
+        @Override
+        public @NotNull Some<R> end() {
+            //noinspection DataFlowIssue
+            if (result.completeSuccess()) {
+                return new PmSome<>(result.value());
+            } else if (result.completeWithErrors()) {
+                return new PmSome<>(result.signals());
+            } else /*result.completeWithWarnings()*/ {
+                return new PmSome<>(result.value(), result.signals());
+            }
+        }
+    }
+
     @Override
     public @NotNull <U> ChoiceMapWhenAsContext<U, T, R> whenInstanceOf(Class<U> cls) {
+        //noinspection Convert2Diamond
         return new ChoiceMapWhenAsContext<U, T, R>() {
             @Override
             public @NotNull ChoiceMapContext<T, R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn) {

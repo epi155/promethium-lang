@@ -6,13 +6,14 @@ import java.util.function.Predicate;
 
 /**
  * context to set the condition to the value
- * @param <T>   value type of the chosen value
+ *
+ * @param <T> value type of the chosen value
  */
-public interface ChoiceValueContext<T> extends ChoiceValueExitContext {
+public interface ChoiceValueContext<T> /*extends ChoiceValueExitContext*/ {
     /**
      * sets condition to value as predicate
      * @param predicate condition to the value
-     * @return      instance of {@link ChoiceValueWhenContext}
+     * @return instance of {@link ChoiceValueWhenContext}
      */
     @NotNull ChoiceValueWhenContext<T> when(@NotNull Predicate<T> predicate);
 
