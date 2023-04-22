@@ -81,7 +81,7 @@ public class TestCustom2 {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
-                    .choice()
+                .choose()
                     .when(it -> it.equals("r"))
                     .peek(it -> {
                     })
@@ -93,12 +93,12 @@ public class TestCustom2 {
                 .end()
             );
         searchFor(1)
-                .choice()
+            .choose()
                 .when(Optional::isPresent).peek(it -> log.info("match at {}", it.get()))
                 .otherwise().peek(it -> log.info("None match"))
             .end().onFailure(es -> es.forEach(e -> log.warn("Error: {}", e.message())));
         searchFor(1)
-            .<Integer>choiceMap()
+            .<Integer>chooseMap()
                 .when(Optional::isPresent)
                     .map(it -> Hope.of(it.get()+1))
                 .otherwise()

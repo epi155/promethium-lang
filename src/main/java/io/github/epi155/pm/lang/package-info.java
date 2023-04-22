@@ -213,51 +213,51 @@
  * if there are no errors, allow the value contained to be evaluated
  * <pre>
  * (Hope&lt;A> | Some&lt;A>) ax = ...
- * Some&lt;B> bx = ax{@link io.github.epi155.pm.lang.ChoiceContext#choiceMap() .&lt;B>choiceMap()}
- *     {@link io.github.epi155.pm.lang.ChoiceMapContext#when(java.lang.Object) .when(A)}
- *         {@link io.github.epi155.pm.lang.ChoiceMapWhenContext#map(java.util.function.Function) .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)}
+ * Some&lt;B> bx = ax{@link io.github.epi155.pm.lang.ChooseContext#chooseMap() .&lt;B>chooseMap()}
+ *     {@link io.github.epi155.pm.lang.ChooseMapContext#whenEquals(java.lang.Object) .when(A)}
+ *         {@link io.github.epi155.pm.lang.ChooseMapWhenContext#map(java.util.function.Function) .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)}
  *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChoiceMapWhenContext#mapOf(java.util.function.Function) .mapOf(Function&lt;? super A, ? extends B>)}
+ *         {@link io.github.epi155.pm.lang.ChooseMapWhenContext#mapOf(java.util.function.Function) .mapOf(Function&lt;? super A, ? extends B>)}
  *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChoiceMapWhenContext#fault(io.github.epi155.pm.lang.CustMsg, java.lang.Object...) .fault(CustMsg, Object...)}
- *     {@link io.github.epi155.pm.lang.ChoiceMapContext#when(boolean) .when(boolean)}
+ *         {@link io.github.epi155.pm.lang.ChooseMapWhenContext#fault(io.github.epi155.pm.lang.CustMsg, java.lang.Object...) .fault(CustMsg, Object...)}
+ *     {@link io.github.epi155.pm.lang.ChooseMapContext#when(boolean) .when(boolean)}
  *         .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)       // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceMapContext#when(java.util.function.Predicate) .when(Predicate&lt;A>)}
+ *     {@link io.github.epi155.pm.lang.ChooseMapContext#when(java.util.function.Predicate) .when(Predicate&lt;A>)}
  *         .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)       // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceMapContext#whenInstanceOf(java.lang.Class) .whenInstanceOf(Class&lt;C>)}
- *         {@link io.github.epi155.pm.lang.ChoiceMapWhenAsContext#map(java.util.function.Function) .map(Function&lt;? super C, ? extends AnyValue&lt;B>>))}      // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceMapContext#otherwise() .otherwise()}
- *         {@link io.github.epi155.pm.lang.ChoiceMapElseContext#map(java.util.function.Function) .map(Function&lt;? super A, ? extends AnyValue&lt;B>>))}      // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceMapExitContext#end() .end()}; </pre>
+ *     {@link io.github.epi155.pm.lang.ChooseMapContext#whenInstanceOf(java.lang.Class) .whenInstanceOf(Class&lt;C>)}
+ *         {@link io.github.epi155.pm.lang.ChooseMapWhenAsContext#map(java.util.function.Function) .map(Function&lt;? super C, ? extends AnyValue&lt;B>>))}      // etc.
+ *     {@link io.github.epi155.pm.lang.ChooseMapContext#otherwise() .otherwise()}
+ *         {@link io.github.epi155.pm.lang.ChooseMapElseContext#map(java.util.function.Function) .map(Function&lt;? super A, ? extends AnyValue&lt;B>>))}      // etc.
+ *     {@link io.github.epi155.pm.lang.ChooseMapExitContext#end() .end()}; </pre>
  * and
  * <pre>
- * None bx = ax{@link io.github.epi155.pm.lang.ChoiceContext#choice() .choice()}
- *     {@link io.github.epi155.pm.lang.ChoiceValueContext#when(java.lang.Object) .when(A)}
- *         {@link io.github.epi155.pm.lang.ChoiceValueWhenContext#ergo(java.util.function.Function) .ergo(Function&lt;? super A, ? extends ItemStatus>)}
+ * None bx = ax{@link io.github.epi155.pm.lang.ChooseContext#choose() .choose()}
+ *     {@link io.github.epi155.pm.lang.ChooseNixContext#whenEquals(java.lang.Object) .when(A)}
+ *         {@link io.github.epi155.pm.lang.ChooseNixWhenContext#ergo(java.util.function.Function) .ergo(Function&lt;? super A, ? extends ItemStatus>)}
  *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChoiceValueWhenContext#peek(java.util.function.Consumer) .peek(Consumer&lt;? super A>)}
+ *         {@link io.github.epi155.pm.lang.ChooseNixWhenContext#peek(java.util.function.Consumer) .peek(Consumer&lt;? super A>)}
  *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChoiceValueWhenContext#fault(io.github.epi155.pm.lang.CustMsg, java.lang.Object...) .fault(CustMsg, Object...)}
- *     {@link io.github.epi155.pm.lang.ChoiceValueContext#when(boolean) .when(boolean)}
+ *         {@link io.github.epi155.pm.lang.ChooseNixWhenContext#fault(io.github.epi155.pm.lang.CustMsg, java.lang.Object...) .fault(CustMsg, Object...)}
+ *     {@link io.github.epi155.pm.lang.ChooseNixContext#when(boolean) .when(boolean)}
  *         .ergo(Function&lt;? super A, ? extends ItemStatus>)}      // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceValueContext#when(java.util.function.Predicate) .when(Predicate&lt;A>)}
+ *     {@link io.github.epi155.pm.lang.ChooseNixContext#when(java.util.function.Predicate) .when(Predicate&lt;A>)}
  *         .ergo(Function&lt;? super A, ? extends ItemStatus>)}      // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceValueContext#whenInstanceOf(java.lang.Class) .whenInstanceOf(Class&lt;C>)}
- *         {@link io.github.epi155.pm.lang.ChoiceValueWhenAsContext#ergo(java.util.function.Function) .ergo(Function&lt;? super C, ? extends ItemStatus>)}       // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceValueContext#otherwise() .otherwise()}
- *         {@link io.github.epi155.pm.lang.ChoiceValueElseContext#ergo(java.util.function.Function) .ergo(Function&lt;? super A, ? extends ItemStatus>)}       // etc.
- *     {@link io.github.epi155.pm.lang.ChoiceValueExitContext#end() .end()}; </pre>
+ *     {@link io.github.epi155.pm.lang.ChooseNixContext#whenInstanceOf(java.lang.Class) .whenInstanceOf(Class&lt;C>)}
+ *         {@link io.github.epi155.pm.lang.ChooseNixWhenAsContext#ergo(java.util.function.Function) .ergo(Function&lt;? super C, ? extends ItemStatus>)}       // etc.
+ *     {@link io.github.epi155.pm.lang.ChooseNixContext#otherwise() .otherwise()}
+ *         {@link io.github.epi155.pm.lang.ChooseNixElseContext#ergo(java.util.function.Function) .ergo(Function&lt;? super A, ? extends ItemStatus>)}       // etc.
+ *     {@link io.github.epi155.pm.lang.ChooseNixExitContext#end() .end()}; </pre>
  * <h3>Conditional raw</h3>
  * These method structures can also be triggered directly by a value
  * <pre>
- * Some&lt;B> bx = ChoiceContext{@link io.github.epi155.pm.lang.ChoiceContext#choice(java.lang.Object) .&lt;A,B>choiceMap(A)}
+ * Some&lt;B> bx = ChooseContext{@link io.github.epi155.pm.lang.ChooseContext#choose(java.lang.Object) .&lt;A,B>chooseMap(A)}
  *     ...
- *     {@link io.github.epi155.pm.lang.ChoiceMapExitContext#end() .end()}; </pre>
+ *     {@link io.github.epi155.pm.lang.ChooseMapExitContext#end() .end()}; </pre>
  * and
  * <pre>
- * None bx = ChoiceContext{@link io.github.epi155.pm.lang.ChoiceContext#choice(java.lang.Object) .&lt;A>choice(A)}
+ * None bx = ChooseContext{@link io.github.epi155.pm.lang.ChooseContext#choose(java.lang.Object) .&lt;A>choose(A)}
  *     ...
- *     {@link io.github.epi155.pm.lang.ChoiceValueExitContext#end() .end()}; </pre>
+ *     {@link io.github.epi155.pm.lang.ChooseNixExitContext#end() .end()}; </pre>
  * although an imperative structure might be preferable in this case.
  * <h2>Search</h2>
  * The {@link io.github.epi155.pm.lang.SearchResult} class is designed to manage the result of a search,

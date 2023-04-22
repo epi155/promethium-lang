@@ -11,12 +11,12 @@ import java.util.stream.Stream;
  *
  * @param <T> payload type
  */
-public interface AnyValue<T> extends AnyError, ChoiceContext<T> {
+public interface AnyValue<T> extends AnyError, ChooseContext<T> {
     /**
      * Returns the value.
      * <p>
-     *     in the presence of errors and the value is not present,
-     *     the {@link java.util.NoSuchElementException} error is thrown
+     * in the presence of errors and the value is not present,
+     * the {@link java.util.NoSuchElementException} error is thrown
      * </p>
      *
      * @return value

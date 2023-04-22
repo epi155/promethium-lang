@@ -4,12 +4,14 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * interface to retrieve the final value or collect any errors occurred in the execution of the actions
- * @param <R>   value type of the final value
+ *
+ * @param <R> value type of the final value
  */
-public interface ChoiceMapExitContext<R> {
+public interface ChooseMapExitContext<R> {
     /**
      * final value or collect any errors occurred in the execution of the actions
-     * @return  instance of {@link Some} with final value or collected errors
+     *
+     * @return instance of {@link Some} with final value or collected errors
      */
     @NotNull Some<R> end();
 }

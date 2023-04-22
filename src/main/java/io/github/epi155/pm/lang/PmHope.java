@@ -120,13 +120,23 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull ChoiceValueContext<T> choice() {
-        return new PmChoiceValueContext<>(this);
+    public @NotNull <R> OptoMapContext<T, R> optoMap() {
+        return new PmOptoMapContext<>(this);
     }
 
     @Override
-    public @NotNull <R> ChoiceMapContext<T, R> choiceMap() {
-        return new PmChoiceMapContext<>(this);
+    public @NotNull OptoNixContext<T> opto() {
+        return new PmOptoNixContext<>(this);
+    }
+
+    @Override
+    public @NotNull ChooseNixContext<T> choose() {
+        return new PmChooseNixContext<>(this);
+    }
+
+    @Override
+    public @NotNull <R> ChooseMapContext<T, R> chooseMap() {
+        return new PmChooseMapContext<>(this);
     }
 
     @Override

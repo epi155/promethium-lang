@@ -102,6 +102,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
     private <U> void consumeOfUsingThread(U u, Function<? super U, ? extends ItemStatus> fcn, Semaphore s, Phaser p) {
         try {
             p.register();
+            //noinspection BlockingMethodInNonBlockingContext
             s.acquire();
             new Thread(() -> {
                 try {
@@ -175,6 +176,7 @@ class PmNoneBuilder extends PmAnyBuilder implements NoneBuilder {
             }
             try {
                 p.register();
+                //noinspection BlockingMethodInNonBlockingContext
                 s.acquire();
                 new Thread(() -> {
                     try {

@@ -38,7 +38,7 @@ import java.util.function.Function;
  *
  * @param <T> value type
  */
-public interface Hope<T> extends SingleError, AnyValue<T> {
+public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
     /**
      * Create a <b> Hope </b> with value
      *

@@ -221,7 +221,7 @@ class TestHope {
                                 .thus(() -> translate(b))));
 
         @NotNull None nz = hx
-                .choice()
+            .choose()
                 .when(false).peek(c -> {
                 })
                 .when(false).ergo(c -> Nope.nope())
@@ -236,7 +236,7 @@ class TestHope {
                 .end();
 
         Some<D> iz = hx
-                .<D>choiceMap()
+            .<D>chooseMap()
                 .when(false)
                 .map(c -> fromCtoDh(c))
                 .when(false)
@@ -255,31 +255,31 @@ class TestHope {
                 .map(c -> fromCtoDs(c))
                 .end();
 
-        @NotNull None vz = ChoiceContext.choice(1)
-                .when(false)
-                .peek(c -> {
-                })
-                .when(false).ergo(c -> Nope.nope())
-                .when(false).fault(MY_FAULT)
-                .when(c -> false).peek(c -> {
-                })
-                .whenInstanceOf(String.class).peek(c -> {
-                })
-                .whenInstanceOf(String.class).ergo(c -> Nope.nope())
+        @NotNull None vz = ChooseContext.choose(1)
+            .when(false)
+            .peek(c -> {
+            })
+            .when(false).ergo(c -> Nope.nope())
+            .when(false).fault(MY_FAULT)
+            .when(c -> false).peek(c -> {
+            })
+            .whenInstanceOf(String.class).peek(c -> {
+            })
+            .whenInstanceOf(String.class).ergo(c -> Nope.nope())
                 .whenInstanceOf(String.class).fault(MY_FAULT)
                 .otherwise().ergo(c -> Nope.nope())
                 .end();
 
-        @NotNull Some<Integer> wz = ChoiceContext.<Long, Integer>choiceMap(1L)
-                .when(false).map(c -> Hope.of(1))
-                .when(false).mapOf(c -> 1)
-                .when(false).fault(MY_FAULT)
-                .when(c -> false).map(c -> Hope.of(1))
-                .whenInstanceOf(String.class).map(c -> Hope.of(1))
-                .whenInstanceOf(String.class).mapOf(c -> 1)
-                .whenInstanceOf(String.class).fault(MY_FAULT)
-                .otherwise().map(c -> Hope.of(1))
-                .end();
+        @NotNull Some<Integer> wz = ChooseContext.<Long, Integer>chooseMap(1L)
+            .when(false).map(c -> Hope.of(1))
+            .when(false).mapOf(c -> 1)
+            .when(false).fault(MY_FAULT)
+            .when(c -> false).map(c -> Hope.of(1))
+            .whenInstanceOf(String.class).map(c -> Hope.of(1))
+            .whenInstanceOf(String.class).mapOf(c -> 1)
+            .whenInstanceOf(String.class).fault(MY_FAULT)
+            .otherwise().map(c -> Hope.of(1))
+            .end();
     }
 
     private D fromStoD(String s) {
