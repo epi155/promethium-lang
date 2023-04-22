@@ -210,54 +210,12 @@
  * </table>
  * <h2>Conditional</h2>
  * The classes that have their own value (Some and Hope) have two conditional methods which,
- * if there are no errors, allow the value contained to be evaluated
- * <pre>
- * (Hope&lt;A> | Some&lt;A>) ax = ...
- * Some&lt;B> bx = ax{@link io.github.epi155.pm.lang.ChooseContext#chooseMap() .&lt;B>chooseMap()}
- *     {@link io.github.epi155.pm.lang.ChooseMapContext#whenEquals(java.lang.Object) .when(A)}
- *         {@link io.github.epi155.pm.lang.ChooseMapWhenContext#map(java.util.function.Function) .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)}
- *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChooseMapWhenContext#mapOf(java.util.function.Function) .mapOf(Function&lt;? super A, ? extends B>)}
- *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChooseMapWhenContext#fault(io.github.epi155.pm.lang.CustMsg, java.lang.Object...) .fault(CustMsg, Object...)}
- *     {@link io.github.epi155.pm.lang.ChooseMapContext#when(boolean) .when(boolean)}
- *         .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)       // etc.
- *     {@link io.github.epi155.pm.lang.ChooseMapContext#when(java.util.function.Predicate) .when(Predicate&lt;A>)}
- *         .map(Function&lt;? super A, ? extends AnyValue&lt;B>>)       // etc.
- *     {@link io.github.epi155.pm.lang.ChooseMapContext#whenInstanceOf(java.lang.Class) .whenInstanceOf(Class&lt;C>)}
- *         {@link io.github.epi155.pm.lang.ChooseMapWhenAsContext#map(java.util.function.Function) .map(Function&lt;? super C, ? extends AnyValue&lt;B>>))}      // etc.
- *     {@link io.github.epi155.pm.lang.ChooseMapContext#otherwise() .otherwise()}
- *         {@link io.github.epi155.pm.lang.ChooseMapElseContext#map(java.util.function.Function) .map(Function&lt;? super A, ? extends AnyValue&lt;B>>))}      // etc.
- *     {@link io.github.epi155.pm.lang.ChooseMapExitContext#end() .end()}; </pre>
- * and
- * <pre>
- * None bx = ax{@link io.github.epi155.pm.lang.ChooseContext#choose() .choose()}
- *     {@link io.github.epi155.pm.lang.ChooseNixContext#whenEquals(java.lang.Object) .when(A)}
- *         {@link io.github.epi155.pm.lang.ChooseNixWhenContext#ergo(java.util.function.Function) .ergo(Function&lt;? super A, ? extends ItemStatus>)}
- *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChooseNixWhenContext#peek(java.util.function.Consumer) .peek(Consumer&lt;? super A>)}
- *     .when(A)
- *         {@link io.github.epi155.pm.lang.ChooseNixWhenContext#fault(io.github.epi155.pm.lang.CustMsg, java.lang.Object...) .fault(CustMsg, Object...)}
- *     {@link io.github.epi155.pm.lang.ChooseNixContext#when(boolean) .when(boolean)}
- *         .ergo(Function&lt;? super A, ? extends ItemStatus>)}      // etc.
- *     {@link io.github.epi155.pm.lang.ChooseNixContext#when(java.util.function.Predicate) .when(Predicate&lt;A>)}
- *         .ergo(Function&lt;? super A, ? extends ItemStatus>)}      // etc.
- *     {@link io.github.epi155.pm.lang.ChooseNixContext#whenInstanceOf(java.lang.Class) .whenInstanceOf(Class&lt;C>)}
- *         {@link io.github.epi155.pm.lang.ChooseNixWhenAsContext#ergo(java.util.function.Function) .ergo(Function&lt;? super C, ? extends ItemStatus>)}       // etc.
- *     {@link io.github.epi155.pm.lang.ChooseNixContext#otherwise() .otherwise()}
- *         {@link io.github.epi155.pm.lang.ChooseNixElseContext#ergo(java.util.function.Function) .ergo(Function&lt;? super A, ? extends ItemStatus>)}       // etc.
- *     {@link io.github.epi155.pm.lang.ChooseNixExitContext#end() .end()}; </pre>
- * <h3>Conditional raw</h3>
- * These method structures can also be triggered directly by a value
- * <pre>
- * Some&lt;B> bx = ChooseContext{@link io.github.epi155.pm.lang.ChooseContext#choose(java.lang.Object) .&lt;A,B>chooseMap(A)}
- *     ...
- *     {@link io.github.epi155.pm.lang.ChooseMapExitContext#end() .end()}; </pre>
- * and
- * <pre>
- * None bx = ChooseContext{@link io.github.epi155.pm.lang.ChooseContext#choose(java.lang.Object) .&lt;A>choose(A)}
- *     ...
- *     {@link io.github.epi155.pm.lang.ChooseNixExitContext#end() .end()}; </pre>
+ * if there are no errors, allow the value contained to be evaluated,
+ * see {@link io.github.epi155.pm.lang.ChooseContext#chooseMap()}
+ * and {@link io.github.epi155.pm.lang.ChooseContext#choose()}.
+ * These method structures can also be triggered directly by a value,
+ * see {@link io.github.epi155.pm.lang.ChooseContext#chooseMap(java.lang.Object)}
+ * and {@link io.github.epi155.pm.lang.ChooseContext#choose(java.lang.Object)},
  * although an imperative structure might be preferable in this case.
  * <h2>Search</h2>
  * The {@link io.github.epi155.pm.lang.SearchResult} class is designed to manage the result of a search,

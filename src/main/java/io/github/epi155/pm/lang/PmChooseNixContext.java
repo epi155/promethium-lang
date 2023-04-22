@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -10,11 +11,10 @@ import java.util.function.Predicate;
 class PmChooseNixContext<T> implements ChooseNixContext<T> {
     private final AnyValue<T> parent;
     private boolean branchExecuted = false;
-    private ItemStatus result;
+    private @Nullable ItemStatus result;
 
     PmChooseNixContext(AnyValue<T> anyValue) {
         this.parent = anyValue;
-        this.result = anyValue;
     }
 
     @Override
@@ -90,14 +90,14 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
 
     @Override
     public @NotNull ChooseNixElseContext<T> otherwise() {
-        return this.new ChooseNixElseContextBase() {
-
+        //noinspection Convert2Diamond
+        return new ChooseNixElseContext<T>() {
             @Override
             public @NotNull ChooseNixExitContext peek(@NotNull Consumer<? super T> action) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     action.accept(parent.value());
                 }
-                return this;
+                return new ChooseNixElseContextBase();
             }
 
             @Override
@@ -105,7 +105,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = fcn.apply(parent.value());
                 }
-                return this;
+                return new ChooseNixElseContextBase();
             }
 
             @Override
@@ -113,12 +113,12 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = Nope.fault(ce, argv);
                 }
-                return this;
+                return new ChooseNixElseContextBase();
             }
 
             @Override
             public @NotNull ChooseNixExitContext nop() {
-                return this;
+                return new ChooseNixElseContextBase();
             }
         };
     }
@@ -162,14 +162,14 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         }
     }
 
-    private abstract class ChooseNixElseContextBase implements ChooseNixElseContext<T>, ChooseNixExitContext {
+    private class ChooseNixElseContextBase implements ChooseNixExitContext {
         @Override
         public @NotNull None end() {
             if (parent.completeSuccess()) {
-                return result.completeSuccess() ? PmNone.none() : new PmNone(result.signals());
+                return (result == null || result.completeSuccess()) ? PmNone.none() : new PmNone(result.signals());
             } else if (parent.completeWithErrors()) {
                 return new PmNone(parent.signals());    // parent errors (warnings)
-            } else if (result.completeSuccess()) {
+            } else if (result == null || result.completeSuccess()) {
                 return new PmNone(parent.signals());    // parent warnings
             } else {
                 val bld = None.builder();

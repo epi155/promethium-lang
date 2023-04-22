@@ -123,6 +123,11 @@ public class TestOpto0 {
             .otherwise().fault(MY_FAULT)
             .end();
         Assertions.assertTrue(h.completeWithoutErrors());
+        @NotNull Nope i1 = Hope.<Number>fault(MY_FAULT).opto()
+            .whenInstanceOf(Float.class).nop()
+            .otherwise().peek(System.out::println)
+            .end();
+        Assertions.assertTrue(i1.completeWithErrors());
     }
 
     @Test

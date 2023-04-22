@@ -1,6 +1,7 @@
 package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -9,11 +10,10 @@ import java.util.function.Predicate;
 class PmOptoNixContext<T> implements OptoNixContext<T> {
     private final ErrorXorValue<T> parent;
     private boolean branchExecuted = false;
-    private SingleError result;
+    private @Nullable SingleError result;
 
     PmOptoNixContext(ErrorXorValue<T> errorXorValue) {
         this.parent = errorXorValue;
-        this.result = errorXorValue;
     }
 
     @Override
@@ -170,7 +170,7 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
         @Override
         public @NotNull Nope end() {
             if (parent.completeSuccess()) {
-                return result.completeSuccess() ? PmNope.nope() : new PmNope(result.failure());
+                return result == null || result.completeSuccess() ? PmNope.nope() : new PmNope(result.failure());
             } else {
                 return new PmNope(parent.failure());    // parent error
             }

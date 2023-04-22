@@ -41,6 +41,10 @@ class PmSome<T> extends PmManyError implements Some<T> {
         } else if (v.completeWithErrors()) {
             return new PmSome<>(v.signals());
         } else {
+            /*
+             * the only class implementing AnyValue that can handle warnings is Some,
+             * which is handled separately at the beginning of the method.
+             */
             return new PmSome<>(v.value(), v.signals());
         }
 

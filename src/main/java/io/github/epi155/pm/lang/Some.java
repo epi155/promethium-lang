@@ -107,27 +107,33 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @return instance of {@link Some} (success)
      */
     static <U> @NotNull Some<U> of(@NotNull U value) {
-        //noinspection ConstantValue
-        if (value == null) {
-            StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG);
-            return new PmSome<>(Collections.singletonList(fail));
-        } else if (value instanceof Signal) {
+        if (value instanceof Signal) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
             val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
             val bld = Some.<U>builder();
-            bld.add((Signal)value);
+            bld.add((Signal) value);
             bld.add(fail);
             return bld.build();
         }
         return new PmSome<>(value);
     }
 
+    static <U> @NotNull Some<U> of(@NotNull AnyValue<U> value) {
+        //noinspection ConstantValue
+        if (value == null) {    // null select this method
+            StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG);
+            return new PmSome<>(Collections.singletonList(fail));
+        }
+        return PmSome.of(value);
+    }
+
     /**
      * Static constructor from {@link Hope}
-     * @param u     {@link Hope} instance
-     * @return      {@link Some} instance
-     * @param <U>   {@link Some}/{@link Hope} data type
+     *
+     * @param u   {@link Hope} instance
+     * @param <U> {@link Some}/{@link Hope} data type
+     * @return {@link Some} instance
      */
     static <U> @NotNull Some<U> pull(@NotNull Hope<U> u) {
         return PmSome.of(u);

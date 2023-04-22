@@ -1,6 +1,7 @@
 package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -9,7 +10,7 @@ import java.util.function.Predicate;
 class PmOptoRawNixContext<T> implements OptoNixContext<T> {
     private final @NotNull T origin;
     private boolean branchExecuted = false;
-    private SingleError result;
+    private @Nullable SingleError result;
 
     PmOptoRawNixContext(@NotNull T value) {
         this.origin = value;

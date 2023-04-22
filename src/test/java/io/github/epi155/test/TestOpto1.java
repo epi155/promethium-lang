@@ -106,6 +106,15 @@ public class TestOpto1 {
     }
 
     @Test
+    void testC7() {
+        Hope<String> a = Hope.<Number>fault(MY_FAULT).<String>optoMap()
+            .when(true).mapOf(it -> "hi")
+            .otherwise().mapOf(it -> "lo")
+            .end();
+        Assertions.assertTrue(a.completeWithErrors());
+    }
+
+    @Test
     void testD0() {
         Hope<String> a = Hope.of("aa").<String>optoMap()
             .when(it -> it.length() == 1).map(it -> Hope.of(it.charAt(0)).<String>optoMap()

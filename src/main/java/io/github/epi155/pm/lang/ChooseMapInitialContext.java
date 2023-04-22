@@ -4,6 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
+/**
+ * initial context to set the condition to the value
+ *
+ * @param <T> value type of the chosen value
+ * @param <R> value type of the final value
+ */
 public interface ChooseMapInitialContext<T, R> {
     /**
      * sets condition to value as predicate

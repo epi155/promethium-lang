@@ -4,6 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
+/**
+ * initial context to set the condition to the value
+ *
+ * @param <T> value type of the chosen value
+ */
 public interface ChooseNixInitialContext<T> {
     /**
      * sets condition to value as predicate

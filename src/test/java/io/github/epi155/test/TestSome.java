@@ -3,9 +3,11 @@ package io.github.epi155.test;
 import io.github.epi155.pm.lang.*;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -113,16 +115,58 @@ public class TestSome {
 
     }
 
+    @Test
+        // mvn test -Dtest="TestSome#test06"
+    void test06() {
+        val a = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
+        val b = Some.of(a);
+        Assertions.assertTrue(b.completeWithoutErrors());
+        Assertions.assertFalse(b.completeSuccess());
+        Assertions.assertEquals(1, b.value());
+
+        @NotNull None c = a.choose().when(true).nop().otherwise().fault(MY_FAULT).end();
+        Assertions.assertTrue(c.completeWithoutErrors());
+        Assertions.assertFalse(c.completeSuccess());
+
+    }
+
+    @Test
+        // mvn test -Dtest="TestSome#test07"
+    void test07() {
+        val bld = Some.<Integer>builder();
+        bld.alert(MY_ALERT);
+        bld.fault(MY_FAULT);
+        Collection<Signal> za = bld.signals();
+        Assertions.assertThrows(UnsupportedOperationException.class, za::clear);
+    }
+
+    @Test
+        // mvn test -Dtest="TestSome#test08"
+    void test08() {
+        val bld = Some.<Integer>builder();
+        bld.value(1);
+        bld.fault(MY_FAULT);
+        val a = bld.build();
+        Assertions.assertTrue(a.completeWithErrors());
+        Assertions.assertEquals(2, a.signals().size());
+        System.out.println(a);
+
+        val b = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
+        b.summary().ifPresent(System.out::println);
+        val c = Some.<Integer>builder().withAlert(MY_ALERT).withAlert(MY_FAULT).buildWithValue(1);
+        c.summary().ifPresent(System.out::println);
+    }
+
     void test501(A a) {
         val bld = Some.<C>builder();
         formalValidation(a)
-                .onSuccess(() -> decode(a)
-                        .onSuccess(b -> meritValidation(b)
-                                .onSuccess(() -> translate(b)
-                                        .onSuccess(bld::value)
-                                        .onFailure(bld::add))
-                                .onFailure(bld::add))
+            .onSuccess(() -> decode(a)
+                .onSuccess(b -> meritValidation(b)
+                    .onSuccess(() -> translate(b)
+                        .onSuccess(bld::value)
                         .onFailure(bld::add))
+                    .onFailure(bld::add))
+                .onFailure(bld::add))
                 .onFailure(bld::add);
         Some<C> sc = bld.build();
     }

@@ -106,6 +106,7 @@ public class TestOpto3 {
         Assertions.assertTrue(d.completeWithErrors());
     }
 
+
     @Test
     void testD0() {
         Hope<String> a = OptoContext.<String, String>optoMap("aa")
