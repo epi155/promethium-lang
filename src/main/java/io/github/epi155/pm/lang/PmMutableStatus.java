@@ -37,7 +37,7 @@ abstract class PmMutableStatus implements ItemStatus {
     public boolean completeWithErrors() {
         return !isSuccess;
     }
-
+    @Override
     public boolean completeWarning() {
         return isSuccess && !noSignals;
     }

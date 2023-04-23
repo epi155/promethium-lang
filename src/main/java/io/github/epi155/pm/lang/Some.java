@@ -118,6 +118,13 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
         return new PmSome<>(value);
     }
 
+    /**
+     * static factory with payload AnyValue
+     *
+     * @param value instance of {@link AnyValue}
+     * @param <U>   payload type
+     * @return instance of {@link Some} (success or any errors and any warnings)
+     */
     static <U> @NotNull Some<U> of(@NotNull AnyValue<U> value) {
         //noinspection ConstantValue
         if (value == null) {    // null select this method

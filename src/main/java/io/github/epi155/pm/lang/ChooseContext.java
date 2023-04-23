@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * context to perform actions based on a choose
+ * context to perform actions based on choose
  *
  * @param <T> value type of the chosen value
  */
@@ -25,7 +25,7 @@ public interface ChooseContext<T> {
      *
      * @param value external value
      * @param <S>   value type of the chosen/external value
-     * @return instance of {@link ChooseNixContext}
+     * @return instance of {@link ChooseNixInitialContext}
      * @see #choose()
      */
     static @NotNull <S> ChooseNixInitialContext<S> choose(@NotNull S value) {

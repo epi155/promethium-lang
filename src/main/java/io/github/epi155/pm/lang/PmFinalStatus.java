@@ -22,18 +22,18 @@ abstract class PmFinalStatus implements ItemStatus {
     protected PmFinalStatus(Collection<? extends Signal> signals) {
         this.signals = Collections.unmodifiableCollection(signals);
         List<Warning> warnings = new ArrayList<>();
-        boolean zErrors = false;
+        boolean kErrors = false;
         for (Signal signal : getSignalsQueue()) {
             if (signal instanceof Warning) {
                 warnings.add((Warning) signal);
             } else {
-                zErrors = true;
+                kErrors = true;
             }
         }
         this.alerts = Collections.unmodifiableCollection(warnings);
         this.zSuccess = signals.isEmpty();
-        this.zErrors = zErrors;
-        this.zAlerts = !zErrors && !alerts.isEmpty();
+        this.zErrors = kErrors;
+        this.zAlerts = !kErrors && !alerts.isEmpty();
     }
 
     protected PmFinalStatus() {
@@ -44,7 +44,7 @@ abstract class PmFinalStatus implements ItemStatus {
         this.zErrors = false;
     }
 
-    public PmFinalStatus(PmFinalStatus status) {
+    protected PmFinalStatus(PmFinalStatus status) {
         this.signals = status.signals;
         this.alerts = status.alerts;
         this.zSuccess = status.zSuccess;
@@ -80,35 +80,51 @@ abstract class PmFinalStatus implements ItemStatus {
 
 
     public String toString() {
-        String status = zSuccess ? L_SUCCESS : zErrors ? L_ERRORS : L_WARNIGS;
+        String status = labelStatus();
         val sw = new StringWriter();
         val pw = new PrintWriter(sw);
         pw.printf("{ finalStatus: %s", status);
         extraToString(pw);
         if (!alerts.isEmpty()) {
             pw.print(", warnings: [ ");
-            boolean append = false;
-            for (Warning alert : alerts) {
-                if (append) pw.print(", ");
-                pw.print(alert.toString());
-                append = true;
-            }
+            dumpAlerts(pw);
             pw.print(" ]");
         }
         if (zErrors) {
             pw.print(", errors: [ ");
-            boolean append = false;
-            for (Signal signal : signals) {
-                if (signal instanceof Failure) {
-                    if (append) pw.print(", ");
-                    pw.print(signal);
-                    append = true;
-                }
-            }
+            dumpFailure(pw);
             pw.print(" ]");
         }
         pw.print(" }");
         return sw.toString();
+    }
+
+    private void dumpFailure(PrintWriter pw) {
+        boolean append = false;
+        for (Signal signal : signals) {
+            if (signal instanceof Failure) {
+                if (append) pw.print(", ");
+                pw.print(signal);
+                append = true;
+            }
+        }
+    }
+
+    private void dumpAlerts(PrintWriter pw) {
+        boolean append = false;
+        for (Warning alert : alerts) {
+            if (append) pw.print(", ");
+            pw.print(alert.toString());
+            append = true;
+        }
+    }
+
+    private String labelStatus() {
+        if (zSuccess)
+            return L_SUCCESS;
+        if (zErrors)
+            return L_ERRORS;
+        return L_WARNIGS;
     }
 
     protected void extraToString(PrintWriter pw) {

@@ -9,7 +9,7 @@ public class TestErgo {
     private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
 
     @Test
-    void testSome1() {
+    void testSome1x01() {
         None a1 = Some.of(1).ergo(k -> Some.of(k + 1));
         Assertions.assertTrue(a1.completeSuccess());
         None a2 = Some.of(1).ergo(k -> None.none());
@@ -18,7 +18,10 @@ public class TestErgo {
         Assertions.assertTrue(a3.completeSuccess());
         None a4 = Some.of(1).ergo(k -> Nope.nope());
         Assertions.assertTrue(a4.completeSuccess());
+    }
 
+    @Test
+    void testSome1x02() {
         None b1 = Some.of(1).ergo(k -> Some.fault(MY_FAULT));
         Assertions.assertTrue(b1.completeWithErrors());
         None b2 = Some.of(1).ergo(k -> None.fault(MY_FAULT));
@@ -34,7 +37,10 @@ public class TestErgo {
         Assertions.assertTrue(b6.completeWarning());
         None b7 = Some.of(1).ergo(k -> Some.<Integer>builder().withFault(MY_FAULT).buildWithValue(k + 1));
         Assertions.assertTrue(b7.completeWithErrors());
+    }
 
+    @Test
+    void testSome1x03() {
         None c1 = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1).ergo(k -> Some.of(k + 1));
         Assertions.assertTrue(c1.completeWarning());
         None c2 = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1).ergo(k -> None.none());
@@ -43,7 +49,10 @@ public class TestErgo {
         Assertions.assertTrue(c3.completeWarning());
         None c4 = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1).ergo(k -> Nope.nope());
         Assertions.assertTrue(c4.completeWarning());
+    }
 
+    @Test
+    void testSome1x04() {
         None d1 = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1).ergo(k -> Some.fault(MY_FAULT));
         Assertions.assertTrue(d1.completeWithErrors());
         Assertions.assertEquals(2, d1.signals().size());
@@ -63,7 +72,10 @@ public class TestErgo {
         None d6 = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1).ergo(k -> None.alert(MY_ALERT));
         Assertions.assertTrue(d6.completeWarning());
         Assertions.assertEquals(2, d6.signals().size());
+    }
 
+    @Test
+    void testSome1x05() {
         None e1 = Some.<Integer>fault(MY_FAULT).ergo(k -> Some.of(k + 1));
         Assertions.assertTrue(e1.completeWithErrors());
         None e2 = Some.<Integer>fault(MY_FAULT).ergo(k -> None.none());
@@ -72,7 +84,10 @@ public class TestErgo {
         Assertions.assertTrue(e3.completeWithErrors());
         None e4 = Some.<Integer>fault(MY_FAULT).ergo(k -> Nope.nope());
         Assertions.assertTrue(e4.completeWithErrors());
+    }
 
+    @Test
+    void testSome1x06() {
         None f1 = Some.<Integer>fault(MY_FAULT).ergo(k -> Some.fault(MY_FAULT));
         Assertions.assertTrue(f1.completeWithErrors());
         Assertions.assertEquals(1, f1.signals().size());
@@ -88,7 +103,7 @@ public class TestErgo {
     }
 
     @Test
-    void testNone1() {
+    void testNone1x01() {
         None a1 = None.none().ergo(() -> Some.of(1));
         Assertions.assertTrue(a1.completeSuccess());
         None a2 = None.none().ergo(None::none);
@@ -97,7 +112,10 @@ public class TestErgo {
         Assertions.assertTrue(a3.completeSuccess());
         None a4 = None.none().ergo(Nope::nope);
         Assertions.assertTrue(a4.completeSuccess());
+    }
 
+    @Test
+    void testNone1x02() {
         None b1 = None.none().ergo(() -> Some.fault(MY_FAULT));
         Assertions.assertTrue(b1.completeWithErrors());
         None b2 = None.none().ergo(() -> None.fault(MY_FAULT));
@@ -111,7 +129,10 @@ public class TestErgo {
         Assertions.assertTrue(b5.completeWarning());
         None b6 = None.none().ergo(() -> None.alert(MY_ALERT));
         Assertions.assertTrue(b6.completeWarning());
+    }
 
+    @Test
+    void testNone1x03() {
         None c1 = None.alert(MY_ALERT).ergo(() -> Some.of(1));
         Assertions.assertTrue(c1.completeWarning());
         None c2 = None.alert(MY_ALERT).ergo(None::none);
@@ -120,7 +141,10 @@ public class TestErgo {
         Assertions.assertTrue(c3.completeWarning());
         None c4 = None.alert(MY_ALERT).ergo(Nope::nope);
         Assertions.assertTrue(c4.completeWarning());
+    }
 
+    @Test
+    void testNone1x04() {
         None d1 = None.alert(MY_ALERT).ergo(() -> Some.fault(MY_FAULT));
         Assertions.assertTrue(d1.completeWithErrors());
         Assertions.assertEquals(2, d1.signals().size());
@@ -140,7 +164,10 @@ public class TestErgo {
         None d6 = None.alert(MY_ALERT).ergo(() -> None.alert(MY_ALERT));
         Assertions.assertTrue(d6.completeWarning());
         Assertions.assertEquals(2, d6.signals().size());
+    }
 
+    @Test
+    void testNone1x05() {
         None e1 = None.fault(MY_FAULT).ergo(() -> Some.of(1));
         Assertions.assertTrue(e1.completeWithErrors());
         None e2 = None.fault(MY_FAULT).ergo(None::none);
@@ -149,7 +176,10 @@ public class TestErgo {
         Assertions.assertTrue(e3.completeWithErrors());
         None e4 = None.fault(MY_FAULT).ergo(Nope::nope);
         Assertions.assertTrue(e4.completeWithErrors());
+    }
 
+    @Test
+    void testNone1x06() {
         None f1 = None.fault(MY_FAULT).ergo(() -> Some.fault(MY_FAULT));
         Assertions.assertTrue(f1.completeWithErrors());
         Assertions.assertEquals(1, f1.signals().size());

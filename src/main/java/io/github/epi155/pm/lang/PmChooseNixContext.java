@@ -166,7 +166,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         @Override
         public @NotNull None end() {
             if (parent.completeSuccess()) {
-                return (result == null || result.completeSuccess()) ? PmNone.none() : new PmNone(result.signals());
+                return result == null || result.completeSuccess() ? PmNone.none() : new PmNone(result.signals());
             } else if (parent.completeWithErrors()) {
                 return new PmNone(parent.signals());    // parent errors (warnings)
             } else if (result == null || result.completeSuccess()) {

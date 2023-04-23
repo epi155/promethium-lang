@@ -30,10 +30,12 @@ public class TestChoice {
             .otherwise().nop()
             .end();
         System.out.println(ee);
+        Assertions.assertTrue(ee.completeWithErrors());
         @NotNull None res = Hope.<Integer>fault(MY_FAULT).choose()
             .whenEquals(1).peek(it -> System.out.println("one"))
             .otherwise().peek(it -> System.out.println("off"))
             .end();
+        Assertions.assertTrue(res.completeWithErrors());
 //        @NotNull None z = Hope.of(1).choice()
 //                .when(1).peek(k -> System.out.println("one"))
 //                .when(2).ergo(k -> Nope.failure(MY_FAULT))

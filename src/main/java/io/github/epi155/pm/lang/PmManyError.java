@@ -17,7 +17,7 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
         super(signals);
     }
 
-    public PmManyError(PmFinalStatus status) {
+    protected PmManyError(PmFinalStatus status) {
         super(status);
     }
 
