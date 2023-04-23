@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 
 @Slf4j
-public class TestOpto1 {
+class TestOpto1 {
     private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error {} !!");
 
     @Test

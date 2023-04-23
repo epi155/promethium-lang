@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class TestChoice {
+class TestChoice {
     private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error {} !!");
     private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Mmm warning {} !!");
 
@@ -51,11 +51,11 @@ public class TestChoice {
     }
 
     @Test
-    public void testC1() {
+    void testC1() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
-                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
-                .collect(Collectors.toList());
+            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
+            .collect(Collectors.toList());
         val bld = None.builder();
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> bld.add(it.choose()
@@ -67,11 +67,12 @@ public class TestChoice {
         val none = bld.build();
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
     }
+
     @Test
-    public void testC2() {
+    void testC2() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
-                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
+            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
             .collect(Collectors.toList());
         val bld = None.builder();
         AtomicBoolean fst = new AtomicBoolean(true);
@@ -89,10 +90,10 @@ public class TestChoice {
     }
 
     @Test
-    public void testC3() {
+    void testC3() {
         val randm = new Random();
         List<Hope<Integer>> values = IntStream.rangeClosed(1, 50)
-                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
+            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Hope.<Integer>fault(MY_FAULT, k) : Hope.of(k))
             .collect(Collectors.toList());
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> it.<String>chooseMap()
@@ -110,7 +111,7 @@ public class TestChoice {
     }
 
     @Test
-    public void testC4() {
+    void testC4() {
         @NotNull Some<String> a1 = Hope.of(1).<String>chooseMap()
             .when(false).fault(MY_FAULT)
             .otherwise().fault(MY_FAULT).end();
@@ -183,17 +184,17 @@ public class TestChoice {
             .whenInstanceOf(Integer.class).mapOf(it -> Integer.toString(it))
             .otherwise().mapOf(it -> String.format("%d", it))
             .end();
-        Assertions.assertTrue(d1.completeWithErrors());
+        Assertions.assertTrue(e1.completeWithoutErrors());
 
         @NotNull None p1 = ChooseContext.choose(1)
             .when(false).fault(MY_FAULT)
             .otherwise().fault(MY_FAULT).end();
-        Assertions.assertTrue(n1.completeWithErrors());
+        Assertions.assertTrue(p1.completeWithErrors());
         @NotNull None q1 = ChooseContext.choose(1)
             .when(true).fault(MY_FAULT)
             .otherwise().fault(MY_FAULT)
             .end();
-        Assertions.assertTrue(n1.completeWithErrors());
+        Assertions.assertTrue(q1.completeWithErrors());
         @NotNull None r1 = ChooseContext.choose(1)
             .whenInstanceOf(Integer.class).fault(MY_FAULT)
             .otherwise().nop()
@@ -202,7 +203,7 @@ public class TestChoice {
     }
 
     @Test
-    public void testC6() {
+    void testC6() {
         val randm = new Random();
         List<Some<Integer>> values = IntStream.rangeClosed(1, 50)
             .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>fault(MY_FAULT, k) : Some.of(k))
@@ -218,11 +219,12 @@ public class TestChoice {
         val none = bld.build();
         none.onFailure(es -> es.forEach(s -> log.warn("Errore: {}", s.message())));
     }
+
     @Test
-    public void testC7() {
+    void testC7() {
         val randm = new Random();
         List<Some<Integer>> values = IntStream.rangeClosed(1, 50)
-                .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>fault(MY_FAULT, k) : Some.of(k))
+            .mapToObj(k -> (randm.nextDouble() < 0.2) ? Some.<Integer>fault(MY_FAULT, k) : Some.of(k))
             .collect(Collectors.toList());
         AtomicBoolean fst = new AtomicBoolean(true);
         values.forEach(it -> it.<String>chooseMap()
@@ -238,10 +240,11 @@ public class TestChoice {
             .onSuccess(s -> log.info("result is {}", s))
             .onFailure(es -> es.forEach(e -> log.warn("Error is: {}", e.message()))));
     }
+
     @Test
-    public void testC8() {
-        Number[] nn = { 1, 2L, 3F, 3.1415926535_8979323846_2643383279 };
-        for(Number z: nn) {
+    void testC8() {
+        Number[] nn = {1, 2L, 3F, 3.1415926535_8979323846_2643383279};
+        for (Number z : nn) {
             val a = Hope.of(z).choose()
                 .whenInstanceOf(Integer.class).peek(n -> n++)
                 .whenInstanceOf(Double.class).ergo(n -> Hope.of(Math.sqrt(n)))
@@ -359,7 +362,7 @@ public class TestChoice {
     }
 
     @Test
-    public void testC9() {
+    void testC9() {
         @NotNull None a01 = Hope.of(1).choose()
             .when(true).nop()
             .otherwise().fault(MY_FAULT)
@@ -373,7 +376,7 @@ public class TestChoice {
     }
 
     @Test
-    public void testC10() {
+    void testC10() {
         @NotNull None a01 = ChooseContext.choose(1)
             .when(true).nop()
             .otherwise().fault(MY_FAULT)
@@ -387,7 +390,7 @@ public class TestChoice {
     }
 
     @Test
-    public void testC11() {
+    void testC11() {
         Some<Integer> some = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
         @NotNull Some<Integer> a01 = some.<Integer>chooseMap()
             .when(true).mapOf(it -> it * 2)
@@ -418,7 +421,7 @@ public class TestChoice {
     }
 
     @Test
-    public void testSC1() {
+    void testSC1() {
         val randm = new Random();
         List<Integer> values = IntStream.rangeClosed(1, 50).boxed().collect(Collectors.toList());
         values.forEach(value -> {
@@ -450,14 +453,14 @@ public class TestChoice {
     }
 
     @Test
-    public void testSC2() {
+    void testSC2() {
         Nope a = Nope.fault(MY_FAULT, new Bad());
         Assertions.assertTrue(a.completeWithErrors());
         val fault = a.failure();
         System.out.println(fault.message());
     }
 
-    class Bad {
+    static class Bad {
         public String toString() {
             throw new RuntimeException();
         }

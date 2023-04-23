@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 
 @Slf4j
-public class TestSome {
+class TestSome {
     private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
     private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
 

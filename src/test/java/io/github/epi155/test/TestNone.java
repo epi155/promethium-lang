@@ -9,29 +9,31 @@ import org.junit.jupiter.api.Test;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class TestNone {
+class TestNone {
     @Test
-    public void test1() {
+    void test1() {
         None.builder().build()
             .onSuccess(() -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    public void test2() {
+    void test2() {
         None.builder().withStatus(Nope.capture(new NullPointerException())).build()
             .onSuccess(() -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    public void test3() {
+    void test3() {
         val result = None.builder().build()
             .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
 
         Assertions.assertDoesNotThrow(() -> {
-            Some.capture(new NullPointerException()).peek(it -> { throw new NullPointerException(); });
+            Some.capture(new NullPointerException()).peek(it -> {
+                throw new NullPointerException();
+            });
         });
         Some.of("hello").mapOf(it -> it.charAt(0));
         Some.<String>capture(new NullPointerException()).mapOf(it -> it.charAt(0));
@@ -41,24 +43,24 @@ public class TestNone {
     private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
 
     @Test
-    public void test4() {
+    void test4() {
         val result = None.builder().withStatus(Nope.capture(new NullPointerException())).build()
-                .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
+            .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 
     @Test
-    public void test5() {
+    void test5() {
         None.builder()
-                .build()
-                .peek(() -> log.info("I was here"))
-                .ergo(Nope::nope);
+            .build()
+            .peek(() -> log.info("I was here"))
+            .ergo(Nope::nope);
         None.builder()
-                .build()
-                .peek(() -> log.info("I was here"))
-                .ergo(() -> Nope.capture(new NullPointerException()));
+            .build()
+            .peek(() -> log.info("I was here"))
+            .ergo(() -> Nope.capture(new NullPointerException()));
         None.builder()
-                .build()
+            .build()
                 .ergo(Nope::nope)
                 .peek(() -> log.info("I was here"));
         None.builder()
@@ -68,12 +70,12 @@ public class TestNone {
     }
 
     @Test
-    public void test6() {
+    void test6() {
         None.builder()
-                .withStatus(Nope.capture(new NullPointerException()))
-                .build()
-                .peek(() -> log.info("I was here"))
-                .ergo(Nope::nope)
+            .withStatus(Nope.capture(new NullPointerException()))
+            .build()
+            .peek(() -> log.info("I was here"))
+            .ergo(Nope::nope)
 //            .anyway(() -> log.info("In any case"))
 //            .anyway(Nope::nope)
 //            .anyway(() -> Nope.capture(new NullPointerException()))
@@ -97,7 +99,7 @@ public class TestNone {
     }
 
     @Test
-    public void test7() {
+    void test7() {
         val some = Some.of(1);
         val none = None.of(some);
         Assertions.assertEquals(0, none.signals().size());
@@ -117,8 +119,9 @@ public class TestNone {
         Assertions.assertTrue(n2.summary().isPresent());
     }
 
-    @Test   //  mvn test -Dtest="TestNone#test8"
-    public void test8() {
+    @Test
+        //  mvn test -Dtest="TestNone#test8"
+    void test8() {
         val a = None.none().<Integer>mapTo(w -> w.isEmpty() ? 0 : 4, e -> 12);
         Assertions.assertEquals(0, a);
         val b = None.alert(MY_ALERT).<Integer>mapTo(w -> w.isEmpty() ? 0 : 4, e -> 12);

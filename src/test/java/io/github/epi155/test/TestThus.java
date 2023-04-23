@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestThus {
+class TestThus {
     private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
 
     @Test

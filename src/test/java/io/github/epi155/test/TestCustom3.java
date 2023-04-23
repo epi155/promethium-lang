@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class TestCustom3 {
+class TestCustom3 {
 
     private static final CustMsg BAD_N = CustMsg.of("E01", "Valore nullo o negativo: {}");
     private static final CustMsg FAC_N = CustMsg.of("W01", "Valore {} scomponibile in fattori: {}");

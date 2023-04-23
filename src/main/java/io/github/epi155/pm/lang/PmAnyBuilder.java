@@ -35,27 +35,4 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
     public void add(@NotNull ItemStatus any) {
         add(any.signals());
     }
-
-//    @Override
-//    public <T> @NotNull Stream<T> flat(@NotNull Hope<T> hope) {
-//        if (hope.completeWithoutErrors()) {
-//            return Stream.of(hope.value());
-//        } else {
-//            add(hope.failure());
-//            return Stream.empty();
-//        }
-//    }
-//
-//    @Override
-//    public <T> @NotNull Stream<T> flat(@NotNull Some<T> some) {
-//        if (some.completeSuccess()) {
-//            return Stream.of(some.value());
-//        } else {
-//            add(some.signals());
-//            if (completeWithErrors())
-//                return Stream.empty();
-//            else
-//                return Stream.of(some.value());
-//        }
-//    }
 }

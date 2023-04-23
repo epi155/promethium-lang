@@ -4,7 +4,7 @@ import io.github.epi155.pm.lang.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestErgo {
+class TestErgo {
     private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
     private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
 

@@ -60,13 +60,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     @Override
     public @NotNull Glitches onSuccess(@NotNull Consumer<? super T> successAction) {
         if (completeWithoutErrors()) {
-//            if (value == null) {
-//                StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-//                StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
-//                return new PmSome<>(Collections.singletonList(PmTrouble.of(new NoSuchElementException(), caller)));
-//            } else {
             successAction.accept(value);
-//            }
         }
         return this;
     }
@@ -74,13 +68,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     @Override
     public @NotNull Glitches onSuccess(@NotNull BiConsumer<? super T, Collection<Warning>> successAction) {
         if (completeWithoutErrors()) {
-//            if (value == null) {
-//                StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-//                StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
-//                return new PmSome<>(Collections.singletonList(PmTrouble.of(new NoSuchElementException(), caller)));
-//            } else {
             successAction.accept(value, alerts());
-//            }
         }
         return this;
     }

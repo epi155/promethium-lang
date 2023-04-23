@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestMapOf {
+class TestMapOf {
     private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
     private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
 

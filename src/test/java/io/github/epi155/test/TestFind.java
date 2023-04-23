@@ -228,8 +228,9 @@ class TestFind {
         Assertions.assertThrows(NoSuchElementException.class, value::value);
         Assertions.assertDoesNotThrow(value::failure);
     }
+
     @Test
-    public void testNotFoundR3() {
+    void testNotFoundR3() {
         SearchResult<String> result = SearchResult.empty();
         @NotNull SearchResult<Integer> value = result
             .<Integer>resultBuilder()

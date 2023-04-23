@@ -11,15 +11,15 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class TestBld {
+class TestBld {
 
 
     @Test
-    public void test1() {
+    void test1() {
         val bld = Some.<Integer>builder();
         val some = bld
-                .withStatus(Nope.nope())
-                .buildWithValue(1);
+            .withStatus(Nope.nope())
+            .buildWithValue(1);
 
         if (some.completeWithoutErrors()) {
             val value = some.value();
@@ -39,7 +39,7 @@ public class TestBld {
     }
 
     @Test
-    public void test2() {
+    void test2() {
         val bld = None.builder();
         bld.withStatus(Some.of(1)
             .ergo(k -> Some.of(2 * k)
@@ -52,14 +52,14 @@ public class TestBld {
     }
 
     @Test
-    public void test3() {
+    void test3() {
         val result = Some.of(2)
             .mapTo(k -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 
     @Test
-    public void test4() {
+    void test4() {
         val bld = Some.<Integer>builder();
         val fault = bld.fault(CustMsg.of("E01", "Houston we have had a problem"));
         fault.setProperty("MissionName", "Apollo");
@@ -91,14 +91,14 @@ public class TestBld {
     }
 
     @Test
-    public void test5() {
+    void test5() {
         Some.of(1)
             .onSuccess(k -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));
     }
 
     @Test
-    public void test6() {
+    void test6() {
         Some.capture(new NullPointerException())
             .onSuccess(k -> log.info("All fine"))
             .onFailure(es -> es.forEach(e -> log.warn("Oops {}", e.message())));

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 
 @Slf4j
-public class TestFormat {
+class TestFormat {
 
     @Test
     void testFormatZero() {
@@ -19,6 +19,7 @@ public class TestFormat {
         log.info("Message: {}", mesg);
         Assertions.assertEquals("Messagge zero", mesg);
     }
+
     @Test
     void testFormatArgTwo() {
         val mesg = Nope.fault(CustMsg.of("T002", "Messagges: {}, {}"), "Hola", "Mundo").failure().message();

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.*;
 
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TestFailure {
+class TestFailure {
     static final CustMsg CUST_ERR = CustMsg.of("AZ15", "Errore Gestito");
 
     static {
@@ -17,7 +17,7 @@ public class TestFailure {
 
     @Test
     @Order(10)
-    public void testCapture() {
+    void testCapture() {
         log.info("1.0 Cattura eccezione (package) ...");
         val bld = None.builder();
         try {
@@ -41,7 +41,7 @@ public class TestFailure {
 
     @Test
     @Order(42)
-    public void testCaptureHope() {
+    void testCaptureHope() {
         log.info("4.2 Cattura eccezione Hope ...");
         Hope<String> hope;
         try {
@@ -64,17 +64,17 @@ public class TestFailure {
 
     @Test
     @Order(50)
-    public void testEmpty() {
+    void testEmpty() {
         log.info("5.0 Some non valorizzato ...");
         envelope1()
-                .onSuccess(k -> log.info("Result is {}", k))
-                .onFailure(le -> {
-                    Assertions.assertEquals(1, le.size());
-                    val e = le.iterator().next();
-                    Assertions.assertEquals("999B", e.code());
-                    val reason = e.place();
-                    Assertions.assertNotNull(reason);
-                    Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
+            .onSuccess(k -> log.info("Result is {}", k))
+            .onFailure(le -> {
+                Assertions.assertEquals(1, le.size());
+                val e = le.iterator().next();
+                Assertions.assertEquals("999B", e.code());
+                val reason = e.place();
+                Assertions.assertNotNull(reason);
+                Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
                     Assertions.assertTrue(reason.contains("envelope1"));
                     log.error("* Errore: [{}] - ({},{})", e.message(), e.code(), e.place());
                 });
@@ -82,7 +82,7 @@ public class TestFailure {
 
     @Test
     @Order(60)
-    public void testCustomError0() {
+    void testCustomError0() {
         log.info("6.0 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
         val e = Hope.fault(error);
@@ -98,7 +98,7 @@ public class TestFailure {
 
     @Test
     @Order(61)
-    public void testCustomError1() {
+    void testCustomError1() {
         log.info("6.1 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
         val e = Nope.fault(error);
@@ -114,7 +114,7 @@ public class TestFailure {
 
     @Test
     @Order(62)
-    public void testCustomError2() {
+    void testCustomError2() {
         log.info("6.2 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
         val e = Some.fault(error);
@@ -132,7 +132,7 @@ public class TestFailure {
 
     @Test
     @Order(63)
-    public void testCustomError3() {
+    void testCustomError3() {
         log.info("6.3 Custom Error ...");
         val error = CustMsg.of("T033", "Custom Error");
         val e = None.fault(error);
@@ -150,7 +150,7 @@ public class TestFailure {
 
     @Test
     @Order(900)
-    public void test900() {
+    void test900() {
         val some = Some.fault(CUST_ERR);
         Assertions.assertFalse(some.completeSuccess());
     }
@@ -158,14 +158,14 @@ public class TestFailure {
 
     @Test
     @Order(910)
-    public void test910() {
+    void test910() {
         val none = None.fault(CUST_ERR);
         Assertions.assertFalse(none.completeSuccess());
     }
 
     @Test
     @Order(911)
-    public void test911() {
+    void test911() {
         try {
             crashMethod();
         } catch (Exception e) {
@@ -176,21 +176,21 @@ public class TestFailure {
 
     @Test
     @Order(922)
-    public void test922() {
+    void test922() {
         val some = Nope.nope();
         Assertions.assertTrue(some.completeSuccess());
     }
 
     @Test
     @Order(920)
-    public void test920() {
+    void test920() {
         val some = Nope.fault(CUST_ERR);
         Assertions.assertFalse(some.completeSuccess());
     }
 
     @Test
     @Order(930)
-    public void test930() {
+    void test930() {
         val bld = None.builder();
         try {
             crashMethod();

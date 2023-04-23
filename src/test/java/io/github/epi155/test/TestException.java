@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 @Slf4j
-public class TestException {
+class TestException {
     private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
 
     @Test

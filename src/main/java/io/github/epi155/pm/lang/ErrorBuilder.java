@@ -54,24 +54,4 @@ public interface ErrorBuilder extends ItemStatus {
      * @return {@link Warning} instance
      */
     @NotNull Warning alert(@NotNull CustMsg ce, Object... objects);
-//    /**
-//     * Flat an {@link Hope} instance, adding error if present.
-//     * To be used with {@link Stream#flatMap(Function)}
-//     *
-//     * @param hope {@link Hope} instance.
-//     * @param <T>  Hope type
-//     * @return empty stream on error, singleton stream when no error
-//     */
-//    <T> @NotNull Stream<T> flat(@NotNull Hope<T> hope);
-//
-//    /**
-//     * Flat an {@link Some} instance, adding errors if present.
-//     * To be used with {@link Stream#flatMap(Function)}
-//     *
-//     * @param some {@link Some} instance.
-//     * @param <T>  Hope type
-//     * @return empty stream on errors, singleton stream when no errors
-//     */
-//    <T> @NotNull Stream<T> flat(@NotNull Some<T> some);
-
 }

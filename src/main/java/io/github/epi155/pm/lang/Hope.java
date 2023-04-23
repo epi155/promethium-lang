@@ -47,6 +47,10 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * @return <b>Hope</b> instance
      */
     static <S> @NotNull Hope<S> of(@NotNull S value) {
+        /*
+         * the @NotNull annotation tells the IDE that the value should be not null,
+         * but the inattentive user could set a null value
+         */
         //noinspection ConstantValue
         if (value == null) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();

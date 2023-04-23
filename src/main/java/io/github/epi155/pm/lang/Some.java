@@ -126,6 +126,10 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @return instance of {@link Some} (success or any errors and any warnings)
      */
     static <U> @NotNull Some<U> of(@NotNull AnyValue<U> value) {
+        /*
+         * the @NotNull annotation tells the IDE that the value should be not null,
+         * but the inattentive user could set a null value
+         */
         //noinspection ConstantValue
         if (value == null) {    // null select this method
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();

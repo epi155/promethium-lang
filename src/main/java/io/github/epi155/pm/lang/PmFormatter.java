@@ -34,13 +34,7 @@ final class PmFormatter {
 
             if (j == -1) {
                 // no more variables
-                if (i == 0) { // this is a simple string
-                    return messagePattern;
-                } else { // add the tail string which contains no variables and return
-                    // the result.
-                    sbuf.append(messagePattern, i, messagePattern.length());
-                    return sbuf.toString();
-                }
+                return finalMessage(sbuf, i, messagePattern);
             } else {
                 if (isEscapedDelimeter(messagePattern, j)) {
                     if (!isDoubleEscaped(messagePattern, j)) {
@@ -67,6 +61,16 @@ final class PmFormatter {
         // append the characters following the last {} pair.
         sbuf.append(messagePattern, i, messagePattern.length());
         return sbuf.toString();
+    }
+
+    private static String finalMessage(StringBuilder sbuf, int i, String messagePattern) {
+        if (i == 0) { // this is a simple string
+            return messagePattern;
+        } else { // add the tail string which contains no variables and return
+            // the result.
+            sbuf.append(messagePattern, i, messagePattern.length());
+            return sbuf.toString();
+        }
     }
 
     private static boolean isEscapedDelimeter(String messagePattern, int delimeterStartIndex) {
@@ -126,7 +130,7 @@ final class PmFormatter {
     private static void report(String msg, @NotNull Throwable t) {
         System.err.println(msg);
         System.err.println("Reported exception:");
-        t.printStackTrace();
+        t.printStackTrace();    // to std.err
     }
 
     private static void objectArrayAppend(@NotNull StringBuilder sbuf, Object[] a, @NotNull Map<Object[], Object> seenMap) {

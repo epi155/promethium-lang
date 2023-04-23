@@ -13,7 +13,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TestWarning {
+class TestWarning {
     private None good() {
         return None.none();
     }

@@ -10,69 +10,69 @@ import org.junit.jupiter.api.Test;
 import java.util.NoSuchElementException;
 
 @Slf4j
-public class TestNope {
+class TestNope {
 
 
     @Test
-    public void test1() {
+    void test1() {
         Nope.nope()
             .onSuccess(() -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
 
     @Test
-    public void test2() {
+    void test2() {
         Nope.fault(CustMsg.of("E01", "Houston we have had a problem"))
             .onSuccess(() -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
 
     @Test
-    public void test3() {
+    void test3() {
         val result = Nope.nope()
             .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
 
     @Test
-    public void test4() {
+    void test4() {
         val result = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"))
-                .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
+            .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
 
     @Test
-    public void test7() {
+    void test7() {
         val nope = Nope.nope();
         nope.peek(() -> log.info("to be continue"));
     }
 
     @Test
-    public void test8() {
+    void test8() {
         val nope = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
         nope.peek(() -> log.info("to be continue"));
     }
 
     @Test
-    public void test9() {
+    void test9() {
         val nope = Nope.nope();
         nope.ergo(Nope::nope);
     }
 
     @Test
-    public void test10() {
+    void test10() {
         val nope = Nope.nope();
         nope.ergo(() -> Nope.capture(new NullPointerException()));
     }
 
     @Test
-    public void test12() {
+    void test12() {
         val nope = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
         nope.ergo(Nope::nope);
     }
 
     @Test
-    public void test13() {
+    void test13() {
         val nope = Nope.nope();
         Assertions.assertThrows(NoSuchElementException.class, () -> {
             val fault = nope.failure();
@@ -80,14 +80,15 @@ public class TestNope {
     }
 
     @Test
-    public void test14() {
+    void test14() {
         val nope = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = nope.failure();
         });
     }
+
     @Test
-    public void test15() {
+    void test15() {
         Nope n1 = Nope.nope();
         Assertions.assertFalse(n1.summary().isPresent());
 
