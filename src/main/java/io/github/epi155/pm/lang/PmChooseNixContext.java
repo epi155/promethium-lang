@@ -79,6 +79,15 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
+            public @NotNull ChooseNixContext<T> alert(CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                    result = None.alert(ce, argv);
+                    branchExecuted = true;
+                }
+                return PmChooseNixContext.this;
+            }
+
+            @Override
             public @NotNull ChooseNixContext<T> nop() {
                 if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
                     branchExecuted = true;
@@ -117,6 +126,14 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
+            public @NotNull ChooseNixExitContext alert(CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
+                    result = None.alert(ce, argv);
+                }
+                return new ChooseNixElseContextBase();
+            }
+
+            @Override
             public @NotNull ChooseNixExitContext nop() {
                 return new ChooseNixElseContextBase();
             }
@@ -149,6 +166,14 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = Nope.fault(ce, argv);
                 branchExecuted = true;
+            }
+            return PmChooseNixContext.this;
+        }
+
+        @Override
+        public @NotNull ChooseNixContext<T> alert(CustMsg ce, Object... argv) {
+            if (parent.completeWithoutErrors() && !branchExecuted && test()) {
+                result = None.alert(ce, argv);
             }
             return PmChooseNixContext.this;
         }

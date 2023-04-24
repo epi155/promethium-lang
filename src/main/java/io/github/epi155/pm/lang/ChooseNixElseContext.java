@@ -37,6 +37,15 @@ public interface ChooseNixElseContext<T> {
     @NotNull ChooseNixExitContext fault(CustMsg ce, Object... argv);
 
     /**
+     * Set custom warning message
+     *
+     * @param ce   custom warning
+     * @param argv warning argument
+     * @return instance of {@link ChooseNixExitContext}
+     */
+    @NotNull ChooseNixExitContext alert(CustMsg ce, Object... argv);
+
+    /**
      * no operation
      *
      * @return instance of {@link ChooseNixExitContext}

@@ -2,8 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 final class PmFormatter {
     static final char DELIM_START = '{';
@@ -128,9 +127,11 @@ final class PmFormatter {
         }
     }
     private static void report(String msg, @NotNull Throwable t) {
-        System.err.println(msg);
-        System.err.println("Reported exception:");
-        t.printStackTrace();    // to std.err
+        ReportHelper.REPORT_PRINT_STREAM_PROVIDER.getPrintStream().ifPresent(ps -> {
+            ps.println(msg);
+            ps.println("Reported exception:");
+            t.printStackTrace(ps);
+        });
     }
 
     private static void objectArrayAppend(@NotNull StringBuilder sbuf, Object[] a, @NotNull Map<Object[], Object> seenMap) {
@@ -237,5 +238,15 @@ final class PmFormatter {
                 sbuf.append(", ");
         }
         sbuf.append(']');
+    }
+
+    private static class ReportHelper {
+        private static final ReportPrintStreamProvider REPORT_PRINT_STREAM_PROVIDER;
+
+        static {
+            ServiceLoader<ReportPrintStreamProvider> loader = ServiceLoader.load(ReportPrintStreamProvider.class);
+            Iterator<ReportPrintStreamProvider> iterator = loader.iterator();
+            REPORT_PRINT_STREAM_PROVIDER = iterator.hasNext() ? iterator.next() : Optional::empty;
+        }
     }
 }

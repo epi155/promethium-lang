@@ -299,12 +299,14 @@ class TestChoice {
 
         ChooseContext.choose(1)
             .whenEquals(1).ergo(k -> Hope.of("a"))
-            .whenEquals(2).peek(k -> Nope.nope())
+            .whenEquals(2).peek(k -> {
+            })
             .otherwise().nop()
             .end();
         ChooseContext.choose(2)
             .whenEquals(1).ergo(k -> Hope.of("a"))
-            .whenEquals(2).peek(k -> Nope.nope())
+            .whenEquals(2).peek(k -> {
+            })
             .otherwise().nop()
             .end();
 
@@ -338,18 +340,19 @@ class TestChoice {
 
         Hope.of(1).choose()
             .whenEquals(1).ergo(k -> Hope.of("a"))
-            .whenEquals(2).peek(k -> Nope.nope())
+            .whenEquals(2).nop()
             .otherwise().nop()
             .end();
         Hope.of(2).choose()
             .whenEquals(1).ergo(k -> Hope.of("a"))
-            .whenEquals(2).peek(k -> Nope.nope())
+            .whenEquals(2).nop()
             .otherwise().nop()
             .end();
 
         Hope.<Integer>capture(new NullPointerException()).choose()
             .whenEquals(1).ergo(k -> Hope.of("a"))
-            .whenEquals(2).peek(k -> Nope.nope())
+            .whenEquals(2).peek(k -> {
+            })
             .otherwise().nop()
             .end();
         Hope.<Number>capture(new NullPointerException()).<String>chooseMap()
@@ -446,10 +449,12 @@ class TestChoice {
             .when(v -> v % 2 == 0).ergo(v -> Hope.capture(new NullPointerException()))
             .otherwise().ergo(v -> Nope.nope())
             .end();
+        Assertions.assertTrue(none.completeWithoutErrors());
         None none2 = ChooseContext.choose(1)
             .when(v -> v % 2 == 0).ergo(v -> Nope.nope())
             .otherwise().ergo(v -> Hope.capture(new NullPointerException()))
             .end();
+        Assertions.assertTrue(none2.completeWithErrors());
     }
 
     @Test
@@ -460,18 +465,115 @@ class TestChoice {
         System.out.println(fault.message());
     }
 
+    @Test
+    void testA01() {
+        @NotNull None a01 = testAlertEq(Hope.of(1).choose());
+        Assertions.assertFalse(a01.completeWithErrors());
+        Assertions.assertFalse(a01.completeSuccess());
+        Assertions.assertTrue(a01.completeWarning());
+
+        @NotNull None a02 = testAlertEq(Hope.of(2).choose());
+        Assertions.assertFalse(a02.completeWithErrors());
+        Assertions.assertFalse(a02.completeWarning());
+        Assertions.assertTrue(a02.completeSuccess());
+
+        @NotNull None a03 = testAlertEq(Hope.<Integer>fault(MY_FAULT).choose());
+        Assertions.assertFalse(a03.completeSuccess());
+        Assertions.assertFalse(a03.completeWarning());
+        Assertions.assertTrue(a03.completeWithErrors());
+    }
+
+    @Test
+    void testA02() {
+        @NotNull None a01 = testAlertAs(Hope.of(1).choose());
+        Assertions.assertFalse(a01.completeWithErrors());
+        Assertions.assertFalse(a01.completeSuccess());
+        Assertions.assertTrue(a01.completeWarning());
+
+        @NotNull None a02 = testAlertAs(Hope.of("1").choose());
+        Assertions.assertFalse(a02.completeWithErrors());
+        Assertions.assertFalse(a02.completeWarning());
+        Assertions.assertTrue(a02.completeSuccess());
+
+        @NotNull None a03 = testAlertAs(Hope.fault(MY_FAULT).choose());
+        Assertions.assertFalse(a03.completeSuccess());
+        Assertions.assertFalse(a03.completeWarning());
+        Assertions.assertTrue(a03.completeWithErrors());
+    }
+
+    @Test
+    void testA03() {
+        @NotNull None a01 = testAlertElse(Hope.of(1).choose());
+        Assertions.assertFalse(a01.completeWithErrors());
+        Assertions.assertFalse(a01.completeSuccess());
+        Assertions.assertTrue(a01.completeWarning());
+
+        @NotNull None a03 = testAlertElse(Hope.<Integer>fault(MY_FAULT).choose());
+        Assertions.assertFalse(a03.completeSuccess());
+        Assertions.assertFalse(a03.completeWarning());
+        Assertions.assertTrue(a03.completeWithErrors());
+    }
+
+    @Test
+    void testR01() {
+        @NotNull None a01 = testAlertEq(ChooseContext.choose(1));
+        Assertions.assertFalse(a01.completeWithErrors());
+        Assertions.assertFalse(a01.completeSuccess());
+        Assertions.assertTrue(a01.completeWarning());
+
+        @NotNull None a02 = testAlertEq(ChooseContext.choose(2));
+        Assertions.assertFalse(a02.completeWithErrors());
+        Assertions.assertFalse(a02.completeWarning());
+        Assertions.assertTrue(a02.completeSuccess());
+    }
+
+    @Test
+    void testR02() {
+        @NotNull None a01 = testAlertAs(ChooseContext.choose(1));
+        Assertions.assertFalse(a01.completeWithErrors());
+        Assertions.assertFalse(a01.completeSuccess());
+        Assertions.assertTrue(a01.completeWarning());
+
+        @NotNull None a02 = testAlertAs(ChooseContext.choose("1"));
+        Assertions.assertFalse(a02.completeWithErrors());
+        Assertions.assertFalse(a02.completeWarning());
+        Assertions.assertTrue(a02.completeSuccess());
+    }
+
+    @Test
+    void testR03() {
+        @NotNull None a01 = testAlertElse(ChooseContext.choose(1));
+        Assertions.assertFalse(a01.completeWithErrors());
+        Assertions.assertFalse(a01.completeSuccess());
+        Assertions.assertTrue(a01.completeWarning());
+    }
+
+    private None testAlertElse(ChooseNixInitialContext<Integer> chooseCtx) {
+        return chooseCtx
+            .when(false).nop()
+            .otherwise().alert(MY_ALERT, "int")
+            .end();
+    }
+
+    private <T> None testAlertAs(@NotNull ChooseNixInitialContext<T> chooseCtx) {
+        return chooseCtx
+            .whenInstanceOf(Integer.class).alert(MY_ALERT, "int")
+            .otherwise().nop()
+            .end();
+    }
+
+    private None testAlertEq(ChooseNixInitialContext<Integer> chooseCtx) {
+        return chooseCtx
+            .whenEquals(1).alert(MY_ALERT, "one")
+            .otherwise().nop()
+            .end();
+    }
+
+
     static class Bad {
         public String toString() {
             throw new RuntimeException();
         }
-    }
-
-    private AnyValue<String> funcOne(String s) {
-        return Hope.of(s);
-    }
-
-    private AnyError actionOne(String s) {
-        return Nope.nope();
     }
 
 }

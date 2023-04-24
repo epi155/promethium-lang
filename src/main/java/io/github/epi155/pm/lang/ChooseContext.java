@@ -105,10 +105,10 @@ public interface ChooseContext<T> {
      *     </tr>
      *     <tr><td colspan="4"></td></tr>
      *     <tr>
-     *         <td rowspan="4">{@code ChooseNixWhenContext<T>}</td>
+     *         <td rowspan="5">{@code ChooseNixWhenContext<T>}</td>
      *         <td><code>{@link ChooseNixWhenContext#ergo(Function) ergo}</code></td>
      *         <td>{@code Function<? super T, ? extends ItemStatus>}</td>
-     *         <td rowspan="9">{@code ChooseNixContext<T>}</td>
+     *         <td rowspan="11">{@code ChooseNixContext<T>}</td>
      *     </tr>
      *     <tr>
      *         <td><code>{@link ChooseNixWhenContext#peek(Consumer) peek}</code></td>
@@ -119,12 +119,16 @@ public interface ChooseContext<T> {
      *         <td>{@code CustMsg, Object...}</td>
      *     </tr>
      *     <tr>
+     *         <td><code>{@link ChooseNixWhenContext#alert(CustMsg, Object...) alert}</code></td>
+     *         <td>{@code CustMsg, Object...}</td>
+     *     </tr>
+     *     <tr>
      *         <td><code>{@link ChooseNixWhenContext#nop() nop}</code></td>
      *         <td></td>
      *     </tr>
      *     <tr><td colspan="3"></td></tr>
      *     <tr>
-     *         <td rowspan="4">{@code ChooseNixWhenAsContext<U, T>}</td>
+     *         <td rowspan="5">{@code ChooseNixWhenAsContext<U, T>}</td>
      *         <td><code>{@link ChooseNixWhenAsContext#ergo(Function) ergo}</code></td>
      *         <td>{@code Function<? super U, ? extends ItemStatus>}</td>
      *     </tr>
@@ -137,15 +141,19 @@ public interface ChooseContext<T> {
      *         <td>{@code CustMsg, Object...}</td>
      *     </tr>
      *     <tr>
+     *         <td><code>{@link ChooseNixWhenAsContext#alert(CustMsg, Object...) alert}</code></td>
+     *         <td>{@code CustMsg, Object...}</td>
+     *     </tr>
+     *     <tr>
      *         <td><code>{@link ChooseNixWhenAsContext#nop() nop}</code></td>
      *         <td></td>
      *     </tr>
      *     <tr><td colspan="4"></td></tr>
      *     <tr>
-     *         <td rowspan="4">{@code ChooseNixElseContext<T>}</td>
+     *         <td rowspan="5">{@code ChooseNixElseContext<T>}</td>
      *         <td><code>{@link ChooseNixElseContext#ergo(Function) ergo}</code></td>
      *         <td>{@code Function<? super T, ? extends ItemStatus>}</td>
-     *         <td rowspan="4">{@code ChooseNixExitContext}</td>
+     *         <td rowspan="5">{@code ChooseNixExitContext}</td>
      *     </tr>
      *     <tr>
      *         <td><code>{@link ChooseNixElseContext#peek(Consumer) peek}</code></td>
@@ -153,6 +161,10 @@ public interface ChooseContext<T> {
      *     </tr>
      *     <tr>
      *         <td><code>{@link ChooseNixElseContext#fault(CustMsg, Object...) fault}</code></td>
+     *         <td>{@code CustMsg, Object...}</td>
+     *     </tr>
+     *     <tr>
+     *         <td><code>{@link ChooseNixElseContext#alert(CustMsg, Object...) alert}</code></td>
      *         <td>{@code CustMsg, Object...}</td>
      *     </tr>
      *     <tr>
