@@ -61,7 +61,7 @@ class TestBld {
     @Test
     void test4() {
         val bld = Some.<Integer>builder();
-        val fault = bld.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val fault = bld.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         fault.setProperty("MissionName", "Apollo");
         fault.setProperty("MissionRun", 13);
         val some = bld.build();

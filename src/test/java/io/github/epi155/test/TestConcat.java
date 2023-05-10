@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 class TestConcat {
-    static final CustMsg NEG = CustMsg.of("NEG", "Negative at {}");
+    static final CustMsg NEG = PmCustMsg.of("NEG", "Negative at {}");
 
     @Test
     void test01() {

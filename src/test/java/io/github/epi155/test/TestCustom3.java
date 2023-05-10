@@ -12,18 +12,18 @@ import java.util.List;
 @Slf4j
 class TestCustom3 {
 
-    private static final CustMsg BAD_N = CustMsg.of("E01", "Valore nullo o negativo: {}");
-    private static final CustMsg FAC_N = CustMsg.of("W01", "Valore {} scomponibile in fattori: {}");
+    private static final CustMsg BAD_N = PmCustMsg.of("E01", "Valore nullo o negativo: {}");
+    private static final CustMsg FAC_N = PmCustMsg.of("W01", "Valore {} scomponibile in fattori: {}");
 
     @Test
     void test1() {
         int[] v = new int[]{2, 3, 5, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 0};
         None none = testPrime(v);
         none
-            .onSuccess(
-                w -> {
-                    log.info("Nessun errore");
-                    w.forEach(it -> log.warn(it.message()));
+                .onSuccess(
+                        w -> {
+                            log.info("Nessun errore");
+                            w.forEach(it -> log.warn(it.message()));
                 })
             .onFailure(
                 s -> s.forEach(it -> log.error(it.message())));

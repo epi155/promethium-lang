@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 class TestFind {
-    private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("CA01", "Oop error !!");
 
     @Test
     void testFound1() {

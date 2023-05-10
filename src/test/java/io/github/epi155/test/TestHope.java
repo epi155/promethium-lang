@@ -13,7 +13,7 @@ import java.util.Random;
 
 @Slf4j
 class TestHope {
-    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
 
 
     @Test
@@ -25,7 +25,7 @@ class TestHope {
 
     @Test
     void test2() {
-        Hope.fault(CustMsg.of("E01", "Houston we have had a problem"))
+        Hope.fault(PmCustMsg.of("E01", "Houston we have had a problem"))
             .onSuccess(i -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -41,7 +41,7 @@ class TestHope {
 
     @Test
     void test4() {
-        val result = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"))
+        val result = Hope.fault(PmCustMsg.of("E01", "Houston we have had a problem"))
                 .mapTo(
                         i -> "all fine",
                         e -> String.format("oops %s", e.message()));
@@ -58,7 +58,7 @@ class TestHope {
 
     @Test
     void test8() {
-        val hope = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val hope = Hope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         hope.peek(i -> log.info("to be continue"));
         Assertions.assertTrue(hope.completeWithErrors());
         Assertions.assertFalse(hope.completeWarning());
@@ -87,7 +87,7 @@ class TestHope {
 
     @Test
     void test12() {
-        val hope = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val hope = Hope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         hope.ergo(Hope::of);
     }
 
@@ -101,7 +101,7 @@ class TestHope {
 
     @Test
     void test14() {
-        val hope = Hope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val hope = Hope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = hope.failure();
         });

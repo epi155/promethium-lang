@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TestThus {
-    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
 
     @Test
     void testHope1() {

@@ -13,7 +13,7 @@ import java.math.BigInteger;
 
 @Slf4j
 class TestOpto2 {
-    private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("CA01", "Oop error {} !!");
 
     @Test
     void testC0() {

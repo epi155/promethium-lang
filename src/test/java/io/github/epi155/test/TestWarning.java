@@ -1,7 +1,6 @@
 package io.github.epi155.test;
 
 
-import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.None;
 import io.github.epi155.pm.lang.Some;
 import lombok.extern.slf4j.Slf4j;
@@ -19,16 +18,16 @@ class TestWarning {
     }
 
     private None fail() {
-        return None.fault(CustMsg.of("E01", "Errore"));
+        return None.fault(PmCustMsg.of("E01", "Errore"));
     }
 
     private None warn() {
-        return None.alert(CustMsg.of("W01", "Allarme"));
+        return None.alert(PmCustMsg.of("W01", "Allarme"));
     }
 
     private None wArn() {
         val bld = None.builder();
-        bld.alert(CustMsg.of("W02", "Attenzione"))
+        bld.alert(PmCustMsg.of("W02", "Attenzione"))
                 .setProperty("altezza", 3.14F)
                 .setProperty("larghezza", 1.41F)
                 .setProperty("profondità", "N/A");
@@ -196,7 +195,7 @@ class TestWarning {
     void test500() {
         val bx = Some.of(null);
         log.info("result is: {}", bx);
-        val cx = Some.of(None.builder().fault(CustMsg.of("E92", "e92")));
+        val cx = Some.of(None.builder().fault(PmCustMsg.of("E92", "e92")));
         log.info("result is: {}", cx);
     }
 }

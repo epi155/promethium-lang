@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Slf4j
 class TestException {
-    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
 
     @Test
     void test01() {

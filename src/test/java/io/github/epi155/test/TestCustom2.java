@@ -1,6 +1,5 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.Hope;
 import io.github.epi155.pm.lang.None;
 import io.github.epi155.pm.lang.Signal;
@@ -112,7 +111,7 @@ public class TestCustom2 {
         int k = new Random(1).nextInt(5);
         if (i<k) return Hope.of(Optional.of(k));
         if (i>k) return Hope.of(Optional.empty());
-        return Hope.fault(CustMsg.of("NF100P", "Collision at {}"), i);
+        return Hope.fault(PmCustMsg.of("NF100P", "Collision at {}"), i);
     }
 
     private interface CustomReader {

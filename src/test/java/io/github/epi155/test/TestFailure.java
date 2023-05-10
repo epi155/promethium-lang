@@ -9,7 +9,7 @@ import org.junit.jupiter.api.*;
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestFailure {
-    static final CustMsg CUST_ERR = CustMsg.of("AZ15", "Errore Gestito");
+    static final CustMsg CUST_ERR = PmCustMsg.of("AZ15", "Errore Gestito");
 
     static {
         log.info(System.getProperty("java.version"));
@@ -84,7 +84,7 @@ class TestFailure {
     @Order(60)
     void testCustomError0() {
         log.info("6.0 Custom Error ...");
-        val error = CustMsg.of("T033", "Custom Error");
+        val error = PmCustMsg.of("T033", "Custom Error");
         val e = Hope.fault(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
@@ -100,7 +100,7 @@ class TestFailure {
     @Order(61)
     void testCustomError1() {
         log.info("6.1 Custom Error ...");
-        val error = CustMsg.of("T033", "Custom Error");
+        val error = PmCustMsg.of("T033", "Custom Error");
         val e = Nope.fault(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
@@ -116,7 +116,7 @@ class TestFailure {
     @Order(62)
     void testCustomError2() {
         log.info("6.2 Custom Error ...");
-        val error = CustMsg.of("T033", "Custom Error");
+        val error = PmCustMsg.of("T033", "Custom Error");
         val e = Some.fault(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
@@ -134,7 +134,7 @@ class TestFailure {
     @Order(63)
     void testCustomError3() {
         log.info("6.3 Custom Error ...");
-        val error = CustMsg.of("T033", "Custom Error");
+        val error = PmCustMsg.of("T033", "Custom Error");
         val e = None.fault(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
@@ -206,7 +206,7 @@ class TestFailure {
     @Order(931)
     void test931() {
         Assertions.assertDoesNotThrow(() -> {
-            val fault = None.builder().fault(CustMsg.of("AZ95", 404, "Not Found"))
+            val fault = None.builder().fault(PmCustMsg.of("AZ95", 404, "Not Found"))
                     .setProperty("key1", 1).setProperty("key2", "red");
             log.info(fault.toString());
         });

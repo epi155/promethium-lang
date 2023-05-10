@@ -40,7 +40,7 @@ enum EnumMessage implements CustMsg {
 
     @Override
     public String message(Object[] objects) {
-        return PmFormatter.format(pattern, objects);
+        return String.format(pattern, objects);
     }
 
     @Override

@@ -39,13 +39,13 @@ class TestNone {
         Some.<String>capture(new NullPointerException()).mapOf(it -> it.charAt(0));
     }
 
-    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
-    private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
+    private static final CustMsg MY_ALERT = PmCustMsg.of("WA01", "Oop warning {} !!");
 
     @Test
     void test4() {
         val result = None.builder().withStatus(Nope.capture(new NullPointerException())).build()
-            .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
+                .mapTo(() -> "all fine", es -> es.stream().map(Signal::message).collect(Collectors.joining(", ")));
         log.info("Result is {}", result);
     }
 

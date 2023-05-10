@@ -16,18 +16,18 @@ import java.util.stream.IntStream;
 
 @Slf4j
 class TestChoice {
-    private static final CustMsg MY_FAULT = CustMsg.of("CA01", "Oop error {} !!");
-    private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Mmm warning {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("CA01", "Oop error {} !!");
+    private static final CustMsg MY_ALERT = PmCustMsg.of("WA01", "Mmm warning {} !!");
 
     @Test
     void testC0() {
         @NotNull None ee = Some.<Integer>builder()
-            .withAlert(MY_FAULT)
-            .buildWithValue(100)
-            .choose()
-            .when(it -> it > 50)
-            .ergo(it -> Nope.fault(MY_FAULT))
-            .otherwise().nop()
+                .withAlert(MY_FAULT)
+                .buildWithValue(100)
+                .choose()
+                .when(it -> it > 50)
+                .ergo(it -> Nope.fault(MY_FAULT))
+                .otherwise().nop()
             .end();
         System.out.println(ee);
         Assertions.assertTrue(ee.completeWithErrors());

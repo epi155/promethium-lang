@@ -1,6 +1,5 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.Nope;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -22,7 +21,7 @@ class TestNope {
 
     @Test
     void test2() {
-        Nope.fault(CustMsg.of("E01", "Houston we have had a problem"))
+        Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"))
             .onSuccess(() -> log.info("All fine"))
             .onFailure(e -> log.warn("Oops {}", e.message()));
     }
@@ -36,8 +35,8 @@ class TestNope {
 
     @Test
     void test4() {
-        val result = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"))
-            .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
+        val result = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"))
+                .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
 
@@ -49,7 +48,7 @@ class TestNope {
 
     @Test
     void test8() {
-        val nope = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         nope.peek(() -> log.info("to be continue"));
     }
 
@@ -67,7 +66,7 @@ class TestNope {
 
     @Test
     void test12() {
-        val nope = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         nope.ergo(Nope::nope);
     }
 
@@ -81,7 +80,7 @@ class TestNope {
 
     @Test
     void test14() {
-        val nope = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
             val fault = nope.failure();
         });
@@ -92,7 +91,7 @@ class TestNope {
         Nope n1 = Nope.nope();
         Assertions.assertFalse(n1.summary().isPresent());
 
-        val n2 = Nope.fault(CustMsg.of("E01", "Houston we have had a problem"));
+        val n2 = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertTrue(n2.summary().isPresent());
     }
 

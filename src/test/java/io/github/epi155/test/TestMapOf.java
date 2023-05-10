@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TestMapOf {
-    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
-    private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
+    private static final CustMsg MY_ALERT = PmCustMsg.of("WA01", "Oop warning {} !!");
 
     @Test
     void testSome1() {

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestCustom1 {
-    static final CustMsg CUST_ERR = CustMsg.of("AZ15", "Errore non Gestito: {}");
+    static final CustMsg CUST_ERR = PmCustMsg.of("AZ15", "Errore non Gestito: {}");
     //@Test
     void hello() {
         Nope nope = Nope.fault(CUST_ERR, "ops", new NullPointerException("Azz"));

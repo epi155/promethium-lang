@@ -12,8 +12,8 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 class TestSome {
-    private static final CustMsg MY_FAULT = CustMsg.of("EA01", "Oop error {} !!");
-    private static final CustMsg MY_ALERT = CustMsg.of("WA01", "Oop warning {} !!");
+    private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
+    private static final CustMsg MY_ALERT = PmCustMsg.of("WA01", "Oop warning {} !!");
 
     @Test
         // mvn test -Dtest="TestSome#test01"
