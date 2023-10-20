@@ -139,7 +139,7 @@
  *         <td>{@code None}</td>
  *     </tr>
  *     <tr>
- *         <td><code>{@link io.github.epi155.pm.lang.AnyValue#peek(java.util.function.Consumer) peek}</code></td>
+ *         <td><code>{@link io.github.epi155.pm.lang.AnyValue#implies(java.util.function.Consumer) thenAccept}</code></td>
  *         <td>{@code Consumer<? super T>}</td>
  *         <td><i>{@code AnyValue<T>}</i></td>
  *     </tr>
@@ -160,7 +160,7 @@
  *         <td>{@code None}</td>
  *     </tr>
  *     <tr>
- *         <td><code>{@link io.github.epi155.pm.lang.OnlyError#peek(java.lang.Runnable) peek}</code></td>
+ *         <td><code>{@link io.github.epi155.pm.lang.OnlyError#implies(java.lang.Runnable) thenRun}</code></td>
  *         <td>{@code Runnable}</td>
  *         <td><i>{@code OnlyError}</i></td>
  *     </tr>
@@ -181,7 +181,7 @@
  *         <td>{@code Nope}</td>
  *     </tr>
  *     <tr>
- *         <td><code>{@link io.github.epi155.pm.lang.Hope#peek(java.util.function.Consumer) peek}  </code></td>
+ *         <td><code>{@link io.github.epi155.pm.lang.Hope#implies(java.util.function.Consumer) thenAccept}  </code></td>
  *         <td>{@code Consumer<? super T>}</td>
  *         <td>{@code Hope<T>}</td>
  *     </tr>
@@ -202,7 +202,7 @@
  *         <td>{@code Nope}</td>
  *     </tr>
  *     <tr>
- *         <td><code>{@link io.github.epi155.pm.lang.Nope#peek(java.lang.Runnable) peek}</code></td>
+ *         <td><code>{@link io.github.epi155.pm.lang.Nope#implies(java.lang.Runnable) thenRun}</code></td>
  *         <td>{@code Runnable}</td>
  *         <td>{@code Nope}</td>
  *     </tr>

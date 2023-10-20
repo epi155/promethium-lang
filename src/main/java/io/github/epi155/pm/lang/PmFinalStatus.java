@@ -1,7 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -81,8 +79,8 @@ abstract class PmFinalStatus implements ItemStatus {
 
     public String toString() {
         String status = labelStatus();
-        val sw = new StringWriter();
-        val pw = new PrintWriter(sw);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
         pw.printf("{ finalStatus: %s", status);
         extraToString(pw);
         if (!alerts.isEmpty()) {

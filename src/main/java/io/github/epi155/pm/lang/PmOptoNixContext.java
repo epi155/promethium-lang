@@ -3,6 +3,7 @@ package io.github.epi155.pm.lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -54,8 +55,8 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
         return new OptoNixWhenAsContext<U, T>() {
 
             @Override
-            public @NotNull OptoNixContext<T> ergo(@NotNull Function<? super U, ? extends SingleError> fcn) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull OptoNixContext<T> thenApply(@NotNull Function<? super U, ? extends SingleError> fcn) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = fcn.apply(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -63,8 +64,8 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
             }
 
             @Override
-            public @NotNull OptoNixContext<T> peek(@NotNull Consumer<? super U> action) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull OptoNixContext<T> thenAccept(@NotNull Consumer<? super U> action) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     action.accept(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -72,8 +73,8 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
             }
 
             @Override
-            public @NotNull OptoNixContext<T> fault(CustMsg ce, Object... argv) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull OptoNixContext<T> fault(@NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = Nope.fault(ce, argv);
                     branchExecuted = true;
                 }
@@ -81,8 +82,17 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
             }
 
             @Override
+            public @NotNull OptoNixContext<T> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
+                    result = Nope.fault(properties, ce, argv);
+                    branchExecuted = true;
+                }
+                return PmOptoNixContext.this;
+            }
+
+            @Override
             public @NotNull OptoNixContext<T> nop() {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     branchExecuted = true;
                 }
                 return PmOptoNixContext.this;
@@ -96,7 +106,7 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
         return new OptoNixElseContext<T>() {
 
             @Override
-            public @NotNull OptoNixExitContext ergo(@NotNull Function<? super T, ? extends SingleError> fcn) {
+            public @NotNull OptoNixExitContext thenApply(@NotNull Function<? super T, ? extends SingleError> fcn) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = fcn.apply(parent.value());
                 }
@@ -104,7 +114,7 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
             }
 
             @Override
-            public @NotNull OptoNixExitContext peek(@NotNull Consumer<? super T> action) {
+            public @NotNull OptoNixExitContext thenAccept(@NotNull Consumer<? super T> action) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     action.accept(parent.value());
                 }
@@ -112,9 +122,17 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
             }
 
             @Override
-            public @NotNull OptoNixExitContext fault(CustMsg ce, Object... argv) {
+            public @NotNull OptoNixExitContext fault(@NotNull CustMsg ce, Object... argv) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = Nope.fault(ce, argv);
+                }
+                return new OptoNixExitContextBase();
+            }
+
+            @Override
+            public @NotNull OptoNixExitContext fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
+                    result = Nope.fault(properties, ce, argv);
                 }
                 return new OptoNixExitContextBase();
             }
@@ -130,7 +148,7 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
         protected abstract boolean test();
 
         @Override
-        public @NotNull OptoNixContext<T> ergo(@NotNull Function<? super T, ? extends SingleError> fcn) {
+        public @NotNull OptoNixContext<T> thenApply(@NotNull Function<? super T, ? extends SingleError> fcn) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = fcn.apply(parent.value());
                 branchExecuted = true;
@@ -139,7 +157,7 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
         }
 
         @Override
-        public @NotNull OptoNixContext<T> peek(@NotNull Consumer<? super T> action) {
+        public @NotNull OptoNixContext<T> thenAccept(@NotNull Consumer<? super T> action) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 action.accept(parent.value());
                 branchExecuted = true;
@@ -148,9 +166,18 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
         }
 
         @Override
-        public @NotNull OptoNixContext<T> fault(CustMsg ce, Object... argv) {
+        public @NotNull OptoNixContext<T> fault(@NotNull CustMsg ce, Object... argv) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = Nope.fault(ce, argv);
+                branchExecuted = true;
+            }
+            return PmOptoNixContext.this;
+        }
+
+        @Override
+        public @NotNull OptoNixContext<T> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+            if (parent.completeWithoutErrors() && !branchExecuted && test()) {
+                result = Nope.fault(properties, ce, argv);
                 branchExecuted = true;
             }
             return PmOptoNixContext.this;
@@ -168,6 +195,7 @@ class PmOptoNixContext<T> implements OptoNixContext<T> {
     private class OptoNixExitContextBase implements OptoNixExitContext {
 
         @Override
+        @NoBuiltInCapture
         public @NotNull Nope end() {
             if (parent.completeSuccess()) {
                 return result == null || result.completeSuccess() ? PmNope.nope() : new PmNope(result.failure());

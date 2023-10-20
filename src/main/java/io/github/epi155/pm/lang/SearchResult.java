@@ -46,6 +46,7 @@ public interface SearchResult<S> extends SearchResult2 {
      * @param <T>   value type of the object being searched for
      */
     @Contract(value = "_ -> new", pure = true)
+    @NoBuiltInCapture
     static <T> @NotNull SearchResult<T> of(@NotNull T value) {
         return new PmSearchResult<>(value, null);
     }
@@ -56,6 +57,7 @@ public interface SearchResult<S> extends SearchResult2 {
      * @param <T>   value type of the object being searched for
      */
     @Contract(value = " -> new", pure = true)
+    @NoBuiltInCapture
     static <T> @NotNull SearchResult<T> empty() {
         return new PmSearchResult<>(null, null);
     }
@@ -68,6 +70,7 @@ public interface SearchResult<S> extends SearchResult2 {
      * @param <T>  value type of the object being searched for
      * @return instance of {@link SearchResult}
      */
+    @NoBuiltInCapture
     static <T> @NotNull SearchResult<T> fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmSearchResult<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
@@ -79,6 +82,7 @@ public interface SearchResult<S> extends SearchResult2 {
      * @return      instance of {@link SearchResult}
      * @param <T>   value type of the object being searched for
      */
+    @NoBuiltInCapture
     static <T> @NotNull SearchResult<T> capture(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];

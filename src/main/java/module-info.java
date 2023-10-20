@@ -5,5 +5,4 @@ module promethium.lang {
     exports io.github.epi155.pm.lang;
 
     requires org.jetbrains.annotations;
-    requires static lombok;
 }

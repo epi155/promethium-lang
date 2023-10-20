@@ -2,15 +2,15 @@ package io.github.epi155.test;
 
 import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.None;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import io.github.epi155.pm.lang.NoneBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 class TestCustom3 {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestCustom3.class);
 
     private static final CustMsg BAD_N = PmCustMsg.of("E01", "Valore nullo o negativo: {}");
     private static final CustMsg FAC_N = PmCustMsg.of("W01", "Valore {} scomponibile in fattori: {}");
@@ -30,7 +30,7 @@ class TestCustom3 {
     }
 
     private None testPrime(int[] vs) {
-        val bld = None.builder();
+        @NotNull NoneBuilder bld = None.builder();
         for(int v: vs) {
             if (v<1) {
                 bld.fault(BAD_N, v);

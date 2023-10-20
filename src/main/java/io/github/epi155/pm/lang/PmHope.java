@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
@@ -37,6 +36,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Hope<R> into(@NotNull Function<? super T, ? extends Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.apply(value);
@@ -46,9 +46,10 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn) {
         if (completeSuccess()) {
-            val result = fcn.apply(value);
+            SingleError result = fcn.apply(value);
             if (result.completeWithoutErrors()) {
                 return Nope.nope();
             } else {
@@ -60,6 +61,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
         if (completeSuccess()) {
             return PmSome.of(fcn.apply(value));
@@ -69,17 +71,20 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Hope<R> intoOf(@NotNull Function<? super T, ? extends R> fcn) {
         return completeSuccess() ? Hope.of(fcn.apply(value)) : new PmHope<>(null, failure());
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
         return completeSuccess() ? new PmSome<>(fcn.apply(value)) : new PmSome<>(Collections.singletonList(failure()));
     }
 
     @Override
-    public @NotNull Hope<T> peek(@NotNull Consumer<? super T> action) {
+    @NoBuiltInCapture
+    public @NotNull Hope<T> implies(@NotNull Consumer<? super T> action) {
         if (completeSuccess()) {
             action.accept(value);
         }
@@ -87,9 +92,10 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
         if (completeSuccess()) {
-            val many = fcn.apply(value);
+            ItemStatus many = fcn.apply(value);
             if (many.completeSuccess()) {
                 return PmNone.none();
             } else {
@@ -110,6 +116,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     @NotNull
+    @NoBuiltInCapture
     public Nope asNope() {
         return completeSuccess() ? Nope.nope() : new PmNope(failure());
     }

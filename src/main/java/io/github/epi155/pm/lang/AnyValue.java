@@ -123,6 +123,6 @@ public interface AnyValue<T> extends AnyError, ChooseContext<T> {
      * @param action action on value, executed if there are no errors
      * @return original {@link AnyValue} instance, with value/errors
      */
-    @NotNull AnyValue<T> peek(@NotNull Consumer<? super T> action);
+    @NotNull AnyValue<T> implies(@NotNull Consumer<? super T> action);
 
 }

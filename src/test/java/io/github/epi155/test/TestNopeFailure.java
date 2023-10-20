@@ -1,15 +1,16 @@
 package io.github.epi155.test;
 
 
+import io.github.epi155.pm.lang.Failure;
 import io.github.epi155.pm.lang.Hope;
 import io.github.epi155.pm.lang.Nope;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 
-@Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestNopeFailure {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestNopeFailure.class);
 
     private void crashMethod() {
         throw new NullPointerException();
@@ -27,9 +28,9 @@ class TestNopeFailure {
             nope = Nope.capture(e);
         }
         Assertions.assertFalse(nope.completeSuccess());
-        val fault = nope.failure();
+        @NotNull Failure fault = nope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
-        val reason = fault.place();
+        @Nullable String reason = fault.place();
         Assertions.assertNotNull(reason);
         Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
@@ -48,9 +49,9 @@ class TestNopeFailure {
             nope = Nope.capture(e);
         }
         Assertions.assertFalse(nope.completeSuccess());
-        val fault = nope.failure();
+        @NotNull Failure fault = nope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
-        val reason = fault.place();
+        @Nullable String reason = fault.place();
         Assertions.assertNotNull(reason);
         Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("testCaptureHere"));
@@ -68,9 +69,9 @@ class TestNopeFailure {
             hope = Hope.capture(e);
         }
         Assertions.assertFalse(hope.completeSuccess());
-        val fault = hope.failure();
+        @NotNull Failure fault = hope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
-        val reason = fault.place();
+        @Nullable String reason = fault.place();
         Assertions.assertNotNull(reason);
         Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
@@ -89,9 +90,9 @@ class TestNopeFailure {
             hope = Hope.capture(e);
         }
         Assertions.assertFalse(hope.completeSuccess());
-        val fault = hope.failure();
+        @NotNull Failure fault = hope.failure();
         Assertions.assertEquals("java.lang.NullPointerException", fault.message());
-        val reason = fault.place();
+        @Nullable String reason = fault.place();
         Assertions.assertNotNull(reason);
         Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestNopeFailure"));
         Assertions.assertTrue(reason.contains("testCaptureHereH"));

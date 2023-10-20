@@ -3,13 +3,13 @@ package io.github.epi155.test;
 import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.FailureException;
 import io.github.epi155.pm.lang.Nope;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-@Slf4j
 class TestException {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestException.class);
+
     private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
 
     @Test

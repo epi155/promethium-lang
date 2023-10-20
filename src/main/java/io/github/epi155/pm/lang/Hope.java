@@ -1,8 +1,8 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -46,6 +46,7 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * @param <S>   type of value
      * @return <b>Hope</b> instance
      */
+    @NoBuiltInCapture
     static <S> @NotNull Hope<S> of(@NotNull S value) {
         /*
          * the @NotNull annotation tells the IDE that the value should be not null,
@@ -57,7 +58,7 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
             return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG));
         } else if (value instanceof Signal) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
+            @NotNull Failure fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
             fail.setProperty("cause", value);
             return new PmHope<>(null, fail);
         }
@@ -72,9 +73,25 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * @param <S>  type value in case of success
      * @return <b>Hope</b> instance
      */
+    @NoBuiltInCapture
     static <S> @NotNull Hope<S> fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmHope<>(null, PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
+    }
+
+    /**
+     * Create an error with properties <b> Hope </b>
+     *
+     * @param properties error properties
+     * @param ce         custom error message
+     * @param argv       custom error parameters
+     * @param <S>        type value in case of success
+     * @return <b>Hope</b> instance
+     */
+    @NoBuiltInCapture
+    static <S> @NotNull Hope<S> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        return new PmHope<>(null, PmFailure.of(properties, stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
 
     /**
@@ -90,6 +107,7 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * @param <S> type value in case of success
      * @return <b>Hope</b> instance
      */
+    @NoBuiltInCapture
     static <S> @NotNull Hope<S> capture(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
@@ -150,7 +168,7 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * @param action action on value, executed if there are no errors
      * @return original {@link Hope} instance, with value/error
      */
-    @NotNull Hope<T> peek(@NotNull Consumer<? super T> action);
+    @NotNull Hope<T> implies(@NotNull Consumer<? super T> action);
 
     /**
      * Set the action on success

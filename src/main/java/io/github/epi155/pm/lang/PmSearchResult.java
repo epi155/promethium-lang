@@ -131,6 +131,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
+        @NoBuiltInCapture
         public @NotNull Some<R> build() {
             if (fault != null)
                 return new PmSome<>(Collections.singletonList(fault));
@@ -177,6 +178,7 @@ class PmSearchResult<T> implements SearchResult<T>{
         }
 
         @Override
+        @NoBuiltInCapture
         public @NotNull SearchResult<R> build() {
             if (fault != null)
                 return new PmSearchResult<>(null, fault);

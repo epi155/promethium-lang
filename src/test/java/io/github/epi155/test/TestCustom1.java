@@ -2,17 +2,18 @@ package io.github.epi155.test;
 
 import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.Nope;
-import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestCustom1 {
+
     static final CustMsg CUST_ERR = PmCustMsg.of("AZ15", "Errore non Gestito: {}");
     //@Test
     void hello() {
         Nope nope = Nope.fault(CUST_ERR, "ops", new NullPointerException("Azz"));
-        val s = nope.failure().message();
+        @NotNull String s = nope.failure().message();
         System.out.println(s);
     }
     void example1(CustomReader rd, CustomWriter wr) {

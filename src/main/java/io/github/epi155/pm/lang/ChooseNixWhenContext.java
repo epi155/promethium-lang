@@ -10,14 +10,14 @@ import java.util.function.Function;
  *
  * @param <T> value type of the chosen value
  */
-public interface ChooseNixWhenContext<T> {
+public interface ChooseNixWhenContext<T> extends ChooseNixWhenStdContext<T> {
     /**
      * performs an action on the value
      *
      * @param action action on the value
      * @return instance of {@link ChooseNixContext}
      */
-    @NotNull ChooseNixContext<T> peek(@NotNull Consumer<? super T> action);
+    @NotNull ChooseNixContext<T> thenAccept(@NotNull Consumer<? super T> action);
 
     /**
      * performs a fallible function on the value
@@ -25,30 +25,6 @@ public interface ChooseNixWhenContext<T> {
      * @param fcn fallible function on the value
      * @return instance of {@link ChooseNixContext}
      */
-    @NotNull ChooseNixContext<T> ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn);
+    @NotNull ChooseNixContext<T> thenApply(@NotNull Function<? super T, ? extends ItemStatus> fcn);
 
-    /**
-     * Set custom error message
-     *
-     * @param ce   custom error
-     * @param argv error argument
-     * @return instance of {@link ChooseNixContext}
-     */
-    @NotNull ChooseNixContext<T> fault(CustMsg ce, Object... argv);
-
-    /**
-     * Set custom warning message
-     *
-     * @param ce   custom warning
-     * @param argv warning argument
-     * @return instance of {@link ChooseNixContext}
-     */
-    @NotNull ChooseNixContext<T> alert(CustMsg ce, Object... argv);
-
-    /**
-     * no operation
-     *
-     * @return instance of {@link ChooseNixContext}
-     */
-    @NotNull ChooseNixContext<T> nop();
 }

@@ -2,23 +2,23 @@ package io.github.epi155.test;
 
 import io.github.epi155.pm.lang.CustMsg;
 import io.github.epi155.pm.lang.Hope;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-@Slf4j
 class TestOpto1 {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestOpto1.class);
+
     private static final CustMsg MY_FAULT = PmCustMsg.of("CA01", "Oop error {} !!");
 
     @Test
     void testC0() {
         Hope<String> a = Hope.of("a").<String>optoMap()
-            .when(it -> it.length() == 1).map(it -> Hope.of(it.charAt(0)).<String>optoMap()
-                .when(Character::isAlphabetic).mapOf(c -> String.valueOf(Character.toUpperCase(c)))
-                .otherwise().fault(MY_FAULT)
-                .end())
+                .when(it -> it.length() == 1).map(it -> Hope.of(it.charAt(0)).<String>optoMap()
+                        .when(Character::isAlphabetic).mapOf(c -> String.valueOf(Character.toUpperCase(c)))
+                        .otherwise().fault(MY_FAULT)
+                        .end())
             .otherwise().fault(MY_FAULT)
             .end();
         Assertions.assertTrue(a.completeWithoutErrors());

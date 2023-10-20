@@ -1,10 +1,10 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -80,9 +80,26 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U>  payload type
      * @return instance of {@link Some} (error)
      */
+    @NoBuiltInCapture
     static <U> @NotNull Some<U> fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
+        @NotNull Failure fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
+        return new PmSome<>(Collections.singletonList(fail));
+    }
+
+    /**
+     * static factory with error message with properties
+     *
+     * @param properties error properties
+     * @param ce         error message
+     * @param argv       message parameters
+     * @param <U>        payload type
+     * @return instance of {@link Some} (error)
+     */
+    @NoBuiltInCapture
+    static <U> @NotNull Some<U> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        @NotNull Failure fail = PmFailure.of(properties, stPtr[PmAnyBuilder.J_LOCATE], ce, argv);
         return new PmSome<>(Collections.singletonList(fail));
     }
 
@@ -93,6 +110,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U> payload type
      * @return instance of {@link Some} (error)
      */
+    @NoBuiltInCapture
     static <U> @NotNull Some<U> capture(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
@@ -106,11 +124,12 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U>   payload type
      * @return instance of {@link Some} (success)
      */
+    @NoBuiltInCapture
     static <U> @NotNull Some<U> of(@NotNull U value) {
         if (value instanceof Signal) {
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
-            val bld = Some.<U>builder();
+            @NotNull Failure fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.ILL_ARG);
+            @NotNull SomeBuilder<U> bld = Some.builder();
             bld.add((Signal) value);
             bld.add(fail);
             return bld.build();
@@ -125,6 +144,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U>   payload type
      * @return instance of {@link Some} (success or any errors and any warnings)
      */
+    @NoBuiltInCapture
     static <U> @NotNull Some<U> of(@NotNull AnyValue<U> value) {
         /*
          * the @NotNull annotation tells the IDE that the value should be not null,
@@ -133,7 +153,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
         //noinspection ConstantValue
         if (value == null) {    // null select this method
             StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-            val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG);
+            @NotNull Failure fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], EnumMessage.NIL_ARG);
             return new PmSome<>(Collections.singletonList(fail));
         }
         return PmSome.of(value);
@@ -146,6 +166,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param <U> {@link Some}/{@link Hope} data type
      * @return {@link Some} instance
      */
+    @NoBuiltInCapture
     static <U> @NotNull Some<U> pull(@NotNull Hope<U> u) {
         return PmSome.of(u);
     }
@@ -188,7 +209,7 @@ public interface Some<T> extends ManyErrors, AnyValue<T> {
      * @param action action on value, executed if there are no errors
      * @return original {@link Some} instance, with value/errors
      */
-    @NotNull Some<T> peek(@NotNull Consumer<? super T> action);
+    @NotNull Some<T> implies(@NotNull Consumer<? super T> action);
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed

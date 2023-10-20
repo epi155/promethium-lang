@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
@@ -32,6 +31,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
         this.value = null;
     }
 
+    @NoBuiltInCapture
     protected static <U> @NotNull Some<U> of(@NotNull AnyValue<U> v) {
         if (v instanceof Some) {
             return (Some<U>) v;
@@ -74,6 +74,7 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull None asNone() {
         if (completeSuccess()) {
             return PmNone.none();
@@ -83,18 +84,20 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> map(@NotNull Function<? super T, ? extends AnyValue<R>> fcn) {
         if (completeSuccess()) {
             return of(fcn.apply(value));
         } else if (completeWithErrors()) {
             return new PmSome<>(this);  // this error & warning - fcn not executed
         } else /*completeWithWarnings()*/ {
-            val that = fcn.apply(value);
+            AnyValue<R> that = fcn.apply(value);
             return composeOnWarning(that);
         }
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
         if (completeSuccess()) {
             return new PmSome<>(fcn.apply(value));
@@ -106,9 +109,10 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull None ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
         if (completeSuccess()) {
-            val that = fcn.apply(value);
+            ItemStatus that = fcn.apply(value);
             if (that.completeSuccess()) {
                 return PmNone.none();   // full success
             } else {
@@ -117,11 +121,11 @@ class PmSome<T> extends PmManyError implements Some<T> {
         } else if (completeWithErrors()) {
             return new PmNone(this);
         } else /*completeWithWarnings()*/ {
-            val that = fcn.apply(value);
+            ItemStatus that = fcn.apply(value);
             if (that.completeSuccess()) {
                 return new PmNone(signals());     // this warning
             } else {
-                val bld = None.builder();
+                @NotNull NoneBuilder bld = None.builder();
                 bld.add(signals());        // this warning
                 bld.add(that.signals());   // that error OR warning
                 return bld.build();
@@ -140,7 +144,8 @@ class PmSome<T> extends PmManyError implements Some<T> {
     }
 
     @Override
-    public @NotNull Some<T> peek(@NotNull Consumer<? super T> action) {
+    @NoBuiltInCapture
+    public @NotNull Some<T> implies(@NotNull Consumer<? super T> action) {
         if (completeWithoutErrors()) {
             action.accept(value);
         }

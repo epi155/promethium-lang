@@ -289,5 +289,6 @@ class TestErgo {
         None f4 = Nope.fault(MY_FAULT).ergo(() -> Nope.fault(MY_FAULT));
         Assertions.assertTrue(f4.completeWithErrors());
         Assertions.assertEquals(1, f4.signals().size());
+
     }
 }

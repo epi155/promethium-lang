@@ -3,6 +3,7 @@ package io.github.epi155.pm.lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -54,7 +55,7 @@ class PmOptoMapContext<T, R> implements OptoMapContext<T, R> {
 
             @Override
             public @NotNull OptoMapContext<T, R> map(@NotNull Function<? super U, ? extends ErrorXorValue<R>> fcn) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = fcn.apply(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -63,7 +64,7 @@ class PmOptoMapContext<T, R> implements OptoMapContext<T, R> {
 
             @Override
             public @NotNull OptoMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     R value = fcn.apply(cls.cast(parent.value()));
                     result = Hope.of(value);
                     branchExecuted = true;
@@ -72,9 +73,18 @@ class PmOptoMapContext<T, R> implements OptoMapContext<T, R> {
             }
 
             @Override
-            public @NotNull OptoMapContext<T, R> fault(CustMsg ce, Object... argv) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull OptoMapContext<T, R> fault(@NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = Hope.fault(ce, argv);
+                    branchExecuted = true;
+                }
+                return PmOptoMapContext.this;
+            }
+
+            @Override
+            public @NotNull OptoMapContext<T, R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
+                    result = Hope.fault(properties, ce, argv);
                     branchExecuted = true;
                 }
                 return PmOptoMapContext.this;
@@ -104,9 +114,17 @@ class PmOptoMapContext<T, R> implements OptoMapContext<T, R> {
             }
 
             @Override
-            public @NotNull OptoMapExitContext<R> fault(CustMsg ce, Object... argv) {
+            public @NotNull OptoMapExitContext<R> fault(@NotNull CustMsg ce, Object... argv) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = Hope.fault(ce, argv);
+                }
+                return new OptoMapExitContextBase();
+            }
+
+            @Override
+            public @NotNull OptoMapExitContext<R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
+                    result = Hope.fault(properties, ce, argv);
                 }
                 return new OptoMapExitContextBase();
             }
@@ -136,9 +154,18 @@ class PmOptoMapContext<T, R> implements OptoMapContext<T, R> {
         }
 
         @Override
-        public @NotNull OptoMapContext<T, R> fault(CustMsg ce, Object... argv) {
+        public @NotNull OptoMapContext<T, R> fault(@NotNull CustMsg ce, Object... argv) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = Hope.fault(ce, argv);
+                branchExecuted = true;
+            }
+            return PmOptoMapContext.this;
+        }
+
+        @Override
+        public @NotNull OptoMapContext<T, R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+            if (parent.completeWithoutErrors() && !branchExecuted && test()) {
+                result = Hope.fault(properties, ce, argv);
                 branchExecuted = true;
             }
             return PmOptoMapContext.this;
@@ -147,6 +174,7 @@ class PmOptoMapContext<T, R> implements OptoMapContext<T, R> {
 
     private class OptoMapExitContextBase implements OptoMapExitContext<R> {
         @Override
+        @NoBuiltInCapture
         public @NotNull Hope<R> end() {
             if (parent.completeSuccess()) {
                 //noinspection DataFlowIssue

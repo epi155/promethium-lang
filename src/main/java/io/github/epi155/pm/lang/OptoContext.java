@@ -37,8 +37,8 @@ public interface OptoContext<T> {
      *
      * <pre>
      *     Nope nope = OptoContext.opto(..)
-     *          .when(..).ergo(..)
-     *          .when(..).peek(..)
+     *          .when(..).thenApply(..)
+     *          .when(..).thenAccept(..)
      *          .otherwise().fault(..)
      *          .end();
      * </pre>
@@ -172,7 +172,7 @@ public interface OptoContext<T> {
      *
      * <pre>
      *      Nope nope = hopeT.opto()
-     *          .when(..).ergo(..)
+     *          .when(..).thenApply(..)
      *          .otherwise().fault(..)
      *          .end();
      * </pre>
@@ -221,12 +221,12 @@ public interface OptoContext<T> {
      *     <tr><td colspan="4"></td></tr>
      *     <tr>
      *         <td rowspan="4">{@code OptoNixWhenContext<T>}</td>
-     *         <td><code>{@link OptoNixWhenContext#ergo(Function) ergo}</code></td>
+     *         <td><code>{@link OptoNixWhenContext#thenApply(Function) thenApply}</code></td>
      *         <td>{@code Function<? super T, ? extends SingleError>}</td>
      *         <td rowspan="9">{@code OptoNixContext<T>}</td>
      *     </tr>
      *     <tr>
-     *         <td><code>{@link OptoNixWhenContext#peek(Consumer) peek}</code></td>
+     *         <td><code>{@link OptoNixWhenContext#thenAccept(Consumer) thenAccept}</code></td>
      *         <td>{@code Consumer<? super T>}</td>
      *     </tr>
      *     <tr>
@@ -240,11 +240,11 @@ public interface OptoContext<T> {
      *     <tr><td colspan="3"></td></tr>
      *     <tr>
      *         <td rowspan="4">{@code OptoNixWhenAsContext<U, T>}</td>
-     *         <td><code>{@link OptoNixWhenAsContext#ergo(Function) ergo}</code></td>
+     *         <td><code>{@link OptoNixWhenAsContext#thenApply(Function) thenApply}</code></td>
      *         <td>{@code Function<? super U, ? extends SingleError>}</td>
      *     </tr>
      *     <tr>
-     *         <td>{@link OptoNixWhenAsContext#peek(Consumer) peek}</td>
+     *         <td>{@link OptoNixWhenAsContext#thenAccept(Consumer) thenAccept}</td>
      *         <td>{@code Consumer<? super U>}</td>
      *     </tr>
      *     <tr>
@@ -258,12 +258,12 @@ public interface OptoContext<T> {
      *     <tr><td colspan="4"></td></tr>
      *     <tr>
      *         <td rowspan="4">{@code OptoNixElseContext<T>}</td>
-     *         <td><code>{@link OptoNixElseContext#ergo(Function) ergo}</code></td>
+     *         <td><code>{@link OptoNixElseContext#thenApply(Function) thenApply}</code></td>
      *         <td>{@code Function<? super T, ? extends SingleError>}</td>
      *         <td rowspan="4">{@code OptoNixExitContext}</td>
      *     </tr>
      *     <tr>
-     *         <td><code>{@link OptoNixElseContext#peek(Consumer) peek}</code></td>
+     *         <td><code>{@link OptoNixElseContext#thenAccept(Consumer) thenAccept}</code></td>
      *         <td>{@code Consumer<? super T>}</td>
      *     </tr>
      *     <tr>

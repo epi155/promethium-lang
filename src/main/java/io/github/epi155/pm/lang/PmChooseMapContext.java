@@ -1,9 +1,9 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -52,7 +52,7 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
         return new ChooseMapWhenAsContext<U, T, R>() {
             @Override
             public @NotNull ChooseMapContext<T, R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = fcn.apply(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -61,7 +61,7 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
 
             @Override
             public @NotNull ChooseMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     R value = fcn.apply(cls.cast(parent.value()));
                     result = Hope.of(value);
                     branchExecuted = true;
@@ -70,9 +70,18 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
             }
 
             @Override
-            public @NotNull ChooseMapContext<T, R> fault(CustMsg ce, Object... argv) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull ChooseMapContext<T, R> fault(@NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = Hope.fault(ce, argv);
+                    branchExecuted = true;
+                }
+                return PmChooseMapContext.this;
+            }
+
+            @Override
+            public @NotNull ChooseMapContext<T, R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
+                    result = Hope.fault(properties, ce, argv);
                     branchExecuted = true;
                 }
                 return PmChooseMapContext.this;
@@ -107,6 +116,14 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
                 }
                 return new ChooseMapExitContextBase();
             }
+
+            @Override
+            public @NotNull ChooseMapExitContext<R> fault(@NotNull Map<String, Object> properties, CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
+                    result = Hope.fault(properties, ce, argv);
+                }
+                return new ChooseMapExitContextBase();
+            }
         };
     }
 
@@ -133,9 +150,18 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
         }
 
         @Override
-        public @NotNull ChooseMapContext<T, R> fault(CustMsg ce, Object... argv) {
+        public @NotNull ChooseMapContext<T, R> fault(@NotNull CustMsg ce, Object... argv) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = Hope.fault(ce, argv);
+                branchExecuted = true;
+            }
+            return PmChooseMapContext.this;
+        }
+
+        @Override
+        public @NotNull ChooseMapContext<T, R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+            if (parent.completeWithoutErrors() && !branchExecuted && test()) {
+                result = Hope.fault(properties, ce, argv);
                 branchExecuted = true;
             }
             return PmChooseMapContext.this;
@@ -146,6 +172,7 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
     private class ChooseMapExitContextBase implements ChooseMapExitContext<R> {
 
         @Override
+        @NoBuiltInCapture
         public @NotNull Some<R> end() {
             if (parent.completeSuccess()) {
                 //noinspection DataFlowIssue
@@ -163,12 +190,12 @@ class PmChooseMapContext<T, R> implements ChooseMapContext<T, R> {
                 if (result.completeSuccess()) {
                     return new PmSome<>(result.value(), parent.signals());
                 } else if (result.completeWithErrors()) {
-                    val bld = Some.<R>builder();
+                    @NotNull SomeBuilder<R> bld = Some.builder();
                     bld.add(parent.signals());  // parent warnings
                     bld.add(result.signals()); // result errors (warnings)
                     return bld.build();
                 } else /*result.completeWithWarnings()*/ {
-                    val bld = Some.<R>builder();
+                    @NotNull SomeBuilder<R> bld = Some.builder();
                     bld.add(parent.signals());  // parent warnings
                     bld.add(result.signals());  // result warnings
                     return bld.buildWithValue(result.value());

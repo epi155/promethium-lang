@@ -1,9 +1,9 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -52,8 +52,8 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         //noinspection Convert2Diamond
         return new ChooseNixWhenAsContext<U, T>() {
             @Override
-            public @NotNull ChooseNixContext<T> peek(@NotNull Consumer<? super U> action) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull ChooseNixContext<T> thenAccept(@NotNull Consumer<? super U> action) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     action.accept(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -61,8 +61,8 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
-            public @NotNull ChooseNixContext<T> ergo(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull ChooseNixContext<T> thenApply(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = fcn.apply(cls.cast(parent.value()));
                     branchExecuted = true;
                 }
@@ -70,8 +70,8 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
-            public @NotNull ChooseNixContext<T> fault(CustMsg ce, Object... argv) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull ChooseNixContext<T> fault(@NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = Nope.fault(ce, argv);
                     branchExecuted = true;
                 }
@@ -79,8 +79,17 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
-            public @NotNull ChooseNixContext<T> alert(CustMsg ce, Object... argv) {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+            public @NotNull ChooseNixContext<T> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
+                    result = Nope.fault(properties, ce, argv);
+                    branchExecuted = true;
+                }
+                return PmChooseNixContext.this;
+            }
+
+            @Override
+            public @NotNull ChooseNixContext<T> alert(@NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     result = None.alert(ce, argv);
                     branchExecuted = true;
                 }
@@ -88,8 +97,17 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
+            public @NotNull ChooseNixContext<T> alert(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
+                    result = None.alert(properties, ce, argv);
+                    branchExecuted = true;
+                }
+                return PmChooseNixContext.this;
+            }
+
+            @Override
             public @NotNull ChooseNixContext<T> nop() {
-                if (parent.completeWithoutErrors() && !branchExecuted && parent.value().getClass().isAssignableFrom(cls)) {
+                if (parent.completeWithoutErrors() && !branchExecuted && cls.isInstance(parent.value())) {
                     branchExecuted = true;
                 }
                 return PmChooseNixContext.this;
@@ -102,7 +120,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         //noinspection Convert2Diamond
         return new ChooseNixElseContext<T>() {
             @Override
-            public @NotNull ChooseNixExitContext peek(@NotNull Consumer<? super T> action) {
+            public @NotNull ChooseNixExitContext thenAccept(@NotNull Consumer<? super T> action) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     action.accept(parent.value());
                 }
@@ -110,7 +128,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
-            public @NotNull ChooseNixExitContext ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
+            public @NotNull ChooseNixExitContext thenApply(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = fcn.apply(parent.value());
                 }
@@ -118,7 +136,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
-            public @NotNull ChooseNixExitContext fault(CustMsg ce, Object... argv) {
+            public @NotNull ChooseNixExitContext fault(@NotNull CustMsg ce, Object... argv) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = Nope.fault(ce, argv);
                 }
@@ -126,9 +144,25 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             }
 
             @Override
-            public @NotNull ChooseNixExitContext alert(CustMsg ce, Object... argv) {
+            public @NotNull ChooseNixExitContext fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
+                    result = Nope.fault(properties, ce, argv);
+                }
+                return new ChooseNixElseContextBase();
+            }
+
+            @Override
+            public @NotNull ChooseNixExitContext alert(@NotNull CustMsg ce, Object... argv) {
                 if (parent.completeWithoutErrors() && !branchExecuted) {
                     result = None.alert(ce, argv);
+                }
+                return new ChooseNixElseContextBase();
+            }
+
+            @Override
+            public @NotNull ChooseNixExitContext alert(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (parent.completeWithoutErrors() && !branchExecuted) {
+                    result = None.alert(properties, ce, argv);
                 }
                 return new ChooseNixElseContextBase();
             }
@@ -144,7 +178,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         protected abstract boolean test();
 
         @Override
-        public @NotNull ChooseNixContext<T> peek(@NotNull Consumer<? super T> action) {
+        public @NotNull ChooseNixContext<T> thenAccept(@NotNull Consumer<? super T> action) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 action.accept(parent.value());
                 branchExecuted = true;
@@ -153,7 +187,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         }
 
         @Override
-        public @NotNull ChooseNixContext<T> ergo(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
+        public @NotNull ChooseNixContext<T> thenApply(@NotNull Function<? super T, ? extends ItemStatus> fcn) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = fcn.apply(parent.value());
                 branchExecuted = true;
@@ -162,7 +196,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         }
 
         @Override
-        public @NotNull ChooseNixContext<T> fault(CustMsg ce, Object... argv) {
+        public @NotNull ChooseNixContext<T> fault(@NotNull CustMsg ce, Object... argv) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = Nope.fault(ce, argv);
                 branchExecuted = true;
@@ -171,9 +205,28 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
         }
 
         @Override
-        public @NotNull ChooseNixContext<T> alert(CustMsg ce, Object... argv) {
+        public @NotNull ChooseNixContext<T> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+            if (parent.completeWithoutErrors() && !branchExecuted && test()) {
+                result = Nope.fault(properties, ce, argv);
+                branchExecuted = true;
+            }
+            return PmChooseNixContext.this;
+        }
+
+        @Override
+        public @NotNull ChooseNixContext<T> alert(@NotNull CustMsg ce, Object... argv) {
             if (parent.completeWithoutErrors() && !branchExecuted && test()) {
                 result = None.alert(ce, argv);
+                branchExecuted = true;
+            }
+            return PmChooseNixContext.this;
+        }
+
+        @Override
+        public @NotNull ChooseNixContext<T> alert(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+            if (parent.completeWithoutErrors() && !branchExecuted && test()) {
+                result = None.alert(properties, ce, argv);
+                branchExecuted = true;
             }
             return PmChooseNixContext.this;
         }
@@ -189,6 +242,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
 
     private class ChooseNixElseContextBase implements ChooseNixExitContext {
         @Override
+        @NoBuiltInCapture
         public @NotNull None end() {
             if (parent.completeSuccess()) {
                 return result == null || result.completeSuccess() ? PmNone.none() : new PmNone(result.signals());
@@ -197,7 +251,7 @@ class PmChooseNixContext<T> implements ChooseNixContext<T> {
             } else if (result == null || result.completeSuccess()) {
                 return new PmNone(parent.signals());    // parent warnings
             } else {
-                val bld = None.builder();
+                @NotNull NoneBuilder bld = None.builder();
                 bld.add(parent.signals()); // parent warnings
                 bld.add(result.signals()); // result errors/warnings
                 return bld.build();

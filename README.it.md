@@ -59,7 +59,8 @@ Usando i metodi `onSuccess`/`onFailure` possiamo riscrivere il codice come:
         report(none.errors());
     }
 ```
-Se la gestione dell'errore si limita ad accumulare l'errore è possibile usare altri metodi che accumulano gli errori automaticamente. Usando `and`/`imply` possiamo riscrivere il tutto come:
+Se la gestione dell'errore si limita ad accumulare l'errore è possibile usare altri metodi che accumulano gli errori
+automaticamente. Usando `ergo`/`implies` possiamo riscrivere il tutto come:
 ```java
     void example3(CustomReader rd, CustomWriter wr) {
         Iterable<CustomInput> iterable = rd.Iterable();
@@ -70,9 +71,13 @@ Se la gestione dell'errore si limita ad accumulare l'errore è possibile usare a
         report(none.errors());
     }
 ```
-Il `Consumer` del metodo `and` viene eseguito solo se `firstStep` termina senza errori, altrimenti viene accumulato l'errore di `firstStep`; analogamente il `Consumer` del metodo `implies` viene eseguito se `secondStep` termina senza errori, altrimenti viene accumulato l'errore di `secondStep`.
 
-Scritto in questo modo il `Consumer` del metodo `imply` ha visibilità del campo `temp`. Se questa visibilità non è necessaria, è possibile usare il metodo `map` e si può riscrivere il tutto con come:
+Il `Consumer` del metodo `ergo` viene eseguito solo se `firstStep` termina senza errori, altrimenti viene accumulato
+l'errore di `firstStep`; analogamente il `Consumer` del metodo `implies` viene eseguito se `secondStep` termina senza
+errori, altrimenti viene accumulato l'errore di `secondStep`.
+
+Scritto in questo modo il `Consumer` del metodo `implies` ha visibilità del campo `temp`. Se questa visibilità non è
+necessaria, è possibile usare il metodo `map` e si può riscrivere il tutto con come:
 ```java
     void example4(CustomReader rd, CustomWriter wr) {
         Iterable<CustomInput> iterable = rd.Iterable();

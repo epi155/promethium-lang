@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -37,7 +36,7 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
             Signal alert = signals().iterator().next();
             return Optional.of(alert.message());
         }
-        val alerts = alerts();
+        Collection<Warning> alerts = alerts();
         int nmSig = signals().size();
         int nmWrn = alerts.size();
         int nmErr = nmSig - nmWrn;
@@ -50,16 +49,17 @@ abstract class PmManyError extends PmFinalStatus implements ManyErrors, Glitches
         }
     }
 
+    @NoBuiltInCapture
     protected  <R> Some<R> composeOnWarning(@NotNull AnyValue<R> that) {
         if (that.completeSuccess()) {
             return new PmSome<>(that.value(), signals());     // this warning
         } else if (that.completeWithErrors()) {
-            val bld = Some.<R>builder();
+            @NotNull SomeBuilder<R> bld = Some.builder();
             bld.add(signals());        // this warning
             bld.add(that.signals());   // that error (warning)
             return bld.build();
         } else /*that.completeWithWarnings()*/{
-            val bld = Some.<R>builder();
+            @NotNull SomeBuilder<R> bld = Some.builder();
             bld.add(signals());        // this warning
             bld.add(that.signals());   // that warning
             return bld.buildWithValue(that.value());

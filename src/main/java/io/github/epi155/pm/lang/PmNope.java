@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -12,6 +11,7 @@ class PmNope extends PmSingleError implements Nope {
         super(null);
     }
 
+    @NoBuiltInCapture
     protected static Nope nope() {
         return NopeHelper.NOPE_INSTANCE;
     }
@@ -21,9 +21,10 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn) {
         if (completeSuccess()) {
-            val one = fcn.get();
+            ItemStatus one = fcn.get();
             if (one.completeSuccess()) {
                 return None.none();
             } else {
@@ -43,9 +44,10 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull Nope thus(@NotNull Supplier<? extends SingleError> fcn) {
         if (completeSuccess()) {
-            val one = fcn.get();
+            SingleError one = fcn.get();
             if (one.completeSuccess()) {
                 return Nope.nope();
             } else {
@@ -57,6 +59,7 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Hope<R> into(@NotNull Supplier<? extends Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.get();
@@ -66,11 +69,13 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Hope<R> intoOf(@NotNull Supplier<? extends R> fcn) {
         return completeSuccess() ? Hope.of(fcn.get()) : new PmHope<>(null, failure());
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn) {
         if (completeSuccess()) {
             return PmSome.of(fcn.get());
@@ -80,6 +85,7 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn) {
         if (completeSuccess()) {
             return new PmSome<>(fcn.get());
@@ -93,7 +99,8 @@ class PmNope extends PmSingleError implements Nope {
         return completeSuccess() ? onSuccess.get() : onFailure.apply(failure());
     }
 
-    public @NotNull Nope peek(@NotNull Runnable action) {
+    @NoBuiltInCapture
+    public @NotNull Nope implies(@NotNull Runnable action) {
         if (completeSuccess()) {
             action.run();
             return Nope.nope();
@@ -103,7 +110,7 @@ class PmNope extends PmSingleError implements Nope {
     }
 
     private static class NopeHelper {
-        private static final Nope NOPE_INSTANCE = new PmNope();
+        private static final PmNope NOPE_INSTANCE = new PmNope();
     }
 
 }

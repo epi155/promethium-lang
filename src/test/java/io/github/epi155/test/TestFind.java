@@ -1,19 +1,15 @@
 package io.github.epi155.test;
 
-import io.github.epi155.pm.lang.CustMsg;
-import io.github.epi155.pm.lang.Hope;
-import io.github.epi155.pm.lang.SearchResult;
-import io.github.epi155.pm.lang.Some;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import io.github.epi155.pm.lang.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-@Slf4j
 class TestFind {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestFind.class);
+
     private static final CustMsg MY_FAULT = PmCustMsg.of("CA01", "Oop error !!");
 
     @Test
@@ -25,15 +21,15 @@ class TestFind {
                         .onNotFound(() -> log.info("Not found"))
                         .onFailure(e -> log.warn("Error {}", e.message())));
         if (result.isFound()) {
-            val value = result.value();
+            @NotNull String value = result.value();
             // action on found value
         } else if (result.isNotFound()) {
             // action on not found
         } else if (result.isFailure()) {
-            val fault = result.failure();
+            @NotNull Failure fault = result.failure();
             // action on failure
         }
-        val a = result.<String>valueBuilder()
+        @NotNull Some<String> a = result.<String>valueBuilder()
                 .onFoundOf(t -> t)
                 .onNotFound(() -> Hope.of("E"))
                 .build();

@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,20 +43,36 @@ public interface Nope extends SingleError, OnlyError {
      *
      * @return Nope senza errori
      */
+    @NoBuiltInCapture
     static @NotNull Nope nope() {
         return PmNope.nope();
     }
 
     /**
-     * Crea un <b>Nope</b> con errore
+     * Static constructor with error
      *
-     * @param ce   riferimento formattazione errore
-     * @param argv parametri per dettaglio errore
-     * @return Nope con errore
+     * @param ce   custom error
+     * @param argv error parameters
+     * @return instance of {@link Nope} with error
      */
+    @NoBuiltInCapture
     static @NotNull Nope fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         return new PmNope(PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
+    }
+
+    /**
+     * Static constructor with error with properties
+     *
+     * @param properties error properties
+     * @param ce         custom error
+     * @param argv       error parameters
+     * @return instance of {@link Nope} with error
+     */
+    @NoBuiltInCapture
+    static @NotNull Nope fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        return new PmNope(PmFailure.of(properties, stPtr[PmAnyBuilder.J_LOCATE], ce, argv));
     }
 
     /**
@@ -70,6 +87,7 @@ public interface Nope extends SingleError, OnlyError {
      * @param t exception to catch
      * @return instance of {@link PmNope} with error
      */
+    @NoBuiltInCapture
     static @NotNull Nope capture(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
@@ -144,7 +162,7 @@ public interface Nope extends SingleError, OnlyError {
      * @param action action executed if there are no errors
      * @return {@link Nope} instance, with original error, if any
      */
-    @NotNull Nope peek(@NotNull Runnable action);
+    @NotNull Nope implies(@NotNull Runnable action);
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed

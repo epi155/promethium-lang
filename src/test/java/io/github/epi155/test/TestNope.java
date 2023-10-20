@@ -1,15 +1,15 @@
 package io.github.epi155.test;
 
+import io.github.epi155.pm.lang.Failure;
 import io.github.epi155.pm.lang.Nope;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-@Slf4j
 class TestNope {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestNope.class);
 
 
     @Test
@@ -28,61 +28,61 @@ class TestNope {
 
     @Test
     void test3() {
-        val result = Nope.nope()
-            .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
+        String result = Nope.nope()
+                .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
 
     @Test
     void test4() {
-        val result = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"))
+        String result = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"))
                 .mapTo(() -> "all fine", e -> String.format("oops %s", e.message()));
         log.info("Result is {}", result);
     }
 
     @Test
     void test7() {
-        val nope = Nope.nope();
-        nope.peek(() -> log.info("to be continue"));
+        @NotNull Nope nope = Nope.nope();
+        nope.implies(() -> log.info("to be continue"));
     }
 
     @Test
     void test8() {
-        val nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
-        nope.peek(() -> log.info("to be continue"));
+        @NotNull Nope nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
+        nope.implies(() -> log.info("to be continue"));
     }
 
     @Test
     void test9() {
-        val nope = Nope.nope();
+        @NotNull Nope nope = Nope.nope();
         nope.ergo(Nope::nope);
     }
 
     @Test
     void test10() {
-        val nope = Nope.nope();
+        @NotNull Nope nope = Nope.nope();
         nope.ergo(() -> Nope.capture(new NullPointerException()));
     }
 
     @Test
     void test12() {
-        val nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
+        @NotNull Nope nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         nope.ergo(Nope::nope);
     }
 
     @Test
     void test13() {
-        val nope = Nope.nope();
+        @NotNull Nope nope = Nope.nope();
         Assertions.assertThrows(NoSuchElementException.class, () -> {
-            val fault = nope.failure();
+            @NotNull Failure fault = nope.failure();
         });
     }
 
     @Test
     void test14() {
-        val nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
+        @NotNull Nope nope = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertDoesNotThrow(() -> {
-            val fault = nope.failure();
+            @NotNull Failure fault = nope.failure();
         });
     }
 
@@ -91,7 +91,7 @@ class TestNope {
         Nope n1 = Nope.nope();
         Assertions.assertFalse(n1.summary().isPresent());
 
-        val n2 = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
+        @NotNull Nope n2 = Nope.fault(PmCustMsg.of("E01", "Houston we have had a problem"));
         Assertions.assertTrue(n2.summary().isPresent());
     }
 

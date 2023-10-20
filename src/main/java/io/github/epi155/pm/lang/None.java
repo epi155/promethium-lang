@@ -1,11 +1,11 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -72,6 +72,7 @@ public interface None extends ManyErrors, OnlyError {
      * Static constructor without errors
      * @return  instance of {@link None} without errors
      */
+    @NoBuiltInCapture
     static @NotNull None none() {
         return PmNone.none();
     }
@@ -83,9 +84,25 @@ public interface None extends ManyErrors, OnlyError {
      * @param objects error parameters
      * @return instance of {@link None} with error
      */
+    @NoBuiltInCapture
     static @NotNull None fault(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        @NotNull Failure fail = PmFailure.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        return new PmNone(Collections.singletonList(fail));
+    }
+
+    /**
+     * Static constructor with error with properties
+     *
+     * @param properties error properties
+     * @param ce         custom error
+     * @param objects    error parameters
+     * @return instance of {@link None} with error
+     */
+    @NoBuiltInCapture
+    static @NotNull None fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        @NotNull Failure fail = PmFailure.of(properties, stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(fail));
     }
 
@@ -96,9 +113,25 @@ public interface None extends ManyErrors, OnlyError {
      * @param objects warning parameters
      * @return instance of {@link None} with warning
      */
+    @NoBuiltInCapture
     static @NotNull None alert(@NotNull CustMsg ce, Object... objects) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        @NotNull Warning warn = PmWarning.of(stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
+        return new PmNone(Collections.singletonList(warn));
+    }
+
+    /**
+     * Static constructor with warning with properties
+     *
+     * @param properties warning properties
+     * @param ce         custom warning
+     * @param objects    warning parameters
+     * @return instance of {@link None} with warning
+     */
+    @NoBuiltInCapture
+    static @NotNull None alert(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... objects) {
+        StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
+        @NotNull Warning warn = PmWarning.of(properties, stPtr[PmAnyBuilder.J_LOCATE], ce, objects);
         return new PmNone(Collections.singletonList(warn));
     }
 
@@ -108,6 +141,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param t exception
      * @return instance of {@link None}
      */
+    @NoBuiltInCapture
     static @NotNull None capture(@NotNull Throwable t) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stPtr[PmAnyBuilder.J_LOCATE];
@@ -120,6 +154,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param item instance of {@link ItemStatus}
      * @return instance of {@link None}
      */
+    @NoBuiltInCapture
     static @NotNull None of(@NotNull ItemStatus item) {
         if (item instanceof None) return (None) item;
         if (item.completeSuccess()) {
@@ -135,6 +170,7 @@ public interface None extends ManyErrors, OnlyError {
      * @param nope {@link Nope} instance
      * @return {@link None} instance
      */
+    @NoBuiltInCapture
     static @NotNull None pull(@NotNull Nope nope) {
         return new PmNone(nope.signals());
     }
@@ -194,13 +230,52 @@ public interface None extends ManyErrors, OnlyError {
     @NotNull Glitches onSuccess(@NotNull Consumer<Collection<Warning>> successAction);
 
     /**
-     * If there are no errors, the action is performed.
-     * In any case the initial errors are returned.
-     *
-     * @param action action executed if there are no errors
-     * @return {@link None} instance, with original error, if any
+     * It generates a {@link LoopConsumer} instance to loop on
+     * <pre>
+     *     Iterable&lt;AnyValue&lt;U&gt;&gt; list = ..
+     *     None none = None.iterable(list).forEach(u -&gt; ..);
+     * </pre>
+     * @param iterable fallible values to loop on
+     * @param <U>      type of value generated
+     * @return {@link LoopConsumer} instance
      */
-    @NotNull None peek(@NotNull Runnable action);
+    @Contract(value = "_ -> new", pure = true)
+    static <U> @NotNull LoopConsumer<U> iterable(@NotNull Iterable<? extends AnyValue<U>> iterable) {
+        @NotNull LoopBuilderConsumer<U> loop = None.builder().iterable(iterable);
+        return PmLoopFactory.of(loop);
+    }
+
+    /**
+     * It generates a {@link LoopConsumer} instance to loop on
+     * <pre>
+     *     Iterable&lt;U&gt; list = ..
+     *     None none = None.iterableOf(list).forEach(u -&gt; ..);
+     * </pre>
+     * @param iterable values to loop on
+     * @param <U>      type of value generated
+     * @return {@link LoopConsumer} instance
+     */
+    @Contract(value = "_ -> new", pure = true)
+    static <U> @NotNull LoopConsumer<U> iterableOf(@NotNull Iterable<? extends U> iterable) {
+        @NotNull LoopBuilderConsumer<? extends U> loop = None.builder().iterableOf(iterable);
+        return PmLoopFactory.of(loop);
+    }
+
+    /**
+     * It generates a {@link LoopConsumer} instance to loop on
+     * <pre>
+     *     Stream&lt;AnyValue&lt;U&gt;&gt; stream = ..
+     *     None none = None.stream(stream).forEach(u -&gt; ..);
+     * </pre>
+     * @param stream fallible values to loop on
+     * @param <U>    type of value generated
+     * @return {@link LoopConsumer} instance
+     */
+    @Contract(value = "_ -> new", pure = true)
+    static <U> @NotNull LoopConsumer<U> stream(@NotNull Stream<? extends AnyValue<U>> stream) {
+        @NotNull LoopBuilderConsumer<U> loop = None.builder().stream(stream);
+        return PmLoopFactory.of(loop);
+    }
 
     /**
      * constructs a result using two alternative methods depending on whether the operation completed successfully or failed
@@ -225,54 +300,6 @@ public interface None extends ManyErrors, OnlyError {
     /**
      * It generates a {@link LoopConsumer} instance to loop on
      * <pre>
-     *     Iterable&lt;AnyValue&lt;U&gt;&gt; list = ..
-     *     None none = None.iterable(list).forEach(u -&gt; ..);
-     * </pre>
-     * @param iterable fallible values to loop on
-     * @param <U>      type of value generated
-     * @return {@link LoopConsumer} instance
-     */
-    @Contract(value = "_ -> new", pure = true)
-    static <U> @NotNull LoopConsumer<U> iterable(@NotNull Iterable<? extends AnyValue<U>> iterable) {
-        val loop = None.builder().iterable(iterable);
-        return PmLoopFactory.of(loop);
-    }
-
-    /**
-     * It generates a {@link LoopConsumer} instance to loop on
-     * <pre>
-     *     Iterable&lt;U&gt; list = ..
-     *     None none = None.iterableOf(list).forEach(u -&gt; ..);
-     * </pre>
-     * @param iterable values to loop on
-     * @param <U>      type of value generated
-     * @return {@link LoopConsumer} instance
-     */
-    @Contract(value = "_ -> new", pure = true)
-    static <U> @NotNull LoopConsumer<U> iterableOf(@NotNull Iterable<? extends U> iterable) {
-        val loop = None.builder().iterableOf(iterable);
-        return PmLoopFactory.of(loop);
-    }
-
-    /**
-     * It generates a {@link LoopConsumer} instance to loop on
-     * <pre>
-     *     Stream&lt;AnyValue&lt;U&gt;&gt; stream = ..
-     *     None none = None.stream(stream).forEach(u -&gt; ..);
-     * </pre>
-     * @param stream fallible values to loop on
-     * @param <U>    type of value generated
-     * @return {@link LoopConsumer} instance
-     */
-    @Contract(value = "_ -> new", pure = true)
-    static <U> @NotNull LoopConsumer<U> stream(@NotNull Stream<? extends AnyValue<U>> stream) {
-        val loop = None.builder().stream(stream);
-        return PmLoopFactory.of(loop);
-    }
-
-    /**
-     * It generates a {@link LoopConsumer} instance to loop on
-     * <pre>
      *     Stream&lt;U&gt; stream = ..
      *     None none = None.streamOf(stream).forEach(u -&gt; ..);
      * </pre>
@@ -282,7 +309,20 @@ public interface None extends ManyErrors, OnlyError {
      */
     @Contract(value = "_ -> new", pure = true)
     static <U> @NotNull LoopConsumer<U> streamOf(@NotNull Stream<? extends U> stream) {
-        val loop = None.builder().streamOf(stream);
+        @NotNull LoopBuilderConsumer<? extends U> loop = None.builder().streamOf(stream);
         return PmLoopFactory.of(loop);
     }
+
+    /**
+     * If there are no errors, the action is performed.
+     * In any case the initial errors are returned.
+     *
+     * @param action action executed if there are no errors
+     * @return {@link None} instance, with original error, if any
+     */
+    @NotNull None implies(@NotNull Runnable action);
+
+    @NotNull None peek(@NotNull Runnable successAction, @NotNull Consumer<Collection<? extends Signal>> failureAction);
+
+    @NotNull None peek(@NotNull Consumer<Collection<Warning>> successAction, @NotNull Consumer<Collection<? extends Signal>> failureAction);
 }

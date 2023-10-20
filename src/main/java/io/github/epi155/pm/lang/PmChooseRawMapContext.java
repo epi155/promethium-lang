@@ -3,6 +3,7 @@ package io.github.epi155.pm.lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -51,7 +52,7 @@ class PmChooseRawMapContext<T, R> implements ChooseMapContext<T, R> {
         return new ChooseMapWhenAsContext<U, T, R>() {
             @Override
             public @NotNull ChooseMapContext<T, R> map(@NotNull Function<? super U, ? extends AnyValue<R>> fcn) {
-                if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
+                if (!branchExecuted && cls.isInstance(origin)) {
                     result = fcn.apply(cls.cast(origin));
                     branchExecuted = true;
                 }
@@ -60,7 +61,7 @@ class PmChooseRawMapContext<T, R> implements ChooseMapContext<T, R> {
 
             @Override
             public @NotNull ChooseMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn) {
-                if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
+                if (!branchExecuted && cls.isInstance(origin)) {
                     R value = fcn.apply(cls.cast(origin));
                     result = Hope.of(value);
                     branchExecuted = true;
@@ -69,9 +70,18 @@ class PmChooseRawMapContext<T, R> implements ChooseMapContext<T, R> {
             }
 
             @Override
-            public @NotNull ChooseMapContext<T, R> fault(CustMsg ce, Object... argv) {
-                if (!branchExecuted && origin.getClass().isAssignableFrom(cls)) {
+            public @NotNull ChooseMapContext<T, R> fault(@NotNull CustMsg ce, Object... argv) {
+                if (!branchExecuted && cls.isInstance(origin)) {
                     result = Hope.fault(ce, argv);
+                    branchExecuted = true;
+                }
+                return PmChooseRawMapContext.this;
+            }
+
+            @Override
+            public @NotNull ChooseMapContext<T, R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+                if (!branchExecuted && cls.isInstance(origin)) {
+                    result = Hope.fault(properties, ce, argv);
                     branchExecuted = true;
                 }
                 return PmChooseRawMapContext.this;
@@ -107,6 +117,14 @@ class PmChooseRawMapContext<T, R> implements ChooseMapContext<T, R> {
                 }
                 return new ChooseMapElseContextBase();
             }
+
+            @Override
+            public @NotNull ChooseMapExitContext<R> fault(@NotNull Map<String, Object> properties, CustMsg ce, Object... argv) {
+                if (!branchExecuted) {
+                    result = Hope.fault(properties, ce, argv);
+                }
+                return new ChooseMapElseContextBase();
+            }
         };
     }
 
@@ -133,9 +151,18 @@ class PmChooseRawMapContext<T, R> implements ChooseMapContext<T, R> {
         }
 
         @Override
-        public @NotNull ChooseMapContext<T, R> fault(CustMsg ce, Object... argv) {
+        public @NotNull ChooseMapContext<T, R> fault(@NotNull CustMsg ce, Object... argv) {
             if (!branchExecuted && test()) {
                 result = Hope.fault(ce, argv);
+                branchExecuted = true;
+            }
+            return PmChooseRawMapContext.this;
+        }
+
+        @Override
+        public @NotNull ChooseMapContext<T, R> fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv) {
+            if (!branchExecuted && test()) {
+                result = Hope.fault(properties, ce, argv);
                 branchExecuted = true;
             }
             return PmChooseRawMapContext.this;
@@ -144,6 +171,7 @@ class PmChooseRawMapContext<T, R> implements ChooseMapContext<T, R> {
 
     private class ChooseMapElseContextBase implements ChooseMapExitContext<R> {
         @Override
+        @NoBuiltInCapture
         public @NotNull Some<R> end() {
             //noinspection DataFlowIssue
             if (result.completeSuccess()) {

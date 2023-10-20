@@ -2,13 +2,16 @@ package io.github.epi155.test;
 
 
 import io.github.epi155.pm.lang.*;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 
-@Slf4j
+import java.util.Collection;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestFailure {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestFailure.class);
+
     static final CustMsg CUST_ERR = PmCustMsg.of("AZ15", "Errore Gestito");
 
     static {
@@ -19,19 +22,19 @@ class TestFailure {
     @Order(10)
     void testCapture() {
         log.info("1.0 Cattura eccezione (package) ...");
-        val bld = None.builder();
+        @NotNull NoneBuilder bld = None.builder();
         try {
             crashMethod();
         } catch (Exception e) {
             bld.capture(e);
         }
-        val esito = bld.build();
+        @NotNull None esito = bld.build();
         Assertions.assertFalse(esito.completeSuccess());
-        val ce = esito.signals();
+        Collection<Signal> ce = esito.signals();
         Assertions.assertEquals(1, ce.size());
-        val e = ce.iterator().next();
+        Signal e = ce.iterator().next();
         Assertions.assertEquals("java.lang.NullPointerException", e.message());
-        val reason = e.place();
+        @Nullable String reason = e.place();
         Assertions.assertNotNull(reason);
         Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
@@ -51,9 +54,9 @@ class TestFailure {
             hope = Hope.capture(e);
         }
         Assertions.assertFalse(hope.completeSuccess());
-        val e = hope.failure();
+        @NotNull Failure e = hope.failure();
         Assertions.assertTrue(e.message().contains("NullPointerException"));
-        val reason = e.place();
+        @Nullable String reason = e.place();
         Assertions.assertNotNull(reason);
         Assertions.assertTrue(reason.startsWith("[ io.github.epi155.test.TestFailure"));
         Assertions.assertTrue(reason.contains("crashMethod"));
@@ -70,9 +73,9 @@ class TestFailure {
             .onSuccess(k -> log.info("Result is {}", k))
             .onFailure(le -> {
                 Assertions.assertEquals(1, le.size());
-                val e = le.iterator().next();
+                Signal e = le.iterator().next();
                 Assertions.assertEquals("999B", e.code());
-                val reason = e.place();
+                @Nullable String reason = e.place();
                 Assertions.assertNotNull(reason);
                 Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
                     Assertions.assertTrue(reason.contains("envelope1"));
@@ -84,11 +87,11 @@ class TestFailure {
     @Order(60)
     void testCustomError0() {
         log.info("6.0 Custom Error ...");
-        val error = PmCustMsg.of("T033", "Custom Error");
-        val e = Hope.fault(error);
+        @NotNull CustMsg error = PmCustMsg.of("T033", "Custom Error");
+        @NotNull Hope<Object> e = Hope.fault(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
-            val reason = z.place();
+            @Nullable String reason = z.place();
             Assertions.assertNotNull(reason);
             Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
             Assertions.assertTrue(reason.contains("testCustomError"));
@@ -100,11 +103,11 @@ class TestFailure {
     @Order(61)
     void testCustomError1() {
         log.info("6.1 Custom Error ...");
-        val error = PmCustMsg.of("T033", "Custom Error");
-        val e = Nope.fault(error);
+        @NotNull CustMsg error = PmCustMsg.of("T033", "Custom Error");
+        @NotNull Nope e = Nope.fault(error);
         e.onFailure(z -> {
             Assertions.assertEquals("Custom Error", z.message());
-            val reason = z.place();
+            @Nullable String reason = z.place();
             Assertions.assertNotNull(reason);
             Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
             Assertions.assertTrue(reason.contains("testCustomError"));
@@ -116,13 +119,13 @@ class TestFailure {
     @Order(62)
     void testCustomError2() {
         log.info("6.2 Custom Error ...");
-        val error = PmCustMsg.of("T033", "Custom Error");
-        val e = Some.fault(error);
+        @NotNull CustMsg error = PmCustMsg.of("T033", "Custom Error");
+        @NotNull Some<Object> e = Some.fault(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
-            val z = le.iterator().next();
+            Signal z = le.iterator().next();
             Assertions.assertEquals("Custom Error", z.message());
-            val reason = z.place();
+            @Nullable String reason = z.place();
             Assertions.assertNotNull(reason);
             Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
             Assertions.assertTrue(reason.contains("testCustomError"));
@@ -134,13 +137,13 @@ class TestFailure {
     @Order(63)
     void testCustomError3() {
         log.info("6.3 Custom Error ...");
-        val error = PmCustMsg.of("T033", "Custom Error");
-        val e = None.fault(error);
+        @NotNull CustMsg error = PmCustMsg.of("T033", "Custom Error");
+        @NotNull None e = None.fault(error);
         e.onFailure(le -> {
             Assertions.assertEquals(1, le.size());
-            val z = le.iterator().next();
+            Signal z = le.iterator().next();
             Assertions.assertEquals("Custom Error", z.message());
-            val reason = z.place();
+            @Nullable String reason = z.place();
             Assertions.assertNotNull(reason);
             Assertions.assertTrue(reason.startsWith("io.github.epi155.test.TestFailure"));
             Assertions.assertTrue(reason.contains("testCustomError"));
@@ -151,7 +154,7 @@ class TestFailure {
     @Test
     @Order(900)
     void test900() {
-        val some = Some.fault(CUST_ERR);
+        @NotNull Some<Object> some = Some.fault(CUST_ERR);
         Assertions.assertFalse(some.completeSuccess());
     }
 
@@ -159,7 +162,7 @@ class TestFailure {
     @Test
     @Order(910)
     void test910() {
-        val none = None.fault(CUST_ERR);
+        @NotNull None none = None.fault(CUST_ERR);
         Assertions.assertFalse(none.completeSuccess());
     }
 
@@ -169,7 +172,7 @@ class TestFailure {
         try {
             crashMethod();
         } catch (Exception e) {
-            val none = None.capture(e);
+            @NotNull None none = None.capture(e);
             Assertions.assertFalse(none.completeSuccess());
         }
     }
@@ -177,27 +180,27 @@ class TestFailure {
     @Test
     @Order(922)
     void test922() {
-        val some = Nope.nope();
+        @NotNull Nope some = Nope.nope();
         Assertions.assertTrue(some.completeSuccess());
     }
 
     @Test
     @Order(920)
     void test920() {
-        val some = Nope.fault(CUST_ERR);
+        @NotNull Nope some = Nope.fault(CUST_ERR);
         Assertions.assertFalse(some.completeSuccess());
     }
 
     @Test
     @Order(930)
     void test930() {
-        val bld = None.builder();
+        @NotNull NoneBuilder bld = None.builder();
         try {
             crashMethod();
         } catch (Exception e) {
             bld.capture(e);
         }
-        val none = bld.build();
+        @NotNull None none = bld.build();
 
         Assertions.assertFalse(none.completeSuccess());
     }
@@ -206,7 +209,7 @@ class TestFailure {
     @Order(931)
     void test931() {
         Assertions.assertDoesNotThrow(() -> {
-            val fault = None.builder().fault(PmCustMsg.of("AZ95", 404, "Not Found"))
+            @NotNull Signal fault = None.builder().fault(PmCustMsg.of("AZ95", 404, "Not Found"))
                     .setProperty("key1", 1).setProperty("key2", "red");
             log.info(fault.toString());
         });
@@ -214,7 +217,7 @@ class TestFailure {
 
 
     private Some<Integer> envelope1() {
-        val bld = Some.<Integer>builder();
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
         return bld.build();
     }
 

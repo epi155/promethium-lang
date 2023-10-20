@@ -21,16 +21,19 @@ class PmLoopFactory {
         return new LoopConsumer<U>() {
 
             @Override
+            @NoBuiltInCapture
             public @NotNull None forEach(@NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 return loop.forEach(fcn).build();
             }
 
             @Override
+            @NoBuiltInCapture
             public @NotNull None forEachParallel(int maxThread, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 return loop.forEachParallel(maxThread, fcn).build();
             }
 
             @Override
+            @NoBuiltInCapture
             public @NotNull None forEachParallel(@NotNull ExecutorService executor, @NotNull Function<? super U, ? extends ItemStatus> fcn) {
                 return loop.forEachParallel(executor, fcn).build();
             }

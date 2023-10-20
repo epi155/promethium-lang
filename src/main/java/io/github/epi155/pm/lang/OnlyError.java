@@ -61,6 +61,6 @@ public interface OnlyError extends ItemStatus {
      * @param action action executed if there are no errors
      * @return {@link OnlyError} instance, with original error, if any
      */
-    @NotNull OnlyError peek(@NotNull Runnable action);
+    @NotNull OnlyError implies(@NotNull Runnable action);
 
 }

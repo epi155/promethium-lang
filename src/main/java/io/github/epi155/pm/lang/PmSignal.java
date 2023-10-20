@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
@@ -18,12 +17,17 @@ abstract class PmSignal implements Signal {
     protected final int theStatus;
     @NotNull
     protected final String theMessage;
-    protected final Map<String, Object> properties = new HashMap<>();
+    protected final Map<String, Object> properties;
 
     protected PmSignal(@NotNull String theCode, int theStatus, @NotNull String theMessage) {
+        this(new HashMap<>(), theCode, theStatus, theMessage);
+    }
+
+    protected PmSignal(@NotNull Map<String, Object> properties, @NotNull String theCode, int theStatus, @NotNull String theMessage) {
         this.theCode = theCode;
         this.theStatus = theStatus;
         this.theMessage = theMessage;
+        this.properties = properties;
     }
 
     protected static @NotNull String lineOf(@NotNull StackTraceElement stackElem) {
@@ -37,19 +41,19 @@ abstract class PmSignal implements Signal {
     //___ delegate Properties___
     @Override
     public String getStrProperty(@NotNull String key) {
-        val value = properties.get(key);
+        Object value = properties.get(key);
         return value instanceof String ? (String) value : null;
     }
 
     @Override
     public String getStrProperty(@NotNull String key, @NotNull String defaultValue) {
-        val value = properties.get(key);
+        Object value = properties.get(key);
         return value instanceof String ? (String) value : defaultValue;
     }
 
     @Override
     public <T> T getProperty(@NotNull String key, @NotNull Class<T> cls) {
-        val value = properties.get(key);
+        Object value = properties.get(key);
         if (value == null) return null;
         if (cls.isAssignableFrom(value.getClass())) {
             return cls.cast(value);
@@ -60,8 +64,8 @@ abstract class PmSignal implements Signal {
 
     @Override
     public String toString() {
-        val sw = new StringWriter();
-        try(val pw = new PrintWriter(sw)) {
+        StringWriter sw = new StringWriter();
+        try (PrintWriter pw = new PrintWriter(sw)) {
             pw.printf("{ code: \"%s\", ", theCode);
             pw.printf("status: %d, ", theStatus);
             pw.printf("message: \"%s\"", theMessage);
@@ -72,7 +76,7 @@ abstract class PmSignal implements Signal {
                 boolean append = false;
                 for (Map.Entry<String, Object> entry : entries) {
                     if (append) pw.printf(", ");
-                    val value = entry.getValue();
+                    Object value = entry.getValue();
                     if (value instanceof String) {
                         pw.printf("%s: \"%s\"", entry.getKey(), value);
                     } else {
@@ -90,9 +94,9 @@ abstract class PmSignal implements Signal {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getProperty(@NotNull String key, @NotNull T defaultValue) {
-        val value = properties.get(key);
+        Object value = properties.get(key);
         if (value == null) return defaultValue;
-        val cls = defaultValue.getClass();
+        Class<?> cls = defaultValue.getClass();
         if (cls.isAssignableFrom(value.getClass())) {
             return (T) value;
         } else {

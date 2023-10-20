@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -9,8 +8,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 class PmNone extends PmManyError implements None {
-    private static class NoneHelper {
-        private static final None NONE_INSTANCE = new PmNone();
+    @NoBuiltInCapture
+    protected static None none() {
+        return NoneHelper.NONE_INSTANCE;
     }
     private PmNone() {
         super();
@@ -23,8 +23,29 @@ class PmNone extends PmManyError implements None {
         super(status);
     }
 
-    protected static None none() {
-        return NoneHelper.NONE_INSTANCE;
+    @Override
+    @NoBuiltInCapture
+    public @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn) {
+        if (completeSuccess()) {    // no errors, no warnings
+            ItemStatus that = fcn.get();
+            if (that.completeSuccess()) {
+                return none();
+            } else {
+                return new PmNone(that.signals());
+            }
+        } else if (completeWithErrors()) {  // errors, warnings?
+            return this;    // fcn not executed
+        } else {    // no errors, some warnings
+            ItemStatus that = fcn.get();
+            if (that.completeSuccess()) {
+                return this;    // keep this warnings
+            } else {
+                @NotNull NoneBuilder bld = None.builder();
+                bld.add(signals());        // this warning
+                bld.add(that.signals());   // that error OR warning
+                return bld.build();
+            }
+        }
     }
     public @NotNull Glitches onSuccess(@NotNull Runnable successAction) {
         if (completeWithoutErrors())
@@ -39,42 +60,22 @@ class PmNone extends PmManyError implements None {
         }
         return this;
     }
+
     @Override
-    public @NotNull None ergo(@NotNull Supplier<? extends ItemStatus> fcn) {
-        if (completeSuccess()) {    // no errors, no warnings
-            val that = fcn.get();
-            if (that.completeSuccess()) {
-                return none();
-            } else {
-                return new PmNone(that.signals());
-            }
-        } else if (completeWithErrors()) {  // errors, warnings?
-            return this;    // fcn not executed
-        } else {    // no errors, some warnings
-            val that = fcn.get();
-            if (that.completeSuccess()) {
-                return this;    // keep this warnings
-            } else {
-                val bld = None.builder();
-                bld.add(signals());        // this warning
-                bld.add(that.signals());   // that error OR warning
-                return bld.build();
-            }
-        }
-    }
-    @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> map(@NotNull Supplier<? extends AnyValue<R>> fcn) {
         if (completeSuccess()) {
             return PmSome.of(fcn.get());
         } else if (completeWithErrors()) {
             return new PmSome<>(this);
         } else /*completeWithWarnings()*/ {
-            val that = fcn.get();
+            AnyValue<R> that = fcn.get();
             return composeOnWarning(that);
         }
     }
 
     @Override
+    @NoBuiltInCapture
     public @NotNull <R> Some<R> mapOf(@NotNull Supplier<? extends R> fcn) {
         if (completeSuccess()) {
             return new PmSome<>(fcn.get());
@@ -85,13 +86,40 @@ class PmNone extends PmManyError implements None {
         }
     }
 
-    public @NotNull None peek(@NotNull Runnable action) {
+    @NoBuiltInCapture
+    public @NotNull None implies(@NotNull Runnable action) {
         if (completeWithoutErrors()) {
             action.run();
-            return none();
-        } else {
-            return this;
         }
+        return this;
+    }
+
+    @NoBuiltInCapture
+    public @NotNull None peek(
+            @NotNull Runnable successAction,
+            @NotNull Consumer<Collection<? extends Signal>> signalAction) {
+        if (completeWithoutErrors()) {
+            successAction.run();
+        } else {
+            signalAction.accept(signals());
+        }
+        return this;
+    }
+
+    @NoBuiltInCapture
+    public @NotNull None peek(
+            @NotNull Consumer<Collection<Warning>> successAction,
+            @NotNull Consumer<Collection<? extends Signal>> signalAction) {
+        if (completeWithoutErrors()) {
+            successAction.accept(alerts());
+        } else {
+            signalAction.accept(signals());
+        }
+        return this;
+    }
+
+    private static class NoneHelper {
+        private static final PmNone NONE_INSTANCE = new PmNone();
     }
 
     @Override

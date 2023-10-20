@@ -2,9 +2,8 @@ package io.github.epi155.test;
 
 import io.github.epi155.pm.lang.Hope;
 import io.github.epi155.pm.lang.None;
+import io.github.epi155.pm.lang.NoneBuilder;
 import io.github.epi155.pm.lang.Signal;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -12,17 +11,18 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 
-@Slf4j
 public class TestCustom2 {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestCustom2.class);
+
     void example2(CustomReader rd, CustomWriter wr) {
-        val bld = None.builder();
+        @NotNull NoneBuilder bld = None.builder();
         Iterable<CustomInput> iterable = rd.Iterable();
         for (CustomInput input : iterable) {
             firstStep(input)
-                .onSuccess(temp -> secondStep(temp)
-                    .onSuccess(wr::write)
-                    .onFailure(bld::add))
-                .onFailure(bld::add);
+                    .onSuccess(temp -> secondStep(temp)
+                            .onSuccess(wr::write)
+                            .onFailure(bld::add))
+                    .onFailure(bld::add);
         }
         None none = bld.build();
         report(none.signals());
@@ -31,18 +31,18 @@ public class TestCustom2 {
     void example3(CustomReader rd, CustomWriter wr) {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
-            .forEach(input -> firstStep(input)
-                .ergo(temp -> secondStep(temp)
-                    .peek(wr::write)));
+                .forEach(input -> firstStep(input)
+                        .ergo(temp -> secondStep(temp)
+                                .implies(wr::write)));
         report(none.signals());
     }
 
     void example4(CustomReader rd, CustomWriter wr) {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
-            .forEach(input -> firstStep(input)
-                    .into(this::secondStep)
-                .peek(wr::write));
+                .forEach(input -> firstStep(input)
+                        .into(this::secondStep)
+                        .implies(wr::write));
         report(none.signals());
     }
 
@@ -51,7 +51,7 @@ public class TestCustom2 {
         None none = stream
             .map(input -> firstStep(input)
                     .into(this::secondStep)
-                .peek(wr::write))
+                    .implies(wr::write))
             .collect(None.collect());
         report(none.signals());
     }
@@ -59,9 +59,9 @@ public class TestCustom2 {
     void example6(CustomReader rd, CustomWriter wr) {
         Stream<CustomInput> stream = rd.stream();
         None none = None.streamOf(stream)
-            .forEach(input -> firstStep(input)
-                    .into(this::secondStep)
-                .peek(wr::write));
+                .forEach(input -> firstStep(input)
+                        .into(this::secondStep)
+                        .implies(wr::write));
         report(none.signals());
     }
 
@@ -80,21 +80,21 @@ public class TestCustom2 {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
             .forEach(input -> firstStep(input)
-                .choose()
+                    .choose()
                     .when(it -> it.equals("r"))
-                    .peek(it -> {
+                    .thenAccept(it -> {
                     })
                     .when(System.nanoTime() > 1_000_000_000)
-                    .peek(it -> log.info("hrrlo2"))
+                    .thenAccept(it -> log.info("hrrlo2"))
                     .otherwise()
-                    .ergo(temp -> secondStep(temp)
-                            .peek(wr::write))
+                    .thenApply(temp -> secondStep(temp)
+                            .implies(wr::write))
                 .end()
             );
         searchFor(1)
-            .choose()
-                .when(Optional::isPresent).peek(it -> log.info("match at {}", it.get()))
-                .otherwise().peek(it -> log.info("None match"))
+                .choose()
+                .when(Optional::isPresent).thenAccept(it -> log.info("match at {}", it.get()))
+                .otherwise().thenAccept(it -> log.info("None match"))
             .end().onFailure(es -> es.forEach(e -> log.warn("Error: {}", e.message())));
         searchFor(1)
             .<Integer>chooseMap()

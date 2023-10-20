@@ -1,8 +1,6 @@
 package io.github.epi155.test;
 
 import io.github.epi155.pm.lang.*;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,19 +8,20 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-@Slf4j
 class TestSome {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestSome.class);
+
     private static final CustMsg MY_FAULT = PmCustMsg.of("EA01", "Oop error {} !!");
     private static final CustMsg MY_ALERT = PmCustMsg.of("WA01", "Oop warning {} !!");
 
     @Test
         // mvn test -Dtest="TestSome#test01"
     void test00() {
-        val h1 = Some.of(null);
+        @NotNull Some<Object> h1 = Some.of(null);
         Assertions.assertTrue(h1.completeWithErrors());
         log.warn("null -> {}", h1);
 
-        val h2 = Some.of(h1.signals().iterator().next());
+        @NotNull Some<Signal> h2 = Some.of(h1.signals().iterator().next());
         Assertions.assertTrue(h2.completeWithErrors());
         log.warn("signals -> {}", h2);
     }
@@ -30,7 +29,7 @@ class TestSome {
     @Test
         // mvn test -Dtest="TestSome#test01"
     void test01() {
-        val bld = Some.<Integer>builder();
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
         Assertions.assertTrue(bld.completeSuccess());
         Assertions.assertFalse(bld.completeWarning());
         bld.alert(MY_ALERT);
@@ -40,41 +39,41 @@ class TestSome {
         bld.fault(MY_FAULT);
         Assertions.assertFalse(bld.completeWarning());
         Assertions.assertTrue(bld.completeWithErrors());
-        val v = bld.buildWithValue(1);
+        @NotNull Some<Integer> v = bld.buildWithValue(1);
         Assertions.assertTrue(v.completeWithErrors());
         Assertions.assertThrows(NoSuchElementException.class, v::value);
-        val w = v.mapOf(k -> k + 1);
+        @NotNull Some<Integer> w = v.mapOf(k -> k + 1);
         log.info("w: {}", w);
     }
 
     @Test
         // mvn test -Dtest="TestSome#test02"
     void test02() {
-        val bld = Some.<Integer>builder();
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
         bld.alert(MY_ALERT);
-        val v = bld.buildWithValue(1);
+        @NotNull Some<Integer> v = bld.buildWithValue(1);
         Assertions.assertTrue(v.completeWarning());
         Assertions.assertDoesNotThrow(v::value);
-        val w = v.mapOf(k -> k + 1);
+        @NotNull Some<Integer> w = v.mapOf(k -> k + 1);
         log.info("w: {}", w);
     }
 
     @Test
         // mvn test -Dtest="TestSome#test03"
     void test03() {
-        val bld = Some.<Integer>builder();
-        val v = bld.buildWithValue(1);
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
+        Some<Integer> v = bld.buildWithValue(1);
         Assertions.assertFalse(v.completeWarning());
         Assertions.assertTrue(v.completeSuccess());
         Assertions.assertDoesNotThrow(v::value);
-        val w = v.mapOf(k -> k + 1);
+        @NotNull Some<Integer> w = v.mapOf(k -> k + 1);
         log.info("w: {}", w);
     }
 
     @Test
         // mvn test -Dtest="TestSome#test04"
     void test04() {
-        val v = Some
+        @NotNull Some<Integer> v = Some
                 .<Integer>builder()
                 .build();
         Assertions.assertFalse(v.completeSuccess());
@@ -83,16 +82,16 @@ class TestSome {
         Assertions.assertThrows(NoSuchElementException.class, v::value);
         log.info("v: {}", v);
 
-        val b1 = Some.<Integer>builder();
-        val v1 = b1.buildWithValue(null);
+        @NotNull SomeBuilder<Integer> b1 = Some.builder();
+        @NotNull Some<Integer> v1 = b1.buildWithValue(null);
         Assertions.assertFalse(v1.completeSuccess());
         Assertions.assertFalse(v1.completeWarning());
         Assertions.assertTrue(v1.completeWithErrors());
         Assertions.assertThrows(NoSuchElementException.class, v1::value);
         log.info("v1: {}", v1);
 
-        val h1 = Nope.fault(MY_FAULT);
-        val v3 = Some
+        @NotNull Nope h1 = Nope.fault(MY_FAULT);
+        @NotNull Some<Failure> v3 = Some
                 .<Failure>builder()
                 .buildWithValue(h1.failure());
         Assertions.assertFalse(v3.completeSuccess());
@@ -105,12 +104,12 @@ class TestSome {
     @Test
         // mvn test -Dtest="TestSome#test05"
     void test05() {
-        val bld = Some.<Integer>builder();
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
         bld.value(1);
         bld.value(2);
         bld.alert(MY_ALERT);
         bld.fault(MY_FAULT);
-        val v = bld.build();
+        @NotNull Some<Integer> v = bld.build();
         log.info("v: {}", v);
 
     }
@@ -118,8 +117,8 @@ class TestSome {
     @Test
         // mvn test -Dtest="TestSome#test06"
     void test06() {
-        val a = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
-        val b = Some.of(a);
+        @NotNull Some<Integer> a = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
+        @NotNull Some<Integer> b = Some.of(a);
         Assertions.assertTrue(b.completeWithoutErrors());
         Assertions.assertFalse(b.completeSuccess());
         Assertions.assertEquals(1, b.value());
@@ -133,7 +132,7 @@ class TestSome {
     @Test
         // mvn test -Dtest="TestSome#test07"
     void test07() {
-        val bld = Some.<Integer>builder();
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
         bld.alert(MY_ALERT);
         bld.fault(MY_FAULT);
         Collection<Signal> za = bld.signals();
@@ -143,22 +142,22 @@ class TestSome {
     @Test
         // mvn test -Dtest="TestSome#test08"
     void test08() {
-        val bld = Some.<Integer>builder();
+        @NotNull SomeBuilder<Integer> bld = Some.builder();
         bld.value(1);
         bld.fault(MY_FAULT);
-        val a = bld.build();
+        @NotNull Some<Integer> a = bld.build();
         Assertions.assertTrue(a.completeWithErrors());
         Assertions.assertEquals(2, a.signals().size());
         System.out.println(a);
 
-        val b = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
+        @NotNull Some<Integer> b = Some.<Integer>builder().withAlert(MY_ALERT).buildWithValue(1);
         b.summary().ifPresent(System.out::println);
-        val c = Some.<Integer>builder().withAlert(MY_ALERT).withAlert(MY_FAULT).buildWithValue(1);
+        @NotNull Some<Integer> c = Some.<Integer>builder().withAlert(MY_ALERT).withAlert(MY_FAULT).buildWithValue(1);
         c.summary().ifPresent(System.out::println);
     }
 
     void test501(A a) {
-        val bld = Some.<C>builder();
+        @NotNull SomeBuilder<C> bld = Some.builder();
         formalValidation(a)
             .onSuccess(() -> decode(a)
                 .onSuccess(b -> meritValidation(b)
@@ -172,13 +171,13 @@ class TestSome {
     }
 
     void test502(A a) {
-        val bld = Some.<C>builder();
+        @NotNull SomeBuilder<C> bld = Some.builder();
         bld.add(
                 formalValidation(a)
                         .ergo(() -> decode(a)
                                 .ergo(b -> meritValidation(b)
                                         .ergo(() -> translate(b)
-                                                .peek(bld::value))))
+                                                .implies(bld::value))))
         );
         Some<C> au = bld.build();
 

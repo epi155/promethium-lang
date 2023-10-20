@@ -1,6 +1,5 @@
 package io.github.epi155.pm.lang;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
@@ -11,7 +10,7 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
     @Override
     public @NotNull Failure fault(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val fail = PmFailure.of(stPtr[J_LOCATE], ce, argv);
+        @NotNull Failure fail = PmFailure.of(stPtr[J_LOCATE], ce, argv);
         add(fail);
         return fail;
     }
@@ -19,7 +18,7 @@ abstract class PmAnyBuilder extends PmMutableStatus implements ErrorBuilder {
     @Override
     public @NotNull Warning alert(@NotNull CustMsg ce, Object... argv) {
         StackTraceElement[] stPtr = Thread.currentThread().getStackTrace();
-        val warn = PmWarning.of(stPtr[J_LOCATE], ce, argv);
+        @NotNull Warning warn = PmWarning.of(stPtr[J_LOCATE], ce, argv);
         add(warn);
         return warn;
     }

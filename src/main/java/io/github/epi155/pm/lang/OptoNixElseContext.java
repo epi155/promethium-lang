@@ -2,6 +2,7 @@ package io.github.epi155.pm.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -17,7 +18,7 @@ public interface OptoNixElseContext<T> {
      * @param fcn fallible function on the value
      * @return instance of {@link OptoNixExitContext}
      */
-    @NotNull OptoNixExitContext ergo(@NotNull Function<? super T, ? extends SingleError> fcn);
+    @NotNull OptoNixExitContext thenApply(@NotNull Function<? super T, ? extends SingleError> fcn);
 
     /**
      * performs an action on the value
@@ -25,7 +26,7 @@ public interface OptoNixElseContext<T> {
      * @param action action on the value
      * @return instance of {@link OptoNixExitContext}
      */
-    @NotNull OptoNixExitContext peek(@NotNull Consumer<? super T> action);
+    @NotNull OptoNixExitContext thenAccept(@NotNull Consumer<? super T> action);
 
     /**
      * Set custom error message
@@ -34,7 +35,17 @@ public interface OptoNixElseContext<T> {
      * @param argv error argument
      * @return instance of {@link OptoNixExitContext}
      */
-    @NotNull OptoNixExitContext fault(CustMsg ce, Object... argv);
+    @NotNull OptoNixExitContext fault(@NotNull CustMsg ce, Object... argv);
+
+    /**
+     * Set custom error message with properties
+     *
+     * @param properties error properties
+     * @param ce         custom error
+     * @param argv       error argument
+     * @return instance of {@link OptoNixExitContext}
+     */
+    @NotNull OptoNixExitContext fault(@NotNull Map<String, Object> properties, @NotNull CustMsg ce, Object... argv);
 
     /**
      * no operation
