@@ -116,7 +116,7 @@ public interface Nope extends SingleError, OnlyError {
      * @return {@link Nope} instance, if this has an error,
      * the producer is not called and the result has the original error
      */
-    @NotNull Nope thus(@NotNull Supplier<? extends SingleError> fcn);
+    @NotNull Nope ergoes(@NotNull Supplier<? extends SingleError> fcn);
 
     /**
      * If there are no errors, the supplier is called,
@@ -136,13 +136,13 @@ public interface Nope extends SingleError, OnlyError {
      *      } </pre>
      *      The method simplifies it to
      * <pre>
-     *      Hope&lt;B&gt; kb = compute().&lt;B&gt;map(this::n2sb); </pre>
+     *      Hope&lt;B&gt; kb = compute().&lt;B&gt;maps(this::n2sb); </pre>
      *
      * @param fcn   producer {@link Hope}
      * @return      {@link Hope} instance
      * @param <R>   {@link Hope} type
      */
-    @NotNull <R> Hope<R> into(@NotNull Supplier<? extends Hope<R>> fcn);
+    @NotNull <R> Hope<R> maps(@NotNull Supplier<? extends Hope<R>> fcn);
 
     /**
      * map value
@@ -153,7 +153,7 @@ public interface Nope extends SingleError, OnlyError {
      * @return {@link Hope} instance with new value,
      * if this has errors, the transformation is not called and the result has the original error;
      */
-    @NotNull <R> Hope<R> intoOf(@NotNull Supplier<? extends R> fcn);
+    @NotNull <R> Hope<R> mapsOf(@NotNull Supplier<? extends R> fcn);
 
     /**
      * If there is no error, the action is performed.

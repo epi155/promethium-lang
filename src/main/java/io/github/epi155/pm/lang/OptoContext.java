@@ -16,9 +16,9 @@ public interface OptoContext<T> {
      * static constructor of an opto map context with an external value
      *
      * <pre>
-     *     Hope&lt;R&gt; hope = OptoContext.&lt;S,R&gt;optoMap(..)
-     *          .when(..).map(..)
-     *          .otherwise().map(..)
+     *     Hope&lt;R&gt; hope = OptoContext.&lt;S,R&gt;choosesMap(..)
+     *          .when(..).maps(..)
+     *          .otherwise().maps(..)
      *          .end();
      * </pre>
      *
@@ -26,9 +26,9 @@ public interface OptoContext<T> {
      * @param <S>   value type of the opto/external value
      * @param <R>   value type of the mapped to value
      * @return instance of {@link OptoMapInitialContext}
-     * @see #optoMap()
+     * @see #choosesMap()
      */
-    static @NotNull <S, R> OptoMapInitialContext<S, R> optoMap(@NotNull S value) {
+    static @NotNull <S, R> OptoMapInitialContext<S, R> choosesMap(@NotNull S value) {
         return new PmOptoRawMapContext<>(value);
     }
 
@@ -36,7 +36,7 @@ public interface OptoContext<T> {
      * static constructor of a opto value context with an external value
      *
      * <pre>
-     *     Nope nope = OptoContext.opto(..)
+     *     Nope nope = OptoContext.chooses(..)
      *          .when(..).thenApply(..)
      *          .when(..).thenAccept(..)
      *          .otherwise().fault(..)
@@ -45,10 +45,10 @@ public interface OptoContext<T> {
      *
      * @param value external value
      * @param <S>   value type of the opto/external value
-     * @return instante of {@link OptoNixInitialContext}
-     * @see #opto()
+     * @return instance of {@link OptoNixInitialContext}
+     * @see #chooses()
      */
-    static @NotNull <S> OptoNixInitialContext<S> opto(@NotNull S value) {
+    static @NotNull <S> OptoNixInitialContext<S> chooses(@NotNull S value) {
         return new PmOptoRawNixContext<>(value);
     }
 
@@ -57,7 +57,7 @@ public interface OptoContext<T> {
      *
      * <pre>
      *      Hope&lt;R&gt; value = hopeT.&lt;R&gt;optoMap()
-     *          .when(..).map(..)
+     *          .when(..).maps(..)
      *          .otherwise().fault(..)
      *          .end();
      * </pre>
@@ -69,13 +69,13 @@ public interface OptoContext<T> {
      *     </tr>
      *     <tr>
      *         <td >{@code OptoContext<T>}</td>
-     *         <td><code>{@link OptoContext#optoMap() &lt;R>optoMap}</code></td>
+     *         <td><code>{@link OptoContext#choosesMap() &lt;R>choosesMap}</code></td>
      *         <td></td>
      *         <td rowspan="2">{@code OptoMapContext<T,R>}</td>
      *     </tr>
      *     <tr>
      *         <td>{@code static}</td>
-     *         <td><code>{@link OptoContext#optoMap(Object) &lt;T,R>optoMap}</code></td>
+     *         <td><code>{@link OptoContext#choosesMap(Object) &lt;T,R>choosesMap}</code></td>
      *         <td>{@code T}</td>
      *     </tr>
      *     <tr><td colspan="4"></td></tr>
@@ -106,12 +106,12 @@ public interface OptoContext<T> {
      *     <tr><td colspan="4"></td></tr>
      *     <tr>
      *         <td rowspan="3">{@code OptoMapWhenContext<T,R>}</td>
-     *         <td><code>{@link OptoMapWhenContext#map(Function) map}</code></td>
+     *         <td><code>{@link OptoMapWhenContext#maps(Function) maps}</code></td>
      *         <td>{@code Function<? super T, ? extends ErrorXorValue<R>>}</td>
      *         <td rowspan="7">{@code OptoMapContext<T, R>}</td>
      *     </tr>
      *     <tr>
-     *         <td><code>{@link OptoMapWhenContext#mapOf(Function) mapOf}</code></td>
+     *         <td><code>{@link OptoMapWhenContext#mapsOf(Function) mapsOf}</code></td>
      *         <td>{@code Function<? super T, ? extends R>}</td>
      *     </tr>
      *     <tr>
@@ -121,11 +121,11 @@ public interface OptoContext<T> {
      *     <tr><td colspan="3"></td></tr>
      *     <tr>
      *         <td rowspan="3">{@code OptoMapWhenAsContext<U,T,R>}</td>
-     *         <td><code>{@link OptoMapWhenAsContext#map(Function) map}</code></td>
+     *         <td><code>{@link OptoMapWhenAsContext#maps(Function) maps}</code></td>
      *         <td>{@code Function<? super U, ? extends ErrorXorValue<R>>}</td>
      *     </tr>
      *     <tr>
-     *         <td><code>{@link OptoMapWhenAsContext#mapOf(Function) mapOf}</code></td>
+     *         <td><code>{@link OptoMapWhenAsContext#mapsOf(Function) mapsOf}</code></td>
      *         <td>{@code Function<? super U, ? extends R>}</td>
      *     </tr>
      *     <tr>
@@ -135,12 +135,12 @@ public interface OptoContext<T> {
      *     <tr><td colspan="4"></td></tr>
      *     <tr>
      *         <td rowspan="3">{@code OptoMapElseContext<T,R>}</td>
-     *         <td><code>{@link OptoMapElseContext#map(Function) map}</code></td>
+     *         <td><code>{@link OptoMapElseContext#maps(Function) maps}</code></td>
      *         <td>{@code Function<? super T, ? extends ErrorXorValue<R>>}</td>
      *         <td rowspan="3">{@code OptoMapExitContext<R>}</td>
      *     </tr>
      *     <tr>
-     *         <td><code>{@link OptoMapElseContext#mapOf(Function) mapOf}</code></td>
+     *         <td><code>{@link OptoMapElseContext#mapsOf(Function) mapsOf}</code></td>
      *         <td>{@code Function<? super T, ? extends R>}</td>
      *     </tr>
      *     <tr>
@@ -165,13 +165,13 @@ public interface OptoContext<T> {
      * @return instance of {@link OptoMapInitialContext}
      */
     @SuppressWarnings("JavadocDeclaration")
-    @NotNull <R> OptoMapInitialContext<T, R> optoMap();
+    @NotNull <R> OptoMapInitialContext<T, R> choosesMap();
 
     /**
      * create a opto value context
      *
      * <pre>
-     *      Nope nope = hopeT.opto()
+     *      Nope nope = hopeT.chooses()
      *          .when(..).thenApply(..)
      *          .otherwise().fault(..)
      *          .end();
@@ -184,13 +184,13 @@ public interface OptoContext<T> {
      *     </tr>
      *     <tr>
      *         <td >{@code OptoContext<T>}</td>
-     *         <td><code>{@link OptoContext#opto() opto}</code></td>
+     *         <td><code>{@link OptoContext#chooses() chooses}</code></td>
      *         <td></td>
      *         <td rowspan="2">{@code OptoNixContext<T>}</td>
      *     </tr>
      *     <tr>
      *         <td>{@code static}</td>
-     *         <td>{@link OptoContext#opto(Object) &lt;T>opto}</td>
+     *         <td>{@link OptoContext#chooses(Object) &lt;T>chooses}</td>
      *         <td>{@code T}</td>
      *     </tr>
      *     <tr><td colspan="4"></td></tr>
@@ -290,5 +290,5 @@ public interface OptoContext<T> {
      * @return instance of {@link OptoNixInitialContext}
      */
     @SuppressWarnings("JavadocDeclaration")
-    @NotNull OptoNixInitialContext<T> opto();
+    @NotNull OptoNixInitialContext<T> chooses();
 }

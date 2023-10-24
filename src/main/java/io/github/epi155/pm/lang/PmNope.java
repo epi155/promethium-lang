@@ -45,7 +45,7 @@ class PmNope extends PmSingleError implements Nope {
 
     @Override
     @NoBuiltInCapture
-    public @NotNull Nope thus(@NotNull Supplier<? extends SingleError> fcn) {
+    public @NotNull Nope ergoes(@NotNull Supplier<? extends SingleError> fcn) {
         if (completeSuccess()) {
             SingleError one = fcn.get();
             if (one.completeSuccess()) {
@@ -60,7 +60,7 @@ class PmNope extends PmSingleError implements Nope {
 
     @Override
     @NoBuiltInCapture
-    public @NotNull <R> Hope<R> into(@NotNull Supplier<? extends Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> maps(@NotNull Supplier<? extends Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.get();
         } else {
@@ -70,7 +70,7 @@ class PmNope extends PmSingleError implements Nope {
 
     @Override
     @NoBuiltInCapture
-    public @NotNull <R> Hope<R> intoOf(@NotNull Supplier<? extends R> fcn) {
+    public @NotNull <R> Hope<R> mapsOf(@NotNull Supplier<? extends R> fcn) {
         return completeSuccess() ? Hope.of(fcn.get()) : new PmHope<>(null, failure());
     }
 

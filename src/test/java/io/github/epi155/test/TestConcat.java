@@ -53,9 +53,9 @@ class TestConcat {
 
     public void test32() {
         @NotNull Nope k1 = fun1(1)
-                .into(this::fun2)
-                .into(this::fun3)
-                .into(this::fun4)
+                .maps(this::fun2)
+                .maps(this::fun3)
+                .maps(this::fun4)
                 .asNope();
         k1.onFailure(e -> log.warn(e.message()));
     }
@@ -103,9 +103,9 @@ class TestConcat {
     void test52() {
         List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6);
         None z = list.stream().map(n -> fun1(n)
-                .into(this::fun2)
-                .into(this::fun3)
-                .into(this::fun4)).collect(None.collect());
+                .maps(this::fun2)
+                .maps(this::fun3)
+                .maps(this::fun4)).collect(None.collect());
         z.onFailure(es -> es.forEach(e -> log.warn(e.message())));
 
     }
@@ -182,9 +182,9 @@ class TestConcat {
     void test65() {
         List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6);
         @NotNull None k1 = None.iterableOf(list).forEach(n -> fun1(n)
-                .into(this::fun2)
-                .into(this::fun3)
-                .into(this::fun4));
+                .maps(this::fun2)
+                .maps(this::fun3)
+                .maps(this::fun4));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 
@@ -192,9 +192,9 @@ class TestConcat {
     void test66() {
         Stream<Integer> stream = IntStream.range(0, 100).boxed();
         @NotNull None k1 = None.streamOf(stream).forEachParallel(5, n -> fun1(n)
-                .into(this::fun2)
-                .into(this::fun3)
-                .into(this::fun4));
+                .maps(this::fun2)
+                .maps(this::fun3)
+                .maps(this::fun4));
         k1.onFailure(es -> es.forEach(e -> log.warn(e.message())));
     }
 

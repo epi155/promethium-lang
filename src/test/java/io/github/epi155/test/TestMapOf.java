@@ -46,10 +46,10 @@ class TestMapOf {
         @NotNull Some<Integer> e1 = Hope.<Integer>fault(MY_FAULT).mapOf(k -> k + 1);
         Assertions.assertTrue(e1.completeWithErrors());
 
-        @NotNull Hope<Integer> g1 = Hope.of(1).intoOf(k -> k + 1);
+        @NotNull Hope<Integer> g1 = Hope.of(1).mapsOf(k -> k + 1);
         Assertions.assertTrue(g1.completeSuccess());
         Assertions.assertEquals(2, g1.value());
-        @NotNull Hope<Integer> g3 = Hope.<Integer>fault(MY_FAULT).intoOf(k -> k + 1);
+        @NotNull Hope<Integer> g3 = Hope.<Integer>fault(MY_FAULT).mapsOf(k -> k + 1);
         Assertions.assertTrue(g3.completeWithErrors());
     }
 
@@ -63,10 +63,10 @@ class TestMapOf {
         Assertions.assertTrue(e1.completeWithErrors());
 
 
-        @NotNull Hope<Integer> g1 = Nope.nope().intoOf(() -> 1);
+        @NotNull Hope<Integer> g1 = Nope.nope().mapsOf(() -> 1);
         Assertions.assertTrue(g1.completeSuccess());
         Assertions.assertEquals(1, g1.value());
-        @NotNull Hope<Integer> g3 = Nope.fault(MY_FAULT).intoOf(() -> 1);
+        @NotNull Hope<Integer> g3 = Nope.fault(MY_FAULT).mapsOf(() -> 1);
         Assertions.assertTrue(g3.completeWithErrors());
     }
 }

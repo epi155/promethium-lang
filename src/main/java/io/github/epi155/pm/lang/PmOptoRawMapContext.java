@@ -51,7 +51,7 @@ class PmOptoRawMapContext<T, R> implements OptoMapContext<T, R> {
         //noinspection Convert2Diamond
         return new OptoMapWhenAsContext<U, T, R>() {
             @Override
-            public @NotNull OptoMapContext<T, R> map(@NotNull Function<? super U, ? extends ErrorXorValue<R>> fcn) {
+            public @NotNull OptoMapContext<T, R> maps(@NotNull Function<? super U, ? extends ErrorXorValue<R>> fcn) {
                 if (!branchExecuted && cls.isInstance(origin)) {
                     result = fcn.apply(cls.cast(origin));
                     branchExecuted = true;
@@ -60,7 +60,7 @@ class PmOptoRawMapContext<T, R> implements OptoMapContext<T, R> {
             }
 
             @Override
-            public @NotNull OptoMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn) {
+            public @NotNull OptoMapContext<T, R> mapsOf(@NotNull Function<? super U, ? extends R> fcn) {
                 if (!branchExecuted && cls.isInstance(origin)) {
                     R value = fcn.apply(cls.cast(origin));
                     result = Hope.of(value);
@@ -94,7 +94,7 @@ class PmOptoRawMapContext<T, R> implements OptoMapContext<T, R> {
         //noinspection Convert2Diamond
         return new OptoMapElseContext<T, R>() {
             @Override
-            public @NotNull OptoMapExitContext<R> map(@NotNull Function<? super T, ? extends ErrorXorValue<R>> fcn) {
+            public @NotNull OptoMapExitContext<R> maps(@NotNull Function<? super T, ? extends ErrorXorValue<R>> fcn) {
                 if (!branchExecuted) {
                     result = fcn.apply(origin);
                 }
@@ -102,7 +102,7 @@ class PmOptoRawMapContext<T, R> implements OptoMapContext<T, R> {
             }
 
             @Override
-            public @NotNull OptoMapExitContext<R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
+            public @NotNull OptoMapExitContext<R> mapsOf(@NotNull Function<? super T, ? extends R> fcn) {
                 if (!branchExecuted) {
                     result = Hope.of(fcn.apply(origin));
                 }
@@ -131,7 +131,7 @@ class PmOptoRawMapContext<T, R> implements OptoMapContext<T, R> {
         protected abstract boolean test();
 
         @Override
-        public @NotNull OptoMapContext<T, R> map(@NotNull Function<? super T, ? extends ErrorXorValue<R>> fcn) {
+        public @NotNull OptoMapContext<T, R> maps(@NotNull Function<? super T, ? extends ErrorXorValue<R>> fcn) {
             if (!branchExecuted && test()) {
                 result = fcn.apply(origin);
                 branchExecuted = true;
@@ -140,7 +140,7 @@ class PmOptoRawMapContext<T, R> implements OptoMapContext<T, R> {
         }
 
         @Override
-        public @NotNull OptoMapContext<T, R> mapOf(@NotNull Function<? super T, ? extends R> fcn) {
+        public @NotNull OptoMapContext<T, R> mapsOf(@NotNull Function<? super T, ? extends R> fcn) {
             if (!branchExecuted && test()) {
                 R value = fcn.apply(origin);
                 result = Hope.of(value);

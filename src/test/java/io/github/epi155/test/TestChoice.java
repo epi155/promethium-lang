@@ -503,7 +503,7 @@ class TestChoice {
     @Test
     void testI01() {
         Double pi = 3.14;
-        Nope n = OptoContext.opto(pi)
+        Nope n = OptoContext.chooses(pi)
                 .whenInstanceOf(Number.class)
                 .thenAccept(it -> log.info("is Number"))
                 .whenInstanceOf(Double.class)
@@ -518,13 +518,13 @@ class TestChoice {
         } else {
             log.info("unknown");
         }
-        Hope<String> m = OptoContext.<Double, String>optoMap(pi)
+        Hope<String> m = OptoContext.<Double, String>choosesMap(pi)
                 .whenInstanceOf(Number.class)
-                .mapOf(it -> "Number")
+                .mapsOf(it -> "Number")
                 .whenInstanceOf(Double.class)
-                .mapOf(it -> "Double")
+                .mapsOf(it -> "Double")
                 .otherwise()
-                .mapOf(it -> "unknown")
+                .mapsOf(it -> "unknown")
                 .end();
     }
 

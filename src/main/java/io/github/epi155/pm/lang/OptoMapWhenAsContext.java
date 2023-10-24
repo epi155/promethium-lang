@@ -19,7 +19,7 @@ public interface OptoMapWhenAsContext<U, T, R> {
      * @param fcn fallible function
      * @return instance of {@link OptoMapContext}
      */
-    @NotNull OptoMapContext<T, R> map(@NotNull Function<? super U, ? extends ErrorXorValue<R>> fcn);
+    @NotNull OptoMapContext<T, R> maps(@NotNull Function<? super U, ? extends ErrorXorValue<R>> fcn);
 
     /**
      * Apply transformation to the opto value
@@ -27,7 +27,7 @@ public interface OptoMapWhenAsContext<U, T, R> {
      * @param fcn transformation function
      * @return instance of {@link OptoMapContext}
      */
-    @NotNull OptoMapContext<T, R> mapOf(@NotNull Function<? super U, ? extends R> fcn);
+    @NotNull OptoMapContext<T, R> mapsOf(@NotNull Function<? super U, ? extends R> fcn);
 
     /**
      * Set custom error message

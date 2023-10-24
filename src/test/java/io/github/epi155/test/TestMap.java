@@ -139,14 +139,14 @@ class TestMap {
         Assertions.assertTrue(f3.completeWithErrors());
         Assertions.assertEquals(1, f3.signals().size());
 
-        @NotNull Hope<Integer> g1 = Hope.of(1).into(k -> Hope.of(k + 1));
+        @NotNull Hope<Integer> g1 = Hope.of(1).maps(k -> Hope.of(k + 1));
         Assertions.assertTrue(g1.completeSuccess());
         Assertions.assertEquals(2, g1.value());
-        @NotNull Hope<Integer> g2 = Hope.of(1).into(k -> Hope.fault(MY_FAULT));
+        @NotNull Hope<Integer> g2 = Hope.of(1).maps(k -> Hope.fault(MY_FAULT));
         Assertions.assertTrue(g2.completeWithErrors());
-        @NotNull Hope<Integer> g3 = Hope.<Integer>fault(MY_FAULT).into(k -> Hope.of(k + 1));
+        @NotNull Hope<Integer> g3 = Hope.<Integer>fault(MY_FAULT).maps(k -> Hope.of(k + 1));
         Assertions.assertTrue(g3.completeWithErrors());
-        @NotNull Hope<Integer> g4 = Hope.<Integer>fault(MY_FAULT).into(k -> Hope.fault(MY_FAULT));
+        @NotNull Hope<Integer> g4 = Hope.<Integer>fault(MY_FAULT).maps(k -> Hope.fault(MY_FAULT));
         Assertions.assertTrue(g4.completeWithErrors());
         Assertions.assertEquals(1, g4.signals().size());
 
@@ -182,14 +182,14 @@ class TestMap {
         Assertions.assertTrue(f3.completeWithErrors());
         Assertions.assertEquals(1, f3.signals().size());
 
-        @NotNull Hope<Integer> g1 = Nope.nope().into(() -> Hope.of(1));
+        @NotNull Hope<Integer> g1 = Nope.nope().maps(() -> Hope.of(1));
         Assertions.assertTrue(g1.completeSuccess());
         Assertions.assertEquals(1, g1.value());
-        @NotNull Hope<Integer> g2 = Nope.nope().into(() -> Hope.fault(MY_FAULT));
+        @NotNull Hope<Integer> g2 = Nope.nope().maps(() -> Hope.fault(MY_FAULT));
         Assertions.assertTrue(g2.completeWithErrors());
-        @NotNull Hope<Integer> g3 = Nope.fault(MY_FAULT).into(() -> Hope.of(1));
+        @NotNull Hope<Integer> g3 = Nope.fault(MY_FAULT).maps(() -> Hope.of(1));
         Assertions.assertTrue(g3.completeWithErrors());
-        @NotNull Hope<Integer> g4 = Nope.fault(MY_FAULT).into(() -> Hope.fault(MY_FAULT));
+        @NotNull Hope<Integer> g4 = Nope.fault(MY_FAULT).maps(() -> Hope.fault(MY_FAULT));
         Assertions.assertTrue(g4.completeWithErrors());
         Assertions.assertEquals(1, g4.signals().size());
 

@@ -37,7 +37,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     @NoBuiltInCapture
-    public @NotNull <R> Hope<R> into(@NotNull Function<? super T, ? extends Hope<R>> fcn) {
+    public @NotNull <R> Hope<R> maps(@NotNull Function<? super T, ? extends Hope<R>> fcn) {
         if (completeSuccess()) {
             return fcn.apply(value);
         } else {
@@ -47,7 +47,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     @NoBuiltInCapture
-    public @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn) {
+    public @NotNull Nope ergoes(@NotNull Function<? super T, ? extends SingleError> fcn) {
         if (completeSuccess()) {
             SingleError result = fcn.apply(value);
             if (result.completeWithoutErrors()) {
@@ -72,7 +72,7 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
 
     @Override
     @NoBuiltInCapture
-    public @NotNull <R> Hope<R> intoOf(@NotNull Function<? super T, ? extends R> fcn) {
+    public @NotNull <R> Hope<R> mapsOf(@NotNull Function<? super T, ? extends R> fcn) {
         return completeSuccess() ? Hope.of(fcn.apply(value)) : new PmHope<>(null, failure());
     }
 
@@ -127,12 +127,12 @@ class PmHope<T> extends PmSingleError implements Hope<T> {
     }
 
     @Override
-    public @NotNull <R> OptoMapContext<T, R> optoMap() {
+    public @NotNull <R> OptoMapContext<T, R> choosesMap() {
         return new PmOptoMapContext<>(this);
     }
 
     @Override
-    public @NotNull OptoNixContext<T> opto() {
+    public @NotNull OptoNixContext<T> chooses() {
         return new PmOptoNixContext<>(this);
     }
 

@@ -141,7 +141,7 @@ class TestHope {
 
     @Test
     void test20() {
-        @NotNull Hope<Integer> hope = Hope.of(1).intoOf(it -> it + 1);
+        @NotNull Hope<Integer> hope = Hope.of(1).mapsOf(it -> it + 1);
         Assertions.assertTrue(hope.completeSuccess());
         Assertions.assertEquals(2, hope.value());
         @NotNull Nope nope = hope.asNope();
@@ -156,7 +156,7 @@ class TestHope {
 
     @Test
     void test21() {
-        @NotNull Hope<Integer> hope = Hope.<Integer>capture(new NullPointerException()).intoOf(it -> it + 1);
+        @NotNull Hope<Integer> hope = Hope.<Integer>capture(new NullPointerException()).mapsOf(it -> it + 1);
         Assertions.assertFalse(hope.completeSuccess());
         @NotNull Nope nope = hope.asNope();
         Assertions.assertFalse(nope.completeSuccess());
@@ -166,8 +166,8 @@ class TestHope {
     @Test
     void test22() {
         @NotNull Hope<BigInteger> z = Hope.of(1)
-                .into(u -> Hope.of("0123456789ABCDEF".charAt(u))
-                        .into(v -> Hope.of(BigInteger.probablePrime(v, new Random()))));
+                .maps(u -> Hope.of("0123456789ABCDEF".charAt(u))
+                        .maps(v -> Hope.of(BigInteger.probablePrime(v, new Random()))));
         Assertions.assertTrue(z.completeSuccess());
         log.info("Result is {}", z);
     }
@@ -211,13 +211,13 @@ class TestHope {
                                 .ergo(() -> translate(b))));
 
         Hope<C> hx = formalValidation(a)
-                .into(() -> decode(a))
-                .into(b -> meritValidation(b)
-                        .into(() -> translate(b)));
+                .maps(() -> decode(a))
+                .maps(b -> meritValidation(b)
+                        .maps(() -> translate(b)));
         Nope nx = formalValidation(a)
-                .thus(() -> decode(a)
-                        .thus(b -> meritValidation(b)
-                                .thus(() -> translate(b))));
+                .ergoes(() -> decode(a)
+                        .ergoes(b -> meritValidation(b)
+                                .ergoes(() -> translate(b))));
 
         @NotNull None nz = hx
                 .choose()

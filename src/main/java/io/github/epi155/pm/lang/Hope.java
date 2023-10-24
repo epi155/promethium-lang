@@ -132,13 +132,13 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      *      } </pre>
      *      The method simplifies it to
      * <pre>
-     *      Hope&lt;B&gt; hb = computeA().map(this::a2b); </pre>
+     *      Hope&lt;B&gt; hb = computeA().maps(this::a2b); </pre>
      *
      * @param fcn transform value to result {@link Hope}
      * @param <R> result type
      * @return result {@link Hope} instance, if this has an error, the transformation is not called and the result has the original error
      */
-    @NotNull <R> Hope<R> into(@NotNull Function<? super T, ? extends Hope<R>> fcn);
+    @NotNull <R> Hope<R> maps(@NotNull Function<? super T, ? extends Hope<R>> fcn);
 
     /**
      * Compose operator
@@ -147,7 +147,7 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * @param fcn fallible function
      * @return result {@link Nope} instance, if this has an error, the function is not called and the result has the original error
      */
-    @NotNull Nope thus(@NotNull Function<? super T, ? extends SingleError> fcn);
+    @NotNull Nope ergoes(@NotNull Function<? super T, ? extends SingleError> fcn);
 
     /**
      * map value
@@ -159,7 +159,7 @@ public interface Hope<T> extends ErrorXorValue<T>, OptoContext<T> {
      * if this has errors, the transformation is not called and the result has the original error;
      * RuntimeException are caught as new error
      */
-    @NotNull <R> Hope<R> intoOf(@NotNull Function<? super T, ? extends R> fcn);
+    @NotNull <R> Hope<R> mapsOf(@NotNull Function<? super T, ? extends R> fcn);
 
     /**
      * If there is no error and the value is present, the action on the value is performed.

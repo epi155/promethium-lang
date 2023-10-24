@@ -41,7 +41,7 @@ public class TestCustom2 {
         Iterable<CustomInput> iterable = rd.Iterable();
         None none = None.iterableOf(iterable)
                 .forEach(input -> firstStep(input)
-                        .into(this::secondStep)
+                        .maps(this::secondStep)
                         .implies(wr::write));
         report(none.signals());
     }
@@ -50,7 +50,7 @@ public class TestCustom2 {
         Stream<CustomInput> stream = rd.stream();
         None none = stream
             .map(input -> firstStep(input)
-                    .into(this::secondStep)
+                    .maps(this::secondStep)
                     .implies(wr::write))
             .collect(None.collect());
         report(none.signals());
@@ -60,7 +60,7 @@ public class TestCustom2 {
         Stream<CustomInput> stream = rd.stream();
         None none = None.streamOf(stream)
                 .forEach(input -> firstStep(input)
-                        .into(this::secondStep)
+                        .maps(this::secondStep)
                         .implies(wr::write));
         report(none.signals());
     }

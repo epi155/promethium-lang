@@ -203,25 +203,25 @@ public class TestFaultMap {
 
     @Test
     void testC1() {
-        @NotNull Nope a1 = Hope.of(0).opto()
+        @NotNull Nope a1 = Hope.of(0).chooses()
                 .when(true).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Nope a2 = Hope.of(0).opto()
+        @NotNull Nope a2 = Hope.of(0).chooses()
                 .when(true).nop()
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Nope a3 = Hope.of(0).opto()
+        @NotNull Nope a3 = Hope.of(0).chooses()
                 .when(false).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Nope a4 = Hope.of(0).opto()
+        @NotNull Nope a4 = Hope.of(0).chooses()
                 .when(false).nop()
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
@@ -231,25 +231,25 @@ public class TestFaultMap {
 
     @Test
     void testC2() {
-        @NotNull Nope a1 = OptoContext.opto(0)
+        @NotNull Nope a1 = OptoContext.chooses(0)
                 .when(true).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Nope a2 = OptoContext.opto(0)
+        @NotNull Nope a2 = OptoContext.chooses(0)
                 .when(true).nop()
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Nope a3 = OptoContext.opto(0)
+        @NotNull Nope a3 = OptoContext.chooses(0)
                 .when(false).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Nope a4 = OptoContext.opto(0)
+        @NotNull Nope a4 = OptoContext.chooses(0)
                 .when(false).nop()
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
@@ -259,26 +259,26 @@ public class TestFaultMap {
 
     @Test
     void testD1() {
-        @NotNull Hope<Integer> a1 = Hope.of(0).<Integer>optoMap()
+        @NotNull Hope<Integer> a1 = Hope.of(0).<Integer>choosesMap()
                 .when(true).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Hope<Integer> a2 = Hope.of(0).<Integer>optoMap()
-                .when(true).mapOf(it -> it + 1)
+        @NotNull Hope<Integer> a2 = Hope.of(0).<Integer>choosesMap()
+                .when(true).mapsOf(it -> it + 1)
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Hope<Integer> a3 = Hope.of(0).<Integer>optoMap()
+        @NotNull Hope<Integer> a3 = Hope.of(0).<Integer>choosesMap()
                 .when(false).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Hope<Integer> a4 = Hope.of(0).<Integer>optoMap()
-                .when(false).mapOf(it -> it + 1)
+        @NotNull Hope<Integer> a4 = Hope.of(0).<Integer>choosesMap()
+                .when(false).mapsOf(it -> it + 1)
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
@@ -287,26 +287,26 @@ public class TestFaultMap {
 
     @Test
     void testD2() {
-        @NotNull Hope<Integer> a1 = OptoContext.<Integer, Integer>optoMap(0)
+        @NotNull Hope<Integer> a1 = OptoContext.<Integer, Integer>choosesMap(0)
                 .when(true).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Hope<Integer> a2 = OptoContext.<Integer, Integer>optoMap(0)
-                .when(true).mapOf(it -> it + 1)
+        @NotNull Hope<Integer> a2 = OptoContext.<Integer, Integer>choosesMap(0)
+                .when(true).mapsOf(it -> it + 1)
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Hope<Integer> a3 = OptoContext.<Integer, Integer>optoMap(0)
+        @NotNull Hope<Integer> a3 = OptoContext.<Integer, Integer>choosesMap(0)
                 .when(false).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Hope<Integer> a4 = OptoContext.<Integer, Integer>optoMap(0)
-                .when(false).mapOf(it -> it + 1)
+        @NotNull Hope<Integer> a4 = OptoContext.<Integer, Integer>choosesMap(0)
+                .when(false).mapsOf(it -> it + 1)
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
@@ -371,25 +371,25 @@ public class TestFaultMap {
 
     @Test
     void testF1() {
-        @NotNull Nope a1 = Hope.of(0).opto()
+        @NotNull Nope a1 = Hope.of(0).chooses()
                 .whenInstanceOf(Integer.class).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Nope a2 = Hope.of(0).opto()
+        @NotNull Nope a2 = Hope.of(0).chooses()
                 .whenInstanceOf(Integer.class).nop()
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Nope a3 = Hope.of(0).opto()
+        @NotNull Nope a3 = Hope.of(0).chooses()
                 .whenInstanceOf(String.class).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Nope a4 = Hope.of(0).opto()
+        @NotNull Nope a4 = Hope.of(0).chooses()
                 .whenInstanceOf(String.class).nop()
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
@@ -399,25 +399,25 @@ public class TestFaultMap {
 
     @Test
     void testF2() {
-        @NotNull Nope a1 = OptoContext.opto(0)
+        @NotNull Nope a1 = OptoContext.chooses(0)
                 .whenInstanceOf(Integer.class).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Nope a2 = OptoContext.opto(0)
+        @NotNull Nope a2 = OptoContext.chooses(0)
                 .whenInstanceOf(Integer.class).nop()
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Nope a3 = OptoContext.opto(0)
+        @NotNull Nope a3 = OptoContext.chooses(0)
                 .whenInstanceOf(String.class).fault(Map.of("cause", "just a test"), MY_FAULT)
                 .otherwise().nop()
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Nope a4 = OptoContext.opto(0)
+        @NotNull Nope a4 = OptoContext.chooses(0)
                 .whenInstanceOf(String.class).nop()
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
@@ -483,26 +483,26 @@ public class TestFaultMap {
 
     @Test
     void testH1() {
-        @NotNull Hope<Integer> a1 = Hope.of(0).<Integer>optoMap()
+        @NotNull Hope<Integer> a1 = Hope.of(0).<Integer>choosesMap()
                 .whenInstanceOf(Integer.class).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Hope<Integer> a2 = Hope.of(0).<Integer>optoMap()
-                .whenInstanceOf(Integer.class).mapOf(it -> it + 1)
+        @NotNull Hope<Integer> a2 = Hope.of(0).<Integer>choosesMap()
+                .whenInstanceOf(Integer.class).mapsOf(it -> it + 1)
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Hope<Integer> a3 = Hope.of(0).<Integer>optoMap()
+        @NotNull Hope<Integer> a3 = Hope.of(0).<Integer>choosesMap()
                 .whenInstanceOf(String.class).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Hope<Integer> a4 = Hope.of(0).<Integer>optoMap()
-                .whenInstanceOf(String.class).mapOf(String::length)
+        @NotNull Hope<Integer> a4 = Hope.of(0).<Integer>choosesMap()
+                .whenInstanceOf(String.class).mapsOf(String::length)
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
@@ -511,26 +511,26 @@ public class TestFaultMap {
 
     @Test
     void testH2() {
-        @NotNull Hope<Integer> a1 = OptoContext.<Integer, Integer>optoMap(0)
+        @NotNull Hope<Integer> a1 = OptoContext.<Integer, Integer>choosesMap(0)
                 .whenInstanceOf(Integer.class).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a1.completeWithErrors());
 
-        @NotNull Hope<Integer> a2 = OptoContext.<Integer, Integer>optoMap(0)
-                .whenInstanceOf(Integer.class).mapOf(it -> it + 1)
+        @NotNull Hope<Integer> a2 = OptoContext.<Integer, Integer>choosesMap(0)
+                .whenInstanceOf(Integer.class).mapsOf(it -> it + 1)
                 .otherwise().fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();
         Assertions.assertTrue(a2.completeSuccess());
 
-        @NotNull Hope<Integer> a3 = OptoContext.<Integer, Integer>optoMap(0)
+        @NotNull Hope<Integer> a3 = OptoContext.<Integer, Integer>choosesMap(0)
                 .whenInstanceOf(String.class).fault(Map.of("cause", "just a test"), MY_FAULT)
-                .otherwise().mapOf(it -> it + 1)
+                .otherwise().mapsOf(it -> it + 1)
                 .end();
         Assertions.assertTrue(a3.completeSuccess());
 
-        @NotNull Hope<Integer> a4 = OptoContext.<Integer, Integer>optoMap(0)
-                .whenInstanceOf(String.class).mapOf(String::length)
+        @NotNull Hope<Integer> a4 = OptoContext.<Integer, Integer>choosesMap(0)
+                .whenInstanceOf(String.class).mapsOf(String::length)
                 .otherwise()
                 .fault(Map.of("cause", "just a test"), MY_FAULT)
                 .end();

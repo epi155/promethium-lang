@@ -61,7 +61,6 @@ something like:
 ```java
 class Demo2 {
     Hope<TempData> firstStep(CustomInput input);
-
     Hope<CustomOutput> secondStep(TempData tempData);
 }
 ```
@@ -142,3 +141,4 @@ class Demo6 {
     }
 }
 ```
+
